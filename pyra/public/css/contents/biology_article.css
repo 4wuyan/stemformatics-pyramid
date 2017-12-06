@@ -1,0 +1,87 @@
+div.rightColumn div.mainTextColumn div.articleTitle {
+
+    color: #FFF;
+    background-color: #7C51A1;
+    font-size: 21px;
+    height: 32px;
+    font-family: Times New Roman;
+    
+}
+
+
+div.rightColumn div.mainTextColumn div.articleTitle span{
+    margin-left: 8px;
+    margin-top:5px;
+    position: absolute;
+}
+
+div.rightColumn div.mainTextColumn div.date {
+
+    color: #F8971D;
+    font-size: 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+
+div.mainTextColumn div.mainText {
+    color: #000;
+}
+
+div.mainText p {
+    margin-bottom: 12px;
+    color: #000;
+}
+
+div.mainText p:last-child {
+    margin-bottom: 0px;
+}
+
+div.mainText div.articleImageCaption {
+    float: left;
+    width: 252px;
+    margin-bottom: 12px;
+}
+
+div.mainText div.articleImageCaption img.small{
+    float: left;
+    height: 200px;
+    margin-right: 12px;
+    width: 240px;
+}
+
+
+div.mainText div.articleImageCaption div.caption {
+    
+    background-color: #F8971D;
+    margin-right: 12px; 
+    float: left;
+    width: 240px;
+    
+}
+
+
+div.mainText div.articleImageCaption div.caption div.captionText{
+    margin: 12px;
+    font-size: 11px;
+    line-height: 13px;
+    color: #5A5A5A;
+}
+
+/* this is for references */
+div.biologistInfo p {
+    margin-bottom: 12px;
+}
+
+div.biologistInfo p:last-child {
+    margin-bottom: 0px;
+}
+
+
+div.sideColumn div.showText a {
+    margin-left: 0px;
+}
+
+div.sideColumn div.showText a {
+    width: auto;
+}

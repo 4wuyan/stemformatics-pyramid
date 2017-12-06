@@ -1,0 +1,21 @@
+div.rightColumn h2 {
+
+    color: #F8971D;
+
+}
+
+div.articleTitle {
+    margin-bottom: 20px;
+}   
+
+
+div.showText {
+    color: #5A5A5A;
+    font-size: 11px;
+    line-height: 13px;
+}
+
+
+div.showText a{
+    color: #F15D22;
+}

@@ -1,0 +1,120 @@
+
+div.mainText {
+    float: left;
+}
+
+
+div.mainText a {
+    color: #F8917D;
+}
+
+
+div.mainTextColumn div.imageText {
+
+    float: left;
+    
+    height: 160px; 
+    margin-bottom: 20px;
+    position: relative;
+}
+
+
+div.mainTextColumn img.large {
+
+    float: left;
+    width: 100%;
+    height: 160px;
+}
+
+div.imageText img.background_image {
+    width: 462px;
+    height: 62px;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    opacity:0.7;
+}
+
+div.large_image_text {
+    position: absolute;
+    color: #FFF;
+    font-size: 16px;
+    font-weight: bold;
+    top: 23px;
+    left: 26px;
+    width: 444px;
+    line-height: 20px;
+}
+
+div.large_image_text span{
+    
+    color: #FFF;
+    font-size: 12px;
+    font-weight: normal;
+    
+}
+
+
+div.mainTextColumn div.mainText {
+    color: #787878;
+    font-size: 16px;
+    /* height: 65px;  */
+    margin-bottom: 20px;
+    line-height: 19px;
+}
+
+div.mainTextColumn div.biologistInfo {
+    width: 100%;
+}
+
+div.showBiologists {
+    height: 120px;
+}
+
+div.showBiologists img.small {
+    width: 200px;
+    height: 120px;
+}
+
+div.mainTextColumn div.biologistInfo div.showText h3 a{
+    font-weight: normal;
+}
+
+div.mainTextColumn div.biologistInfo div.showText a{
+    width: 280px;
+ 
+}
+
+div.mainTextColumn div.biologistInfo div.showText div.text a{
+   font-size: 11px;
+}
+
+
+div.rightColumn #searchListSide {
+    margin-left: 0px;
+}
+
+div.rightColumn #searchListSide div.search {
+    float: none;
+    margin-top: 0px;
+    margin-bottom: 12px;
+}
+
+div.rightColumn #searchListSide div.search a {
+    width: 308px;
+}
+
+div.sideColumnList {
+    margin-top: 100px;
+}
+
+div.sideColumn div.news div.showText{
+    margin-left: 0px;
+    width: auto;
+}
+
+div.sideColumn div.showText div.name {
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+

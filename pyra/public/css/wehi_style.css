@@ -1,0 +1,504 @@
+@charset "utf-8";
+/* CSS Document 
+
+Walter and Eliza Hall Institute of Medical Research (WEHI)
+Website v1.0
+by HugeObject.com.au
+
+*/
+
+@import url("type.css");
+@import url("topnav.css");
+
+body {
+	background: #e9eef5;
+	margin: 0; 
+	padding: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	color: #666666;
+}
+
+#sitewrap {
+	width: 910px;
+	margin: 0 auto;
+	background: #e9eef5 url(../images/bg_sitewrap.gif) repeat-y;
+}
+
+#innerwrap {
+	width: 850px;
+	margin: 0 auto;
+}
+
+#header {
+	width: 850px;
+	height: 110px;
+	margin: 0 auto 10px auto;
+	border-top: 5px solid #315da5;
+	background: #fff url(../images/bg_header.gif) no-repeat;
+}
+
+	#logo {
+		width: 300px;
+		height: 100px;
+		float: left;
+	}
+
+	form#quicksearch {
+		width: 250px; 
+		height: 35px;
+		float: right;
+		margin: 3px 0 0 10px;
+		background: #ffffff url(../images/search-field.gif) 0 0 no-repeat;
+	}
+	
+		form#quicksearch fieldset { border: 0; margin-top: 2px; }
+		form#quicksearch legend { display: none; }
+		input#s {
+			float: left;
+			border: 0;	
+			background: #fff;
+			width: 203px;
+			padding: 2px;
+			color: #999999;
+		}
+		
+		input#quicksearch_submit {
+			width: 20px;
+			float: left;
+			background: transparent url(../images/search-btn.gif) 0 0 no-repeat;
+			border: 0;
+			text-indent: -9999px;
+			cursor: pointer;
+			overflow: hidden;
+			padding-top: 13px;
+		}
+		
+		input#quicksearch_submit:hover, input#quicksearch_submit.hover {
+			background-position: -20px 0;
+		}
+
+#navwrap {
+	clear: both;
+	width: 850px;
+	height: 50px;
+	background: #315da5;
+	margin-bottom: 5px;
+}
+
+#breadcrumb {
+	clear: both;
+	width: 850px;
+	height: 10px;
+	}
+
+#content {
+	clear: both;
+	margin-bottom: 10px;
+}
+
+	.widecolumn {
+		width: 665px;
+		float: left;
+	}
+	
+		.widecolumn table {
+			width: 600px;
+			margin: 0 auto;
+		}
+		
+		.widecolumn table#search_results {
+			width: 660px;
+		}
+			
+			td {
+				vertical-align: top;
+				text-align: center;				
+			}
+		
+		.widecolumn .newsentry .date img {
+			float: left;
+			clear: left;
+			margin-top: 5px;
+			margin-bottom: 15px;
+		}
+		
+		.widecolumn .newsentry .newsitem {
+			clear: right;
+			margin-bottom: 15px;
+		}
+		
+		.widecolumn p.news_pagination {
+			margin-top: 20px;
+			padding-top: 20px;
+			height: 50px;
+			clear: both;
+		}
+		
+			.widecolumn p.news_pagination strong,
+			.widecolumn p.news_pagination a {
+				padding: 3px;
+				border: 1px solid #cccccc;
+			}
+		
+		.widecolumn #slideshow_lrg {
+			width: 660px;
+			height: 298px;
+			padding: 2px; 
+			border: 1px solid #cccccc;
+			margin-bottom: 10px;
+		}
+		
+		.widecolumn #slideshow_sml {
+			width: 660px;
+			height: 220px;
+			padding: 2px; 
+			border: 1px solid #cccccc;
+		}
+		
+		.widecolumn .copy-right {
+			float: right;
+			width: 460px;
+			margin-bottom: 10px;
+			}
+		
+		.widecolumn img {
+			padding: 2px;
+			border: 1px solid #cccccc;				
+			}
+			
+			.widecolumn img.make-me-small {
+				float: left;
+				width: 120px;
+				margin-right: 10px;
+			}
+		
+		.widecolumn img.img-staff {
+			float: left;	
+			margin: 0 10px 10px 0;
+			}
+			
+		.widecolumn img.img-research-left {
+			float: left;	
+			margin: 0 10px 10px 0;
+			}
+		
+		.widecolumn img.float-right {
+			float: right;	
+			margin: 0 0 10px 10px;
+			}
+		
+		.widecolumn img.img-faculty {
+			float: right;	
+			margin: 0 0 10px 10px;
+			}
+		
+		.widecolumn .newsentry {
+			clear: both;
+			padding-bottom: 15px;
+			height: 165px;
+		}
+		
+		.widecolumn #spotlight {
+			clear: both;
+			padding-top: 15px;
+		}
+		
+		.widecolumn .spotlight_box {
+			width: 150px;
+			height: 70px;
+			float: left;
+			border: 1px solid #cccccc;
+			margin-right: 15px;
+		}
+		
+		.widecolumn .spotlight_box_last {
+			width: 150px;
+			height: 70px;
+			float: left;
+			border: 1px solid #cccccc;
+			margin-right: 0;
+		}
+		
+		h3#disease_focus,
+		h3#disease_focus a {
+			display: block;
+			width: 150px;
+			height: 70px;
+			margin: 0;
+			background: transparent url(../images/spotlight_box_diseasefocus.jpg) top left no-repeat;
+			text-indent: -9999px;
+		}
+		
+		h3#events,
+		h3#events a {
+			display: block;
+			width: 150px;
+			height: 70px;
+			margin: 0;
+			background: transparent url(../images/spotlight_box_events.jpg);
+			text-indent: -9999px;
+		}
+		
+		h3#seminars,
+		h3#seminars a {
+			display: block;
+			width: 150px;
+			height: 70px;
+			margin: 0;
+			background: transparent url(../images/spotlight_box_seminars.jpg) top left no-repeat;
+			text-indent: -9999px;
+		}
+		
+		h3#research,
+		h3#research a {
+			display: block;
+			width: 150px;
+			height: 70px;
+			margin: 0;
+			background: transparent url(../images/spotlight_box_research.jpg) top left no-repeat;
+			text-indent: -9999px;
+		}
+	
+	.narrowcolumn {
+		width: 170px;
+		float: right;
+		margin: 0;
+		padding: 0;
+	}
+	
+		.narrowcolumn .featurebox {
+			border: 0;	
+		}
+		
+		.narrowcolumn .narrowbox, .narrowcolumn .narrowbox_nav {
+			margin-top: 15px;
+			margin-bottom: 10px;
+			border: 1px solid #ccc;
+		}
+		
+		.narrowcolumn .right-col-box ul {
+			margin: 10px;
+			padding-left: 0;
+			list-style: none;
+		}
+		
+		.narrowcolumn .right-col-box ul ul {
+			margin: 10px 8px;
+			padding-left: 0;
+			list-style: none;
+		}
+		
+		.narrowcolumn .right-col-box ul li
+		{
+			padding-left: 10px;
+			background-image: url(../images/li_right_col.gif);
+			background-repeat: no-repeat;
+			background-position: 0 .3em;
+			margin-bottom: 5px;
+		}
+		
+		.narrowcolumn .right-col-box ul ul li
+		{
+			padding-left: 10px;
+			background-image: url(../images/li_li_right_col.gif);
+			background-repeat: no-repeat;
+			background-position: 0 .3em;
+			margin-bottom: 5px;
+		}
+		
+		.narrowcolumn .right-col-box li a {
+			color: #3d66ab;
+			text-decoration: none;
+			font-size: 12px;
+			font-weight: bold;
+		}
+		
+		.narrowcolumn .right-col-box ul ul li a {
+			color: #3d66ab;
+			text-decoration: none;
+			font-size: 11px;
+			font-weight: normal;
+		}
+		
+		.narrowcolumn .right-col-box li a:hover {
+			color: #092037;
+			text-decoration: underline; 
+		}
+		
+		.narrowcolumn #major_supporters {
+			text-align: center;
+			margin: 0 auto;
+			width: 160px;
+		}
+
+.clear {
+	clear: both;
+	margin: 5px 0;
+}
+
+hr {
+	background-color:#FFFFFF;
+	border-top: 0;
+	border-bottom: 1px solid #dddddd;
+	color:#FFFFFF;
+	height: 1px;
+	clear: both;
+}
+
+#footer {
+	width: 850px;
+	height: 110px;
+	margin: 10px auto 0 auto;
+	border-bottom: 5px solid #315da5;
+	border-top: 1px solid #cccccc;
+}
+
+	#footer #footer_copy {
+		float: left; 
+		width: 650px;
+	}
+	
+	#footer #google-translate {
+		width: 168px;
+		margin: 0;
+		float: right;
+	}
+	
+	#footer_nav ul {
+		margin-left: 0;
+		padding: 0;
+	}
+	
+	#footer_nav ul li {
+		display: inline;
+		list-style-type: none;
+		padding-right: 5px;
+		border-right: 1px solid #cccccc;
+	}
+	
+	#footer_nav ul li.last {
+		border-right: 0;
+	}
+
+
+/* PAGINATION */
+
+ul.pagination {
+	margin: 0;
+	padding: 0;
+}
+
+	ul.pagination li {
+		display: inline;
+		list-style-type: none;
+		border: 1px solid #ccc;
+		padding: 2px 5px;
+		margin-right: 5px;
+	}
+	
+		ul.pagination li.here {
+			background: #CCC;
+		}
+
+p.pagination {
+	margin: 0;
+	padding: 0;
+}
+
+	p.pagination a, p.pagination strong {
+		border: 1px solid #ccc;
+		padding: 2px 5px;
+		margin-right: 4px;
+	}
+
+
+/* HILITE */
+
+.hilite {
+	font-weight: bold;
+	background: #ffff99;
+}
+
+.marker {
+	font-weight: bold;
+	background: #ffff99;
+}
+
+/* CALENDAR */
+
+table.calendarBG {}
+
+	table.calendarBG tr.calendarHeader {
+		color: #333;
+	}
+
+	table.calendarBG td.calendarDayHeading,
+	table.calendarBG td.calendarCell a
+	{
+		font-weight: bold;
+	}
+	
+	table.calendarBG td.calendarBlank {
+		color: #bbbbbb;
+	}
+	
+	table.calendarBG td.calendarToday {
+		border: 1px solid #9999999;
+		background: #dee0e4;
+		padding: 2px 4px;
+	}
+	
+/* GALLERY */
+
+table.tableBorder {}
+
+	table.tableBorder td {
+		text-align: center;
+	}
+	
+	table.tableBorder td .title {
+		font-size: 8pt;
+	}
+	
+
+/* ORDERED LIST */
+
+.widecolumn ol li {
+	margin-bottom: 10px;
+}
+
+/* WEHI TV VIDEOS */
+
+.video {
+	width: 320px;
+	margin: 0 auto;
+}
+
+.wehi_tv {
+	
+}
+
+	.wehi_tv .video {
+		float: left;
+		margin-right: 15px;
+	}
+	
+	.wehi_tv .video_description {
+		margin-left: 340px;
+		padding-top: 1px;
+	}
+
+div.caption p {
+        font-size:10px;
+        margin:2px 0 0 5px;
+        padding:0;
+}
+.caption {
+        border : 1px solid #cccccc;
+        padding: 2px;
+}
+.caption img {
+        border: 0;
+        padding: 0;
+}

@@ -1,0 +1,13 @@
+#fold_change_output_table th.short {
+
+    width: 180px !important;
+}
+
+#fold_change_output_table {
+    width: 890px !important;
+}
+
+
+#gene_expression_view_button {
+    margin-left: 12px;
+}

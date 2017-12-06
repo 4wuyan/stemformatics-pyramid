@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /expressions/
+Disallow: /hamlet/
+Disallow: /genes/summary
+Disallow: /workbench/
+Disallow: /datasets/download_gct/
+Disallow: /datasets/download_cls/
+

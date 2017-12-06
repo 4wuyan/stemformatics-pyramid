@@ -1,0 +1,125 @@
+div.rightHeader {
+    margin-top: -24px;
+}
+
+#mainList ul li.firstMenuItem {
+   margin-left: 0px !important;
+}
+
+#mainList ul {
+   margin-left: 38px !important;
+
+}
+
+#viewGenes img {
+    margin-top: -28px !important;
+}
+
+#viewGenes {
+    text-align: left !important;
+}
+
+#viewGenes span {
+    margin-left: 5px !important;
+}
+
+
+div.content div.showDetail {
+    padding-bottom: 20px !important;
+}
+
+
+div.yaxisLabel {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2) !important;
+    left: -10px !important;
+    top: -130px !important;
+}
+
+
+div.content div.ie7LastDescription{
+    float: left !important;
+    width: 491px !important;
+    line-height: 13px !important;
+}
+
+div.ruler {
+    height: 0px !important;
+}
+
+
+div.publicationBody {
+    width: 828px !important;
+}
+
+div.sideColumn div.news{
+    clear: none !important;
+}
+
+div.images a img.lastImage {
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+
+#displayDatasets {
+    width: 382px !important;
+}
+
+#footer div.leftfooterText {
+    width: 632px !important;
+}
+
+
+div.leftColumn {
+    width: 138px !important;
+}
+
+div.leftColumn div.list ul li{
+    width: 127px !important;
+}
+
+#displayDatasetResults table {
+    width: 426px !important;
+}
+
+
+#col2 {
+    width: 386px !important;
+}
+
+div.limitedHeader {
+    width: 1004px !important;
+}
+
+
+/* ************* Plus minus ************* */
+div.wb_help_bar_inner_div img.help {
+    margin-top: -14px !important;
+}
+
+
+#form div.innerDiv dl {
+    width: 480px;
+}
+
+#form div.innerDiv dl.gene_sets {
+    width: 210px;
+}
+
+
+#message {
+    line-height: 22px;
+}
+
+
+
+#graph div.legend #sample {
+    top: -350px;
+}
+
+
+#geneSearchDiv div.legend #sample {
+    top: -250px;
+}
+
+
+

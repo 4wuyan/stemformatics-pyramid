@@ -1,0 +1,17 @@
+
+div.content img.header {
+    width:800px;
+    height:300px;
+}
+
+
+div.content img.body {
+    width:800px;
+    height:400px;
+}
+
+h1 {
+    color: #F8971D;
+    font-size: 16px;
+    
+}

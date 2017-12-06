@@ -1,0 +1,62 @@
+
+#geneSearch {
+    float: left;
+}
+
+div.message {
+    float: left;
+}
+
+
+#exportTableCSVButton {
+    margin-left: 0px;
+}
+
+a.linkButtons {
+    margin-left: 12px;
+}
+
+
+#description {
+
+    border: 2px solid #BBB;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+
+#description div.innerDiv {
+
+    margin: 20px;
+    height: 60px;
+    
+    
+}
+
+
+#updateDescription {
+    left: 54px;
+    top: 412px;
+    position: absolute;
+}
+
+#updateDescription textarea{
+
+    height: 97px;
+    width: 654px;
+}
+
+
+#gene_set_items {
+    /* width: auto !important; */
+    width: 100% !important;
+}
+
+#symbol {
+    width: 300px;
+}
+
+
+#add_gene_modal input {
+    width: 100px;
+}

@@ -1,0 +1,41 @@
+
+div.rotating-item {
+    width: 828px;
+}
+
+
+div.rotating-item img.large {
+    width: 828px;
+}
+
+div.rightColumn div.rotating-item img.background_image {
+    height: 60px;
+}
+
+div.rightColumn div.rotating-item div.large_image_text {
+    font-size: 16px;
+}
+
+div.introductionText h1 {
+    font-size: 12px;
+    color: #000;
+    margin-top: 11px;
+    margin-bottom: 4px;
+    font-weight: normal;
+}
+
+div.introductionText {
+    color: #5A5A5A;
+    font-size: 12px;
+    line-height: 16px;
+    width: 828px;
+}
+
+
+div.introductionText ul {
+    margin-left: 16px;
+}
+
+div.introductionText ul li {
+    list-style: disc;
+}

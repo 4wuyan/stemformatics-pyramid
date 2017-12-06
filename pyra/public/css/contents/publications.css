@@ -1,0 +1,66 @@
+
+div.introductionText div.intro {
+
+    color: #787878;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+div.introductionText div.ruler {
+    border:1px solid #B4B4B4;
+    margin-bottom: 8px;
+    float: left;
+    clear: left;
+    width: 99%;
+}
+
+div.introductionText h1 {
+    color: #F8971D;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: Arial;
+    float: left;
+    margin-top: 0px;
+}
+
+div.introductionText h2 {
+    color: #000;
+    font-size: 13px;
+    line-height: 16px;
+    float:left;
+    clear:left;
+    
+}
+
+
+div.introductionText {
+    font-size: 13px;
+    line-height: 16px;
+    font-family: Arial;
+    
+}
+
+div.publicationBody {
+    float:left;
+    clear:both;
+}
+
+div.introductionText a {
+    color: #F15D22;
+    margin-top: 6px;
+    float:left;
+    clear:both;
+}
+
+/* for hamlet */
+a.nofloat {
+    float:none !important; 
+    clear:none !important;
+}
+
+#hamlet_image { 
+    clear:both;
+    float: left;
+    width: 250px;
+    margin: 12px 0px 12px 0px;
+}

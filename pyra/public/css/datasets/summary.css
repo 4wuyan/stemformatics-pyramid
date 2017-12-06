@@ -1,0 +1,49 @@
+
+div.sideDetails {
+    width: 100%;
+    border: 2px solid #F7A790;
+    margin-bottom: 20px;
+}
+
+div.sideDetails table {
+    width: 100%;
+    border: none;
+}
+
+div.sideDetails div.inner {
+    padding: 12px;
+}
+
+div.sideDetails form {
+    margin: 0px;
+    padding: 0px;
+}
+
+div.sideDetails form input {
+    display: inline-block;
+    vertical-align: top;
+}
+
+div.sideDetails div.header,
+div.sideDetails table th {
+    color: #F15D22;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+div.sideDetails.breakdown th:first-child {
+    width: 220px;
+}
+
+div.searchBox {
+    margin: 0px;
+    margin-top: 12px;
+}
+
+div.searchBox div.searchField {
+    width: 250px;
+}
+
+div.searchBox a.searchButton {
+    width: 70px;
+}

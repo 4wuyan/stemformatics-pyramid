@@ -1,0 +1,41 @@
+
+div.content div.ie7LastDescription{
+    float: left !important;
+    width: 401px !important;
+    line-height: 13px !important;
+}
+
+
+#top_links {
+    height: 40px;
+}
+
+textarea {
+    white-space: pre !important;
+}
+
+#y_axis_label_div {
+    width: 20px !important;
+    left: -20px !important;
+}
+
+#x_axis_label_div {
+    text-align:center;
+}
+
+
+#geneSearch,#probeSearch {
+    height: 16px;
+}
+
+#graph div.xAxis div.tickLabel {
+    text-align:left !important;
+    width:auto !important;
+    height: 150px !important;
+
+}
+
+div.legendLabel {
+    font-size: 12px;
+}
+

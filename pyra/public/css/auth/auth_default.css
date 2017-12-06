@@ -1,0 +1,29 @@
+
+div.tables {
+    margin-left: 30px;
+    width: 978px;
+}
+
+div.limit_register { width: 500px; }
+a.linkButtons {
+    margin-bottom: 12px;
+    margin-left: 12px;
+}
+
+
+#original {
+    width: 400px;
+}
+
+#symbol {
+    width: 300px;
+}
+
+
+#gene_set_items_wrapper {
+    min-height: 0px;
+}
+
+#addGeneSet {
+    margin-left: 0px;
+}

@@ -1,0 +1,103 @@
+#transcriptTable th a.sort {
+
+    font-size: 10px;
+    text-decoration: none;
+}
+
+
+#transcriptTable th.long {
+    width: 100px;
+}
+
+#transcriptTable th.short {
+    width: 50px;
+}
+
+#transcriptTable th.select {
+    width: 20px;
+}
+
+#transcriptTable {
+    width: 578px !important;
+    
+}
+
+#wb_background table {
+    width: 978px;
+    
+}
+
+
+div.paging {
+    margin-bottom: 12px;
+    margin-top: 12px;
+    font-size: 13px;
+    margin-left: 12px;
+}
+
+div.paging div {
+
+    float: left;
+    margin-right: 12px;
+
+}
+
+div.filter_options {
+    clear:left;
+    margin-bottom: 12px;
+}
+
+
+tr.transcripts td{
+
+    background-color: #FFF5AA !important;
+}
+
+
+#browser {
+    float: left;
+    border: 2px solid #F7A790;
+    padding: 10px;
+    width: 376px;
+    /* background-color: #FFF5CB; */
+}
+
+
+#browser li a {
+
+    font-size: 12px;
+    text-decoration: none;
+    color: #000;
+}
+
+
+
+#browser li span.selected a {
+    font-weight: bold;
+    font-size: 11px;
+    color: #000;
+}
+
+a.linkButtons  {
+    margin-bottom: 12px;
+    margin-left: 12px;
+}
+
+#exportFilteredTxButton {
+    margin-left: 0px !important;
+}
+
+#transcriptTableStatistics {
+
+    margin-bottom: 12px;
+}
+
+
+#cancel {
+    color:  #F00;
+    font-size: 14px;
+}
+
+#browser li span.folder {
+    font-size: 12px;
+}

@@ -1,0 +1,6 @@
+#form input, #form textarea {
+
+    width: 396px !important;
+}
+
+#form input[type=submit] { width: auto !important; }

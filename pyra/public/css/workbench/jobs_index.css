@@ -1,0 +1,21 @@
+td.sorting_1 { width: 12px; } #chooseDatasetTable th.long { width: 100px; } 
+#chooseDatasetTable th.extra_long { width: 120px; }
+#chooseDatasetTable th.short { width: 90px !important; }
+#chooseDatasetTable th.actions { width: 123px !important; }
+
+/* this is for the MSC index */
+#chooseDatasetTable th.actions_header { width: 150px !important; }
+#chooseDatasetTable th.finished { width: 130px !important; }
+
+#chooseDatasetTable td { line-height: 16px; } 
+#main_body table.msc  { width: 1300px !important; clear: left; }
+
+#chooseDatasetTable,div.dataTables_wrapper table  { width: 978px !important; clear: left; }
+
+div.dataTables_filter { margin-top: 0px; color: #F15D22; }
+
+tr.pending td, tr.pending td a  { background-color: #E6E6E6 !important; /* color: #FFF !important; */ }
+
+tr td.td_status { text-align: left; } 
+tr td.td_status img { height: 18px; } 
+tr td.td_status span.error { color: #FF0000; }

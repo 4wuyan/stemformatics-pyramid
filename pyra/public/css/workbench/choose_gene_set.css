@@ -1,0 +1,26 @@
+h1,h2 {
+    margin-top: 40px;
+    color: #5A5A5A;
+    font-size: 16px;
+    font-family: Arial;
+    margin-bottom: 12px;
+}
+
+
+
+div.display_gene_sets {
+    margin-bottom: 12px;
+    display:none;
+    margin-top: 12px;
+}
+
+
+#public_gene_set_items_wrapper {
+    min-height: 0px;
+}
+
+
+.dataTables_filter {
+    color: #F8971D;
+}
+

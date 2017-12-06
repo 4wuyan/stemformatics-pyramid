@@ -1,0 +1,37 @@
+
+#save-json-form {
+    font-size: 14px;
+    line-height: 22px;
+}
+
+#save-json-form label {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+    float: left;
+    margin-right: 20px; 
+}
+
+#save-json-form > div {
+    margin: 30px 0px;
+}
+
+#helpname {
+    width: 700px;
+    font-size: 12px;
+}
+
+#json-editor {
+    display: inline-block;
+    width: 700px;
+    height: 600px;
+}
+
+#json-editor textarea {
+    white-space: pre;
+}
+
+ul.buttonMenus {
+    margin-left: 120px;
+}
+

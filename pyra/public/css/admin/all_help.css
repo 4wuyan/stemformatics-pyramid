@@ -1,0 +1,45 @@
+
+ul.buttonMenus.main {
+    margin: 20px 0px;
+}
+
+#wb_background_inner_div table {
+    margin: 20px 0px;
+}
+
+#wb_background_inner_div table td:first-child,
+#wb_background_inner_div table th:first-child {
+    width: 75%;
+}
+
+#wb_background_inner_div table th {
+    font-size: 1.4em;
+}
+
+#upload_help_form input {
+    display: inline-block;
+    width: auto;
+    line-height: 26px;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+#upload_help_form input.button {
+    margin: 0px;
+    padding: 0px 12px;
+    height: 28px;
+    border: 1px solid rgb(90, 90, 90);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DDDFE0), to(#FFF));
+    background: -webkit-linear-gradient(top, #FFF, #DDDFE0);
+    background: -moz-linear-gradient(top, #FFF, #DDDFE0);
+    background: -ms-linear-gradient(top, #FFF, #DDDFE0);
+    background: -o-linear-gradient(top, #FFF, #DDDFE0);
+}
+
+#upload_help_form input:active {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFF), to(#DDDFE0));
+    background: -webkit-linear-gradient(top, #DDDFE0, #FFF);
+    background: -moz-linear-gradient(top, #DDDFE0, #FFF);
+    background: -ms-linear-gradient(top, #DDDFE0, #FFF);
+    background: -o-linear-gradient(top, #DDDFE0, #FFF);
+}

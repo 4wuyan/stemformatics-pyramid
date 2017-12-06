@@ -1,0 +1,26 @@
+div.view_value,
+div.slider {
+    float:left;
+    height: 120px;
+    margin: 65px;
+    width: 9px;
+}
+
+div.view_value {
+
+    height: auto;
+    margin:0px;
+    width: 100%;
+    text-align:center;
+}
+
+div.details {
+
+    float: left;
+    height: auto;
+    width: 139px;
+    margin-bottom: 12px;
+}
+
+.ui-state-disabled { opacity: 1; }
+.ui-widget-header { background: #808080; }

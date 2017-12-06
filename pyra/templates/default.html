@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    
+    <%namespace name="Base" file="base.mako"/>
+	<head>    
+		${Base.default_inclusions()}  
+        
+		<!-- all the javascript and css includes for the rendered mako file -->  	
+		${self.includes()}
+        
+	</head>
+
+	<body>
+        <div id="main_body">
+            
+            <!-- actual body for the rendered mako file -->
+            ${self.body()}    
+        
+        
+        
+        </div> 
+	</body>
+</html>    

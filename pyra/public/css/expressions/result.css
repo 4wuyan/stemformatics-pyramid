@@ -1,0 +1,387 @@
+#main_body { width: 1319px; }
+#form {border: 0px; }
+div.enclosed_search_box {width: 1285px; } /* this is for the Rohart Test only */
+div.backgroundGraph{
+    border: 2px solid #BBBBBB;
+    float: left;
+    background-color:#F0F0F0;
+}
+
+div.backgroundGraph div.innerDiv{
+    margin: 20px;
+}
+
+div.backgroundGraph div.innerDiv h1{
+    font-size: 13px;
+    font-weight: bold;
+    color: #F16630;
+    margin-bottom: 15px;
+}
+
+#breadcrumb {
+  margin-bottom: 0;
+  margin-left: 62px;
+}
+#white_background_control {
+  margin-left: 40px;
+}
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph div.innerDiv {
+    margin: 8px;
+    float: left;
+}
+
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph div.innerDiv div.displayGraphs{
+    background-color: #F0F0F0;
+    margin-top: 20px;
+    float: left;
+    height: 743px;
+}
+.errorBox {
+  border: 1px solid gray;
+}
+.graph-title {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.ajs-message.ajs-custom {background-color: #F05D24; display: inline-block; color: #00000; border: 1px solid black;}
+
+#showTableData a.linkButtons {
+    margin-top: 12px;
+    margin-left: 12px;
+}
+
+#showTableData a.linkButtons:first-child {
+    margin-left: 30px;
+}
+.errorTextColumn {
+  padding: 20px 0;
+}
+.errorBox {
+  padding-top: 20px;
+  padding-left: 40px
+}
+
+#prompt-message {
+  font-weight: bold;
+}
+
+#prompt {
+  padding-bottom: 20px;
+}
+
+.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+
+#zoomGraphTableButton {
+    margin-left: 0px;
+    margin-top: 20px !important;
+    float: left;
+}
+
+#showData {
+    border: 2px solid #F8AB8A;
+    float: left;
+    margin-left: 30px;
+}
+
+div.content {
+    margin-left: 0px !important;
+    width: 1006px;
+}
+
+#graphingOptions {
+    float:left;
+    margin-left: 0px !important;
+}
+
+#sdOptions {
+	float:left;
+	margin-left: 40px;
+}
+
+#sortingOptions {
+	float:left;
+	margin-left: 40px;
+}
+
+div.displayGraphs{
+	clear:both;
+    position: relative;
+}
+
+#showTableData {
+    width: 1000px;
+	margin-top: 60px;
+}
+
+#showTableData table {
+    float: left;
+	text-align: left;
+    width: 100%;
+    font-size: 8px;
+}
+
+#showRawTableData {
+	width: 100%;
+    margin-top: 20px;
+}
+
+#showRawTableData table {
+	width: 100%;
+	text-align: left;
+}
+
+#graph div.groupLabels {
+	position:absolute;
+	color: green;
+	font-size: 9px;
+	width: 80px;
+	text-align: center;
+}
+
+.verticaltext {
+  -o-transform:rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -webkit-transform:rotate(-90deg);
+   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+#graph div.majorLabel {
+	position:absolute;
+	/* top: 600px; */
+	color: #000;
+	font-size: 12px;
+	width: 150px;
+	text-align: center;
+}
+
+#graph div.majorLabelVertical {
+	position:absolute;
+	/* top: 600px; */
+	color: #000;
+	font-size: 12px;
+	width: 220px;
+	text-align: right;
+    -webkit-transform: rotate(270deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+	z-index: 999;
+}
+
+#graph div.xAxis div.tickLabel {
+	position:absolute;
+	/* top: 600px; */
+	/* color: green; */
+	font-size: 12px;
+	width: 220px;
+	text-align: left;
+    -webkit-transform: rotate(-45deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(-45deg);
+	-o-transform: rotate(270deg);
+}
+
+#graph div.groupLabelVertical {
+	position:absolute;
+	/* top: 600px; */
+	color: green;
+	font-size: 10px;
+	width: 220px;
+	text-align: right;
+    -webkit-transform: rotate(270deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+}
+
+#graph div.groupLabelVertical a.highlight,
+#graph div.majorLabelVertical a.highlight{
+    color: #F30;
+    font-weight: bold;
+    z-index: 999;
+}
+
+.dataButtons {
+    margin-left: 10px;
+}
+
+#datasetSelectDiv {
+    float:left;
+}
+
+#datasetSelect {
+    float:left;
+}
+
+div.selectDataset {
+    background-color: #F8971D;
+    float: left;
+}
+
+div.selectDataset div.innerDiv{
+    margin: 5px !important;
+}
+
+#graphDataset {
+    float:left;
+    clear:left;
+    margin-top: 0px !important;
+}
+
+div.noGraphData {
+    text-align: center;
+    margin-top: 260px;
+}
+
+#datasetSelectDiv :first-child {
+	margin-left: 0px;
+}
+
+
+div.yaxisLabel {
+	-webkit-transform: rotate(270deg);
+	float: left;
+	left: -140px;
+	position: relative;
+	text-align: center;
+	top: 250px;
+	width: 250px;
+    color: #545454;
+	writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+}
+
+#zoomHorizontalGraphButton{
+    margin-left: 0px;
+}
+
+
+
+#graph div.datasetLines {
+	position:absolute;
+	color: #000;
+	font-size: 9px;
+	text-align: left;
+}
+
+
+#chooseDatasetTable td, #chooseDatasetTable th {
+    border-bottom: 1px solid #BBB;
+    border-right: 1px solid #BBB;
+    padding: 3px 10px;
+}
+
+#chooseDatasetTable {
+    border-collapse: collapse;
+    border: 0px;
+    clear:left;
+    font-size: 12px;
+}
+
+#choose_dataset  {
+    color: #000;
+}
+
+#choose_dataset div.scrollWrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid #BBB;
+    padding: 2px;
+    clear: both;
+}
+
+#showTableData {
+    margin-top: 12px;
+}
+
+div.graphControls {
+    padding: 12px;
+    z-index: 9999;
+    border: solid 10px #5a5a5a;
+    background-color: #CCCCCC;
+}
+
+.dataTables_filter {
+    margin-left: 22px;
+}
+
+.dataTables_wrapper {
+    min-height: 10px;
+}
+
+
+div.view_table_content {
+    margin-left: 30px;
+}
+
+#exportDataCSVButton {
+    margin-left: 0px;
+}
+
+
+#displayGeneDetail {
+    border: none;
+}
+
+#export-wrapper {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+}
+
+a.chooseDatasetsButton {
+    margin-right: 20px;
+}
+div.searchBox { margin-bottom: 0px; }
+div.searchBox a.searchButton {
+    width: 140px;
+}
+
+
+.ui-draggable{
+    border: solid 10px #5A5A5A;
+    background-color: #CCCCCC;
+    cursor: move;
+}
+
+div.movable_legend {
+    left:1215px;
+    top:170px;
+    position: absolute;
+    height: 800px;
+    width: 1800px;
+    z-index: 95;
+}
+
+div.graphControls { z-index: 98; }
+
+#graph_selection { z-index: 99; padding: 12px; }
+
+ul.buttonMenus {margin-top: 12px; margin-bottom: 0px; }
+
+div.xaxis_labels {position: absolute; bottom: -19px; left:19px; z-index: 90; background-color: #F0F0F0; width: 1191px; height: 193px;}
+
+div.legend { display:none;}
+
+
+/* T#1446 - check if datasets are there before opening, otherwise show error. */
+.multi_select{
+min-height:380px;
+}
+
+#nofication {
+  border: 2px solid black !important;
+  color: white;
+  float: right;
+  margin-right: 30px;
+  margin-top: 30px;
+  height: 70px;
+  width: 200px;
+  background-color: gray;
+}

@@ -1,0 +1,30 @@
+.info {
+  font-size:16px !important;
+}
+
+.bold {
+  font-weight:bold;
+}
+
+.button {
+  padding-right:12px
+}
+
+.link {
+  text-decoration: underline;
+  color: #000000;
+  font-weight:bold;
+}
+
+#issues_list{
+  padding-left: 20px;
+  list-style: disc outside;
+}
+
+#issues_list li{
+  display: list-item;
+}
+
+#deleteSTR_form, #refreshLTR_form {
+  display: inline
+}

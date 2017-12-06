@@ -1,0 +1,15 @@
+.dataTables_filter {
+    color: #F15D22;
+}
+
+
+#chooseDatasetTable {
+    clear: left;
+    width: 1006px;
+}
+
+tr.disabled td {
+
+    opacity: 0.3;
+    background: #E6E6E6 !important;
+} 

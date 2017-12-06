@@ -1,0 +1,40 @@
+
+div.tables {
+    width: 978px;
+}
+
+#gene_set_items {
+    width: 978px !important;
+    clear: left;
+}
+
+a.linkButtons {
+    margin-bottom: 12px;
+    margin-left: 12px;
+}
+
+a.linkButtons:first-child {
+    margin-left: 0px !important;
+}
+
+
+#original {
+    width: 300px;
+}
+
+#symbol {
+    width: 100px;
+}
+
+#status {
+    width: 134px;
+}
+
+#gene_set_items_wrapper {
+    min-height: 0px;
+}
+
+
+#gene_set_items_filter {
+    color: #F8971D;
+}

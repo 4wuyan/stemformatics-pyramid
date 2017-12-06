@@ -1,0 +1,79 @@
+#probe_graph_table { width: 1600px; }
+#geneSearch {
+    float: left;
+}
+
+div.message {
+    float: left;
+}
+
+
+#deleteGeneSet {
+    margin-left: 0px;
+}
+
+a.linkButtons {
+    margin-left: 12px;
+}
+
+#graph {
+    height: 400px;
+    width: 536px;
+    margin: 12px;
+}
+
+
+div.majorLabelVertical {
+	
+	position:absolute;
+	/* top: 600px; */
+	color: #000;
+	font-size: 10px;
+	width: 220px;
+	text-align: right;
+    -webkit-transform: rotate(270deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+	
+}
+div.innerDiv {
+
+    height: 610px;
+}
+
+div.yaxisLabel {
+	
+	float: left;
+	left: -128px;
+	position: relative;
+	text-align: center;
+	top: -180px;
+	width: 250px;
+	-webkit-transform: rotate(270deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+}
+
+
+
+div.datasetLines {
+	
+	position:absolute;
+	/* top: 600px; */
+	color: #000;
+	font-size: 9px;
+	width: 280px;
+	text-align: left;
+	
+}
+
+#kinetic_legend,div.legend {
+    display :none;
+}
+div.xaxis_labels{ display:none;}
+
+td.td_graph { height: 900px;vertical-align:top;}
+
+#graphTypeOptions {display:none;}

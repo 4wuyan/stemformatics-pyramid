@@ -1,0 +1,16 @@
+
+div.searchBox {
+    margin-left: 30px;
+}
+
+div.results table th {
+    width: 8%;
+}
+
+div.results table th + th {
+    width: 60%;
+}
+
+div.results table th + th + th {
+    width: auto;
+}

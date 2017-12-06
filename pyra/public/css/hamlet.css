@@ -1,0 +1,213 @@
+
+/* -------------[ Classes ]-------------- */
+
+.bordered
+{ 
+    border-left: 1px solid #999999; 
+    border-top: 1px solid #999999;
+    border-spacing: 0px;
+}
+
+.bordered th, .bordered td 
+{ 
+    border-right: 1px solid #999999; 
+    border-bottom: 1px solid #999999;
+    padding: 3px 5px;
+}
+
+.centeredContent { margin: 0 auto; text-align: center; vertical-align: middle; }
+
+.flush { margin: 0px; position: relative; top: 0px; left: 0px; }
+
+.hoverbox { background-color: #ffffaa; color: #000000; z-index: 9999; }
+
+.invisible { visibility: hidden; }
+
+.lightGrayBG { background-color: #e0e0e0; color: #000000; }
+
+.noBorder { border-style: none; border-width: 0px; }
+
+.panelBG { background-color: #DAD8C8; color: #000000; }
+
+.readonlyTextarea { readonly: readonly; }
+
+.solidBorder { border-style: solid; border-width: 1px; border-color: #000000; border-collapse: collapse; }
+
+.topMenuButton {  width: 20px;  vertical-align: middle;   }
+
+.whiteBG { background-color: #ffffff; color: #000000; }
+
+/* -------------[ Tags  ]-------------- */
+
+a: link, a: visited {
+    text-decoration: none;
+    color: #0074c7;
+}
+
+a: hover { text-decoration: underline; }
+
+body { 
+    font-size: 8pt; font-family: sans-serif; 
+    margin: 0;
+    /*background-color: #BBBB99;*/
+}
+
+h1 { color: #60d080; }
+
+legend { font-weight: bold; }
+
+label { color: #000000; }
+
+table { margin: 0px; position: relative; top: 0px; left: 0px; }
+
+td { vertical-align: top; }
+
+/* -------------[ Specific Elements ]-------------- */
+
+#banner-content { 
+    position: static;
+    top: 0; 
+    left: 0;
+    background-color: #BBBB99;
+    padding: 10px 30px 10px 30px;
+    font-size: 90%;
+    text-align: center; 
+    vertical-align: middle; 
+    margin: 0; 
+    z-index: 300; 
+}
+
+#heatmapArea { position: relative; float: left; margin: 0 auto; text-align: center; vertical-align: middle; margin: 0;  width: 99%; }
+
+#infoArea { margin: 0; width: 150px; }
+
+#menuArea { height: 70px; }
+
+#profCursor { background-color: #501010; position: fixed; opacity: 0.99; text-align: right; vertical-align: top; }
+
+#rawDatasetInputDialog { width: 80%; height: 100%; }
+
+#rawInputTextarea { width: 100%; height: 100%; }
+
+#sampCursor { background-color: #501010;  position: fixed; opacity: 0.99; text-align: center; vertical-align: middle; }
+
+#settingsDialog { width: 80%; height: 100%; z-index: 5; }
+
+span#profText { text-align: left;
+		vertical-align: top;
+		-webkit-transform: rotate(-90deg);
+		-moz-transform: rotate(-90deg);
+		-ms-transform: rotate(-90deg); 
+		-o-transform: rotate(-90deg); 
+		-webkit-transform-origin: right bottom;
+		-moz-transform-origin: right bottom;
+		-ms-transform-origin: right bottom; 
+		-o-transform-origin: right bottom; 
+		filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=3); /* older IE */
+		position: absolute; top: 0; right: 0;
+		color: yellow;
+		background-color: #501010; 
+		font-size: 12pt;
+	      }
+
+span#sampText { text-align: center;  
+		vertical-align: middle; 
+		color: yellow;
+		background-color: #501010; 
+		font-size: 12pt;
+	      }
+
+#toplevel { margin: 0; width: 100%; }
+
+#hamlet-container {
+    font-family: Arial;
+    font-size: 12px;
+    margin-left: 30px;
+    width: 967px;
+}
+
+
+#hamlet-container a {
+    color: #F15D22;
+}
+
+#hamlet-container p {
+    margin-bottom: 13px;
+}
+
+#hamlet-container-content h2 {
+    color: #F15D22;
+    font-size: 16px;
+    font-family: Arial;
+    margin-bottom: 12px;
+    margin-top: 12px;
+}
+
+#hamlet-container-content h3 {
+    color: #F8971D;
+    font-size: 13px;
+    font-family: Arial;
+    margin-bottom: 12px;
+    margin-top: 12px;
+}
+
+#hamlet-container-menu {
+    width:100%;
+    height:40px;
+    background-color:#CCFF00;
+    font-size:small;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
+}
+
+
+#hamlet-container-top {
+    background-color: #FFF;
+    /* border-bottom: 1px solid black; */
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+#hamlet-container-content {
+    background-color: #FFF;
+    font-size: 13px;
+    line-height: 16px;
+    color: #5A5A5A;
+	
+}
+
+#hamlet-container-subtitle {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: large;
+}
+
+#hamlet-container-tabs ul {
+    margin-bottom: 12px;
+}
+
+
+.hm-crosshair { border-left-style: solid; 
+		border-top-style: solid;
+		boder-right-style: none;
+		border-bottom-style: none;
+		border-width: 1px; 
+		border-collapse: collapse; 
+	      }
+div#sampleCrosshair { border-color: #fff; height: 0px; position: fixed; }
+div#profileCrosshair { border-color: #fff; width: 0px;  position: fixed; }
+
+
+#ds_id {
+
+    color: #F15D22;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+
+}
+
+
+#infoArea {
+
+    color: #F15D22;
+}

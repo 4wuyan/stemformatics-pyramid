@@ -1,0 +1,22 @@
+#graph div.majorLabelVertical, #graph div.groupLabelVertical {
+    height: 120px !important;
+    text-align: left !important;
+}
+
+textarea {
+    white-space: pre !important;
+}
+
+#y_axis_label_div {
+    width: 20px !important;
+    left: -15px !important;
+}
+
+#graph div.xAxis div.tickLabel {
+    text-align:left !important;
+    width:auto !important;
+    height: 150px !important;
+
+}
+
+#white_background_control { width: 1006px; }

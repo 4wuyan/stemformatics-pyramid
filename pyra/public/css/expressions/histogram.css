@@ -1,0 +1,35 @@
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph div.innerDiv div.displayGraphs{
+    height: 905px !important;  
+}
+
+div.backgroundGraph {
+    margin-left: 0px !important;
+    background-color: #FFF;
+}
+
+#showTableData a.linkButtons:first-child {
+    margin-left: 0px !important;
+}
+
+
+#zoomGraphTableButton {
+    margin-left: 0px !important;
+}
+
+#showData {
+    margin-left: 0px !important;
+}
+
+#datasetSelectDiv {
+    margin-left: 0px !important;
+}
+
+
+#graphDataset {
+    clear:none !important;
+}
+
+div.legend table {
+    width: auto !important;
+}
+

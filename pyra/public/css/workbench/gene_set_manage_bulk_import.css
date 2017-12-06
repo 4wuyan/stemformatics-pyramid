@@ -1,0 +1,149 @@
+
+
+#form_gene_set_items {
+    margin-top: 30px;
+}
+
+#form_gene_set_items dl {
+    float: left;
+}
+
+#form_gene_set_items dd {
+    width: 200px;
+}
+
+#form_gene_set_items dd input[type=text] {
+    width: 200px;
+}
+
+
+#form_gene_set_items dt {
+
+    width: 200px !important;
+}
+
+#col_left {
+    float: left;
+    width: 226px;
+    
+}
+
+#col_right {
+    float: left;
+    width: 709px;
+}
+
+
+#select {
+    width: 20px;
+}
+
+#original, #symbol, #status {
+    width: 120px;
+}
+
+                    
+#gene_set_items {
+    float:left;
+    margin-bottom: 12px;
+}
+
+
+#description {
+    float: left;
+    width: 200px;
+    height: 60px
+}
+
+#revalidateText {
+    float: left;
+    width: 200px;
+    height: 600px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+#gene_set_items_wrapper {
+    
+    float: left;
+    width: 719px;
+}
+
+
+#form {
+    /* margin-left: 30px; */
+}
+
+#buttons_top {
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+.dataTables_wrapper {
+    min-height: 0px;
+}
+
+#saveGeneSet {
+    clear: none !important;
+    margin-left: 12px;
+}
+
+#form table {
+
+    width: 100%;
+    
+}
+
+
+table.display {
+    margin-bottom: 12px;
+    display:none;
+    margin-top: 12px;
+}
+
+h1,h2 {
+    margin-top: 20px;
+    color: #5A5A5A;
+    font-size: 16px;
+    font-family: Arial;
+    margin-bottom: 12px;
+}
+
+#select_all_ambiguous_div {
+    margin-bottom: 12px;
+}
+
+a.linkButtons {
+    margin-bottom: 12px;
+    float: none;
+}
+
+#search-options dl {
+    width: 240px;
+}
+
+#search-options dl dd {
+    width: 240px;
+}
+
+#search-options dl.gene_set_details {
+    width: 180px;
+    float: right !important;
+    border: 1px solid #bbb;
+    padding: 12px;
+    margin-top: -12px;
+    /*margin-top: -43px;*/
+    background-color: #f3f3f3;
+}
+
+#search-options {
+    margin-bottom: 0px;
+}
+
+#search-options dl.gene_set_details input, #search-options dl.gene_set_details textarea {
+    width: 176px;
+}
+
+#simplemodal-container {
+    height: auto;
+}

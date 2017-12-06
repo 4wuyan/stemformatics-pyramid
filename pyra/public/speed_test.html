@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>Bandwidth Test</title>
+
+<script type="text/javascript">
+//<!--
+var time;
+var starttime;
+var latency_starttime;
+var endtime;
+var downloadtime;
+var kbps;
+var ksec;
+var mbps;
+var msec;
+var ajax_run = new XMLHttpRequest();
+function addCommas(nStr){
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
+}
+function ajax_bandwidth_test(){
+    cancel_any_pending_ajax();
+    disable_table();
+    send_ajax_call();
+}
+function cancel_any_pending_ajax(){
+    if(ajax_run.readyState){
+        if (ajax_run.readyState != 0 && ajax_run.readyState != 4){
+            ajax_run.abort();
+        }
+    }
+}
+function disable_table(){
+    var action_row = document.getElementById('action_row');
+    var spans = action_row.getElementsByTagName('span');
+    var link = action_row.getElementsByTagName('a')[0];
+    link.style.zIndex = -1;
+    if (spans.length>1){
+        spans[1].className = 'disabled';
+        spans[2].className = 'disabled';
+    }
+    var status_box = document.getElementById('status');
+    status_box.innerHTML = "Testing Your Current Bandwidth...";
+    document.title = "Bandwidth Test | Running...";
+}
+function send_ajax_call(){
+    var result = '';
+    var x = new Date();
+    x = x.getTime();
+    var file_name = '/random.img';
+    var latency_url = file_name + '?latency='+x;
+    var url = file_name + '?ajax='+x; //you will need to change the "?" to a "&" if your URI already has some $_GET variables in it...
+
+    if (window.XMLHttpRequest){
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        latency_run = new XMLHttpRequest();
+        ajax_run = new XMLHttpRequest();
+    }
+    else{
+        // code for IE6, IE5
+        latency_run = new ActiveXObject("Microsoft.XMLHTTP");
+        ajax_run = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    latency_run.onreadystatechange = function(){
+        if (latency_run.readyState==4 && latency_run.status==200){
+            result = latency_run.responseBody;    //ie won't work with responseText, but responseBody will work just fine...
+            if (result!=''){
+                // alert(latency_starttime);
+            }
+            else{
+                alert('Speed test failed!');
+            }
+        }
+        else if (latency_run.readyState==1){
+            //connected to server, start the timer...
+            time = new Date();
+            latency_starttime = time.getTime();
+            document.getElementById('status').innerHTML = "Testing Your Current Latency and HTTP Overhead... Connected..."
+        }
+        else if (latency_run.readyState==2){
+            //server is processing the request...
+            document.getElementById('status').innerHTML = "Testing Your Current Latency and HTTP Overhead... Loading..."
+        }
+        else if (latency_run.readyState==4 && latency_run.status!=200){
+            alert('Speed test failed! (' + latency_run.status + ')');
+        }
+    }
+    latency_run.open("GET",latency_url,false);
+    latency_run.send();
+
+    ajax_run.onreadystatechange = function(){
+        if (ajax_run.readyState==4 && ajax_run.status==200){
+            result = ajax_run.responseBody;    //ie won't work with responseText, but responseBody will work just fine...
+            if (result!=''){
+                //no point in printing the binary result to the page, just update the speed test results...
+                update_results();
+            }
+            else{
+                alert('Speed test failed!');
+            }
+        }
+        else if (ajax_run.readyState==1){
+            //connected to server, start the timer...
+            time = new Date();
+            starttime = time.getTime();
+            document.getElementById('status').innerHTML = "Testing Your Current Bandwidth... Connected..."
+        }
+        else if (ajax_run.readyState==2){
+            //server is processing the request...
+            document.getElementById('status').innerHTML = "Testing Your Current Bandwidth... Loading..."
+        }
+        else if (ajax_run.readyState==4 && ajax_run.status!=200){
+            alert('Speed test failed! (' + ajax_run.status + ')');
+        }
+    }
+    ajax_run.open("GET",url,false);
+    ajax_run.send();
+}
+function update_results(){
+    time = new Date();
+    endtime = time.getTime();
+    latency = starttime - latency_starttime;
+    //alert(latency_starttime+' '+starttime);
+    if (endtime == starttime){
+        downloadtime = 0;
+    }
+    else{
+        downloadtime = (endtime - starttime)/1000;
+    }
+    kbytes_of_data = 5120;
+    mbytes_of_data = 5;
+    ksec = kbytes_of_data / downloadtime;
+    msec = mbytes_of_data / downloadtime;
+    kbps = addCommas(Math.round(ksec * 8192)/1000);
+    mbps = addCommas(Math.round(msec * 8192)/1000);
+
+    ksec = addCommas(Math.round(ksec*100)/100);
+    msec = addCommas(Math.round(msec*100)/100);
+    var action_row = document.getElementById('action_row');
+    var cells = action_row.getElementsByTagName('td');
+    var link = document.getElementById('trigger');
+    var title = "Bandwidth Test | ";
+    var text = '';
+    if (msec>1){
+        cells[1].innerHTML = "<span>" + mbps + " mbps</span>";
+        cells[2].innerHTML = "<span>" + msec + " MB/s</span>";
+        cells[3].innerHTML = "<span>" + latency + " ms</span>";
+        title += msec + " MB/s";
+        text += addCommas(Math.round(mbytes_of_data*100)/100) + ' MB of data transferred in ' + downloadtime + ' seconds...';
+    }
+    else{
+        cells[1].innerHTML = "<span>" + kbps + " kbps</span>";
+        cells[2].innerHTML = "<span>" + ksec + " KB/s</span>";
+        cells[3].innerHTML = "<span>" + latency + " ms</span>";
+        title += ksec + " KB/s";
+        text += addCommas(Math.round(kbytes_of_data*100)/100) + ' KB of data transferred in ' + downloadtime + ' seconds...';
+    }
+    document.title = title;
+    document.getElementById('status').innerHTML = text;
+    link.style.zIndex = 1;
+}
+//-->
+
+</script>
+<style type="text/css">
+*{margin:0;padding:0;}
+body{padding:20px;background:#fff;}
+table{border-collapse:collapse;position:relative;z-index:0;}
+th,td{border:1px solid #000;cursor:default;}
+th{padding:2px 5px;font-weight:bold;text-align:center;font-size:16px;}
+td{width:120px;text-align:right;}
+td span{padding:2px 5px;display:block;line-height:20px;}
+td:first-child{width:110px;text-align:left;}
+th:first-child{border-top:0;border-left:0;}
+a{text-decoration:none;font-weight:bold;font-family:tahoma;font-size:12px;display:block;color:#333;padding:5px;text-align:center;position:relative;z-index:1;}
+a:hover{background-color:#333;color:#fff;}
+a,a:hover,a:focus,a:active{outline:0;}
+#link_box{position:relative;}
+#link_mask{display:block;width:100%;height:100%;background:transparent;position:absolute;top:0;left:0;z-index:0;padding:0;line-height:24px;font-size:500px;overflow:hidden;cursor:default;}
+#status{margin-top:20px;}
+.disabled{background-color:#333;color:#fff;}
+.disclaimer td{border-right:0;border-bottom:0;border-left:0;font-size:11px;text-align:right;color:#333;width:auto;}
+.disclaimer td em{font-weight:normal;font-style:italic;}
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr>
+
+      <th> </th>
+      <th>bits</th>
+      <th>Bytes</th>
+      <th>Latency</th>
+    </tr>
+
+  </thead>
+  <tbody>
+    <tr id="action_row">
+      <td><div id="link_box"><a href="javascript:ajax_bandwidth_test();" id="trigger">Start Test</a><span id="link_mask"> </span></div></td>
+
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr class="disclaimer">
+      <td colspan="4">[ <em>speeds are only relative to your connection speed with this website</em> ]</td>
+
+    </tr>
+  </tbody>
+</table>
+<p id="status"></p>
+</body>
+</html>

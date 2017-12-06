@@ -1,0 +1,43 @@
+
+#searchMainArea {
+    color: #000;
+    
+}
+
+
+#searchMainArea form div.searchLabel {
+    color: red;
+    width: 100px;
+    float: left;
+    padding: 4px 0px;
+    border: 2px ;
+    
+}
+
+
+#searchMainArea form input[type="text"] {
+    float : left;
+    width: 200px;
+}
+
+
+#searchMainArea form {
+    clear: both;
+}
+
+div.resultsTitle {
+    float: left;
+    width: 304px;
+    padding: 4px 0px;
+    border: 2px ;
+}
+
+
+.showResults {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    
+}
+
+

@@ -1,0 +1,136 @@
+#workbench {
+
+    margin-left: 30px;
+    width: 978px;
+
+}
+
+
+#workbench div.dashboard table {
+
+    width: 474px;
+    float: left;
+    margin-bottom: 12px;
+    
+}
+
+#workbench div.title {
+    color: #F15D22;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    
+}
+
+#workbench div.content {
+    margin-top: 0px;
+}
+
+
+#workbench div.mainTextColumn {
+    width: 492px;
+    float: left;
+}
+
+#workbench div.sideColumn {
+    width: 474px;
+    float: left;
+}
+
+
+#workbench th.th1 {
+
+    width: 180px;
+}
+
+#workbench div.linkDiv {
+    width: 238px;
+    /* height: 160px; */
+    height: 238px;
+    border: 1px solid #BBB;
+    float: left;
+    margin-left: 12px;
+    margin-bottom: 12px;
+}
+
+#workbench div.no_margin_left {
+    margin-left: 0px;
+}
+
+#workbench div.linkDiv div.innerDiv {
+    margin: 12px;
+}
+
+#workbench div.linkDiv h1 {
+    color: #7C51A1;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+
+#workbench div.linkDiv a {
+    
+    clear: both;
+    float:left;
+    margin-bottom: 12px;
+    color: #5A5A5A;
+}
+
+
+
+#workbench a.helpPopup {
+    margin-bottom: 0px;
+}
+
+
+/* Alternate mako template */
+
+div.title {
+    margin-bottom: 12px !important;
+}
+
+#workbench a.helpPopup {
+    margin-bottom: 12px !important;
+}
+
+#workbench div.search {
+    margin-top: 0px !important;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #BFBFBF;
+    width: 308px;
+    border-left: 2px solid #BFBFBF;
+    border-right: 2px solid #BFBFBF;
+    border-top: 2px solid #BFBFBF;
+    color: #F8971D;
+    float: left;
+    font-size: 13px;
+    margin-right: 10px;
+    margin-top: 34px;
+    padding: 8px;    
+}
+
+#workbench div.search a {
+    color: #F8971D;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+
+
+#wb_background a.bookmark {
+    color: #F8971D;
+    text-decoration: underline !important;
+    float: left;
+    margin-right: 12px;
+    line-height: 28px;
+    
+}
+
+div.wb_sub_menu, div.wb_main_menu {
+    cursor: pointer;
+}
+
+#wb_modal_content p {
+
+    margin-bottom: 8px;
+}

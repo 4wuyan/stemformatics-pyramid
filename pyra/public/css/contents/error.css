@@ -1,0 +1,31 @@
+
+#errorText {
+    color: #5A5A5A;
+    font-size: 11px;
+    line-height: 13px;
+    margin: 20px 0px;
+    border: 2px solid #C5C7C9;
+    padding: 80px;
+}
+
+#errorText h1 {
+    color:#F15D22;
+    font-size: 20px;
+    text-align:left;
+    margin-bottom: 20px;
+}
+
+#message {
+    margin-bottom: 12px;
+}
+
+#prompt{
+
+}
+
+
+div.errorTextColumn{
+    width: 1006px;
+}
+
+

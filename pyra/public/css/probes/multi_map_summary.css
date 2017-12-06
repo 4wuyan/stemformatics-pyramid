@@ -1,0 +1,31 @@
+#multi_probe_map_summary {
+
+    border: 2px solid #BBB;
+}
+
+#multi_probe_map_summary div.innerDiv {
+    margin: 20px;
+}
+
+div.description{
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border: 2px solid #FBC888;
+}
+
+
+#message div.innerDiv {
+    margin: 10px;    
+}
+th.name { min-width: 150px; }
+#genesTable {
+    display: inline-block !important;
+    width: auto !important;
+    float: left;
+    border-right: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+}
+
+.dataTables_length{
+    float: none !important;
+}

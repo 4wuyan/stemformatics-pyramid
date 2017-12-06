@@ -1,0 +1,119 @@
+div.tooltip{
+      @include default_large_text;
+      padding: 8px;
+      display: inline-block;
+      max-width: 300px;
+      z-index: 11000;
+      position: absolute;
+      color: #5a5a5a;
+      background-color: #FFF;
+      border: 1px solid #000;
+      display:block;
+      word-wrap: break-word;
+  }
+
+
+body {
+  font-size: 12px;
+}
+
+text {
+  font-family: Arial;
+  font-size: 14px;
+}
+#legend-title{
+  font-size: 16px;
+  font-weight: bold;
+}
+#main-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.tick text{
+  font-size: 10px;
+}
+
+.button {
+  text-decoration: none;
+  position: absolute;
+  cursor: pointer;
+  color: #333;
+  height: 26px;
+  line-height: 23px;
+  padding-left: 9px;
+  padding-right: 9px;
+  border: 1px solid #777;
+  border-radius: 3px;
+  font-size: 14px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: black;
+}
+
+.brush {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+#graphDiv {
+  display: inline-block;
+}
+
+#colorSelect {
+  position: absolute;
+  left: 100px;
+  overflow: visible;
+  top: 800px;
+}
+.d3-tip {
+    line-height: 1;
+    font-size: 14px ;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.8);;
+    color: #fff;
+    border-radius: 2px;
+    border: 1px solid black;
+  }
+
+#brushButton {
+  left: 1360px;
+}
+
+#change_pca {
+  left: 900px  !important;
+  position: absolute;
+}
+
+#resetButton {
+  left: 400px !important;
+}
+
+.brushButton {
+  left: 470px !important;
+}
+
+#sample {
+  height:13px;
+  position: absolute;
+  left: 590px !important;
+  width: 170px;
+}
+
+#show_sample {
+  left: 780px !important;
+}
+.divForLegend {
+  height: 520px !important;
+  border: 2px solid black;
+  border-spacing: 20px;
+  padding: 20px;
+}

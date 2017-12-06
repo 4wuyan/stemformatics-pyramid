@@ -1,0 +1,20 @@
+
+.hm-invisible { visibility: hidden; }
+
+.hm-panel { position: absolute; top: 0; left: 0; }
+
+.hm-solidBorder { border-style: solid; border-width: 1px; border-color: #000000; border-collapse: collapse; }
+
+.hm-noBorder { border-style: none; border-width: 0px; margins: 0; }
+
+.hm-flush { margin: 0px; position: relative; top: 0px; left: 0px; }
+
+.hm-centeredContent { margin: 0 auto; text-align: center; vertical-align: middle; }
+
+.hm-spinner-back { background: url('../images/mouse_wheel.gif') no-repeat center; opacity: 1.0; }
+
+.hm-calc-msg { vertical-align: middle; text-decoration: blink; font-size: 40pt; color: #1F3AD6; }
+
+.hm-load-msg { vertical-align: middle; text-decoration: blink; font-size: 40pt; color: darkcyan; }
+
+img#hmImg { vertical-align: top; position: relative; top: 0px; left: 0px; }

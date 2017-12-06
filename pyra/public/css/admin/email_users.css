@@ -1,0 +1,41 @@
+
+#send-email-form {
+    font-size: 14px;
+    line-height: 22px;
+}
+
+#send-email-form .input-row {
+    margin-bottom: 20px;
+    width: 976px;
+}
+
+#send-email-form .input-row > div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#send-email-form .label-col {
+    width: 120px;
+    text-align: right;
+    margin-right: 20px;
+}
+
+#send-email-form .input-col {
+    width: 600px;
+}
+
+#send-email-form .input-col p {
+    margin-bottom: 12px;
+}
+
+#send-email-form input,
+#send-email-form textarea {
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans;
+    width: 100%;
+    padding: 0px 5px;
+}
+
+#send-email-form textarea {
+    height: 200px;
+}

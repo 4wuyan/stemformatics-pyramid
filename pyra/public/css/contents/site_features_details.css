@@ -1,0 +1,66 @@
+
+div.leftColumn {
+    margin:10px;
+}
+
+div.mainTextColumn {
+    clear: both;
+    float: left;
+    margin-right: 12px;
+    width: 1000px;
+    
+}
+
+div.mainTextColumn div.innerDiv{
+    border: 2px solid ;
+    color: #BBB;
+    padding: 20px;
+    
+}
+
+div.mainTextColumn  h2 {
+    margin-bottom: 20px;
+    font-family: Arial;
+}
+
+div.mainTextColumn img {
+
+    width: 750px;
+    float: left;
+    margin-right: 12px;
+    
+}
+
+#legend {
+    float:left;
+    margin-left: 12px;
+}
+
+#legend ol {
+    width: 180px;
+    
+    
+}
+
+#legend ol li {
+    margin-top: 12px;
+    font-size: 11px;
+    line-height: 13px;
+    color:#000;
+    margin-left: 12px;
+    margin-right: 0px;
+}
+
+
+#legend h3 {
+    color: #7C51A1;
+    font-family: Arial;
+    margin-bottom: 20px;
+}
+
+
+#calculationLink {
+
+    float: right;
+    margin-right: 10px;
+}

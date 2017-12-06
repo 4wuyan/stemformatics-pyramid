@@ -1,0 +1,29 @@
+div.mainTextColumn {
+	width: 828px;
+}
+
+div.mainTextColumn div.contact {
+	font-size: 14px;
+	font-family: Arial;
+	color: #000;
+}
+
+
+div.mainTextColumn div.contact h3{
+	font-weight: normal;
+	margin-bottom: 20px;
+}
+
+
+div.mainTextColumn div.contact div.contact_type{
+	width: 192px;
+	float: left;
+	margin-bottom: 10px;
+}
+
+
+div.mainTextColumn div.contact div.contact_value{
+	float: left;
+	width: 636px;
+	margin-bottom: 10px;
+}

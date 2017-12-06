@@ -1,0 +1,20 @@
+
+
+#header, #menus, div.limitedHeader {
+   background-color: sandybrown !important;
+     
+}
+
+#warning {
+    margin-left: 30px;
+    margin-top: 28px;
+    float: left;
+    font-size: 20px;
+    font-style: italic;
+    color: orangered;
+}
+
+
+#searchList div a, #mainList ul li a {
+    color: white !important;
+}

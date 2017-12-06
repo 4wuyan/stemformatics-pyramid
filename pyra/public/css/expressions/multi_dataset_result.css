@@ -1,0 +1,394 @@
+#multiChooseDatasets { margin-right: 0; }
+#main_body { margin:0px !important; width: 100vw ; }
+body {
+    width: 100vw !important;
+}
+
+div.searchBox {
+    margin-left: 30px;
+}
+
+div.backgroundGraph{
+    /*border: 2px solid #BBBBBB;*/
+    float: left;
+    margin-left: 30px;
+    /* width: 995px; */
+    width: 1375px;
+}
+
+.menudiv {
+  margin-left: 100px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#blanket {
+   background-color:#111;
+   opacity: 0.30;
+   *background:none;
+   position:absolute;
+   z-index: 100;
+   top:0px;
+   left:0px;
+   width:100%;
+}
+div.show_row_div a.show_rows {
+    background: url(/images/gene_search_gradient.png);
+    color: #000;
+    padding: 10px 5px;
+    font-family: Arial,Helvetica,sans-serif;
+    height: 44px;
+    line-height: 44px;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #C5C7C9;
+    cursor: pointer;
+}
+div.show_row_div a.show_rows:hover {
+  color: #EE8257 !important;
+}
+
+#modalDiv {
+  position: absolute ;
+	background-color: white;
+	width:97vw;
+  overflow: scroll;
+	height:90vh;
+	border:5px solid #000;
+	z-index: 1000;
+  left: 1vw !important;
+  top: 0.5vh;
+}
+#simplemodal-container {
+  border: none !important;
+}
+#close-button {
+  background:none;
+  top:5px !important;
+  right: 5px !important;
+  width:22px;
+  height:26px; }
+
+#row_3, #row_6 {
+  left:25%;
+  display: none;
+}
+#cursor_3,#cursor_6 {
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph div.innerDiv div.displayGraphs{
+    margin-top: 20px;
+    float: left;
+    height: 943px;
+}
+
+
+div.content {
+    margin-left: 0px !important;
+    width: 30vw;
+    height: 33vh;
+    float:left;
+    margin-bottom: 70px;
+}
+div.backgroundGraph div.innerDiv {
+    margin: 20px;
+}
+
+div.backgroundGraph div.innerDiv h1{
+    font-size: 13px;
+    font-weight: bold;
+    color: #F16630;
+    margin-bottom: 15px;
+}
+
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph {
+    background-color: #E6E6E6;
+    /* height: 934px; */ /* change for height - gets updated in result.js dynamically */
+}
+
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph div.innerDiv {
+    margin: 15px;
+    float: left;
+}
+
+div.backgroundGraph div.innerDiv div.innerBackgroundGraph div.innerDiv div.displayGraphs div.innerDiv{
+    margin: 20px;
+}
+
+#showTableData a.linkButtons {
+    margin-top: 12px;
+    margin-left: 12px;
+}
+
+#showTableData a.linkButtons:first-child {
+    margin-left: 30px;
+}
+
+#zoomGraphTableButton {
+    margin-left: 30px !important;
+    margin-top: 20px !important;
+    float: left;
+}
+
+#showData {
+    /*border: 2px solid #F8AB8A;*/
+    float: left;
+    margin-left: 30px;
+}
+
+
+#graphingOptions {
+    float:left;
+    margin-left:30px;
+}
+
+#sdOptions {
+	float:left;
+	margin-left: 40px;
+}
+
+#sortingOptions {
+	float:left;
+	margin-left: 40px;
+}
+
+div.displayGraphs{
+	clear:both;
+}
+
+#showTableData {
+    width: 100vw;
+	margin-top: 60px;
+}
+
+#showTableData table {
+    float: left;
+	text-align: left;
+    width: 100%;
+    font-size: 8px;
+}
+
+#showRawTableData {
+	width: 100%;
+    margin-top: 20px;
+}
+
+#showRawTableData table {
+	width: 100%;
+	text-align: left;
+}
+
+div.groupLabels {
+	position:absolute;
+	color: green;
+	font-size: 9px;
+	width: 80px;
+	text-align: center;
+}
+
+.verticaltext {
+  -o-transform:rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -webkit-transform:rotate(-90deg);
+   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+div.majorLabel {
+	position:absolute;
+	color: #000;
+	font-size: 10px;
+	width: 150px;
+	text-align: center;
+}
+
+div.majorLabelVertical {
+	position:absolute;
+	color: #000;
+	font-size: 10px;
+	width: 220px;
+	text-align: right;
+    -webkit-transform: rotate(270deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+	z-index: 999;
+}
+
+div.groupLabelVertical {
+	position:absolute;
+	color: green;
+	font-size: 10px;
+	width: 220px;
+	text-align: right;
+    -webkit-transform: rotate(270deg);
+    writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+}
+
+div.groupLabelVertical a.highlight,
+div.majorLabelVertical a.highlight{
+    color: #F30;
+    font-weight: bold;
+    z-index: 999;
+}
+
+.dataButtons {
+    margin-left: 10px;
+}
+
+#datasetSelectDiv {
+    float:left;
+}
+
+#datasetSelect {
+    float:left;
+}
+
+div.selectDataset {
+    background-color: #F8971D;
+    float: left;
+}
+
+div.selectDataset div.innerDiv{
+    margin: 5px !important;
+}
+
+#graphDataset {
+    float:left;
+    clear:left;
+    margin-top: 0px !important;
+}
+
+div.noGraphData {
+    text-align: center;
+    margin-top: 400px;
+    width: 1200px;
+    font-size: 20px;
+}
+
+div.yaxisLabel {
+	-webkit-transform: rotate(270deg);
+	float: left;
+	left: -131px;
+	position: relative;
+	text-align: center;
+	top: -300px;
+	width: 250px;
+    color: #545454;
+	writing-mode: tb-rl;
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+}
+
+#zoomHorizontalGraphButton{
+    text-align: center;
+    margin-left: 0px;
+}
+
+div.datasetLines {
+	position:absolute;
+	color: #000;
+	font-size: 9px;
+	width: 280px;
+	text-align: left;
+}
+
+#chooseDatasetTable td, #chooseDatasetTable th {
+    border-bottom: 1px solid #BBB;
+    border-right: 1px solid #BBB;
+    padding: 3px 10px;
+}
+
+#chooseDatasetTable {
+    border-collapse: collapse;
+    border-top: 1px solid #BBB;
+    border-left: 1px solid #BBB;
+    clear:left;
+}
+
+#choose_dataset  {
+    color: #000;
+}
+
+#choose_dataset a {
+    color: #000;
+}
+
+#showTableData {
+    margin-top: 12px;
+}
+
+div.graphControls {
+    /*margin-left: 30px;*/
+    margin-top: 12px;
+}
+
+#form_filter {
+    float:left;
+    text-align: left;
+    margin-top: 12px;
+    margin-left: 22px;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.dataTables_wrapper {
+    min-height: 10px;
+}
+
+#mult_dataset_graph_header {
+    margin-left: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#ucsc_link {
+    margin-top: 0px !important;
+}
+
+div.title a {
+    color: #F15D22 !important;
+    text-decoration: none;
+}
+
+#overallGraphDiv {
+    /*border: 1px solid #787878;*/
+    /*background-color: #F0F0F0;*/
+    margin-left: 30px;
+}
+
+#displayGeneDetail {
+    border: none !important;
+}
+
+div.searchBox a.searchButton {
+    width: 140px;
+}
+
+.ui-draggable{
+    border: solid 10px #5A5A5A;
+    background-color: #CCCCCC;
+    cursor: move;
+}
+
+div.movable_legend {
+    position: absolute;
+    height: 800px;
+    width: 500px;
+
+}
+div.title { margin-bottom: 12px; }
+div.graphControls { z-index: 98; }
+
+#graph_selection { z-index: 99; padding: 12px; }
+
+ul.buttonMenus {margin-bottom: 0px; }
+#kinetic_legend { z-index: 100;}
+div.xaxis_labels {position: absolute;  left:100px; z-index: 90; background-color: #F0F0F0; width: 1191px; height: 200px;}
+
+div.legend { display:none;}

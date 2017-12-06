@@ -1,0 +1,91 @@
+#main_body {
+    width: 100% !important;
+    margin: 0px 0px 0px 30px !important;
+
+}
+
+#annotate_biosamples_metadata_div,
+#biosamples_metadata_grid table ,
+.wide_for_annotations {
+    min-width: 1200px !important;
+    max-width: 4000px !important;
+}
+#metastore_grid table {
+    width: 1400px !important;
+}
+
+a.large_link,button.sample_type_ui,
+a.large_link,button.big {
+    font-size: 18px;
+    color: #000 !important;
+    margin-right: 12px;
+}
+
+.normal_top_margin {
+
+    margin-top: 20px;
+}
+
+.normal_bottom_margin {
+    margin-bottom: 20px;
+}
+
+th.htColHeader {
+    width:auto;
+}
+
+#controls {
+    z-index: 99;
+    position:fixed;
+    top:100px;
+    left: 920px;
+    padding: 20px;
+    border: solid 10px #5a5a5a;
+    background-color: #CCCCCC;
+}
+
+#ajax_message {
+    margin:12px;
+    font-size: 12px;
+    width: 800px;
+
+}
+
+#main_control_bar_heading {
+  display: inline;
+}
+
+#controls table th,#controls table tr, #controls table td{ border-bottom: 1px solid #5a5a5a !important; border-right: 1px solid #5a5a5a; border-top: 1px solid #5a5a5a ; }
+
+#samples_header,#dataset_header { width: 300px; }
+#biosamples_metadata_grid { margin-bottom: 50px; }
+table { border-top: 0px; border-left: 0px; border-right: 1px solid #CCC; border-bottom: 1px solid  #CCC;  }
+#sortable {
+    top:400px;
+    left: 300px;
+    position: fixed;
+    width: 900px;
+    padding: 20px;
+    border: solid 10px #5a5a5a;
+    background-color: #CCCCCC;
+}
+#ordering_help ul li { padding: 0px !important; height: auto !important; font-size: 16px !important; }
+#sortable ul li {
+ margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px;
+}
+#sortable li span { position: absolute; margin-left: -1.3em; }
+
+#sortable button { margin-top: 12px; }
+
+#sortable h1 { margin-bottom: 12px;  font-size: 18px;}
+
+#sortable li div { margin-right: 12px; font-size: 16px; display: inline; }
+div.select_column div,div.select_group div { display: inline-block; width: 450px; }
+div.select_group input,div.select_group div, div.select_column div, div.select_column input { margin-left: 4px; margin-right: 8px; }
+
+#steps { float:left;width:400px;border: 1px #5a5a5a solid; }
+#other { margin-left: 20px;border: 1px #5a5a5a solid;float:left;width:400px; }
+
+#steps td, #steps th,#other td,#other th { text-align:left; border-bottom: 0px; }
+
+div.simplemodal-wrap { overflow:auto !important; }

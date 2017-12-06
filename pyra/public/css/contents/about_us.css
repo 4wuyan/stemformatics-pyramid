@@ -1,0 +1,143 @@
+
+div.header {
+    font-size: 16px;
+    color: #FFF;
+    background-color: #666AE1;
+    height: 58px;
+    width: 484px;
+    margin-left: 14px;
+    margin-top: 13px;
+    margin-bottom: 105px;
+}
+
+div.header div.innerDiv{
+    margin: 10px;
+    float:left;
+}
+
+div.mainTextColumn div.largeText {
+    font-family: Arial;
+    color: #000;
+    font-size: 16px;
+    line-height: 19px;
+    margin-bottom: 8px;
+}
+
+div.mainTextColumn div.smallText {
+    font-family: Arial;
+    color: #000;
+    font-size: 11px;
+    line-height: 13px;
+    margin-bottom: 20px;
+}
+
+div.mainTextColumn div.intro {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    line-height: 13px;
+}
+
+
+div.mainTextColumn div.organisation {
+    height: 51px;
+}
+
+div.mainTextColumn div.organisation.team {
+    height: 86px;
+}
+
+div.mainTextColumn div.organisation div.logo {
+    float: left;
+    width: 156px;    
+    height: 50px;
+    text-align: center;
+}
+div.mainTextColumn div.organisation div.logo img{
+   text-align: left;
+   margin: 0 auto;
+   padding: 0; /* Zero to prevent IE box trouble. */
+   max-width: 130px;
+   max-height: 50px;
+}
+
+div.mainTextColumn div.organisation.team div.logo img {
+   max-height: 86px;
+}
+
+div.mainTextColumn div.organisation div.title {
+    width: 264px;    
+    float: left;
+    font-family: Times New Roman;
+    font-size: 16px;
+    color: #F15D22;
+}
+
+div.mainTextColumn div.organisation div.subTitle {
+    width: 264px;    
+    float: left;
+    font-family: Arial;
+    font-size: 11px;
+    line-height: 13px;
+    color: #5A5A5A;
+    margin-top: 7px;
+}
+
+div.mainTextColumn div.organisation div.link {
+    width: 52px;
+    height: 24px;
+    background-color: #BEBEBE;
+    float: left;
+    margin-left: 10px;
+    
+}
+
+div.mainTextColumn div.organisation div.link:hover {
+    background-color: #F8971D;
+}
+
+div.mainTextColumn div.organisation div.link div.innerDiv{
+    
+    margin-left: 4px;
+}
+
+div.mainTextColumn div.organisation div.link a{
+    
+    color: #FFF;
+    font-size: 8px;
+    line-height: 10px;
+    text-decoration: none;
+    
+}
+
+div.sideColumn div.text {
+    margin-top: 12px;
+    margin-bottom: 20px;
+}
+
+
+div.sideColumn div.text ul li {
+    list-style-type: disc;
+    margin-left: 16px;
+    color: #7C51A1;
+}
+
+div.sideColumn div.text ul li span {
+    color:#5A5A5A;
+}
+
+div.sideColumn div.text a{
+    color: #5A5A5A;
+}
+
+
+div.sideColumn div.text a:hover{
+    text-decoration: underline ;
+    color: #000;
+}
+
+
+
+div.rightColumn div.rotating-item img.background_image {
+    height: 60px;
+}
