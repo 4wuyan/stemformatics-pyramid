@@ -1,4 +1,5 @@
 class Helper:
+    #h.url is not in use right now
     def url(self,url_string):
         return None
     def external_dependency_url(self,url_string,url_string2):

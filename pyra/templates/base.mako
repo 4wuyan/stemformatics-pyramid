@@ -129,6 +129,7 @@ import string
 </%def>
 </%doc>
 
+
 <%def name="default_inclusions_wb()">
     <link rel="stylesheet" type="text/css" href="${h.web_asset_url('/css/workbench/wb_default.css')}" >
     <script type="text/javascript" src="${h.web_asset_url('/js/workbench/wb_main.js')}"></script>
@@ -167,7 +168,6 @@ import string
     <div class="clear"></div>
 
 </%def>
-<%doc>
 <%def name="header()">
         % try:
             %if c.header is not None and c.header != '':
@@ -178,7 +178,7 @@ import string
                 <% project_url ='/' %>
             %endif
         % except AttributeError:
-            <div id="header">
+            < id="header">
         % endtry
                 <div class="limitedHeader">
                     ##% if c.production:
@@ -204,12 +204,12 @@ import string
                             % else:
                                 <a id="logout_link" href="${h.url('/auth/logout')}">Logout </a>|<a href="${h.url('/auth/history/show')}">History</a>|<a class="no_padding_right" href="${h.url('/auth/update_details')}">My account</a><br/><a href="${h.url('/ensembl_upgrade/index')}">Ensembl upgrade</a>|<a class="no_padding_right"
 href="${h.url('/auth/show_private_datasets')}">My datasets</a>
-                                <!-- |<a ${'id=unread_notifications' if c.notifications > 0 else ''} href="${h.url('/auth/notifications')}">My Notifications (${c.notifications})</a> -->
+                                <%doc><!-- |<a ${'id=unread_notifications' if c.notifications > 0 else ''} href="${h.url('/auth/notifications')}">My Notifications (${c.notifications})</a> --></%doc>
                             % endif
                         </div>
 
                     </div>
-                    ${self.help_icon()}
+                    <%doc>${self.help_icon()}</%doc>
                 </div>
             </div>
             <div id="menus">
@@ -413,7 +413,7 @@ Updated citation to follow.
 
 
 </%def>
-
+<%doc>
 <%def name="sideColumnBiologists()">
             <div id="searchListSide" class="clear">
                 <div class="search"><a href="${h.url('/contents/site_features')}">SITE FEATURES >></a></div>
