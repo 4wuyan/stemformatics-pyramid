@@ -15,3 +15,5 @@ class BaseController():
         c.hostname = "S4M_Host_Name"
         c.json_tutorials_for_page="json_tute"
         c.role="user"
+        c.production = "true"
+        c.debug = None
