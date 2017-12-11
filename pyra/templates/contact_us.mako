@@ -1,7 +1,7 @@
 <%inherit file="default.html"/>\
 <%namespace name="Base" file="base.mako"/>
 <%def name="includes()">
-    <link href="${request.static_url('pyra:public/css/sass/stylesheets/screen.css') }" rel="stylesheet">
+    <link href="${request.static_path('pyra:public/css/sass/stylesheets/screen.css') }" rel="stylesheet">
 </%def>
 
 

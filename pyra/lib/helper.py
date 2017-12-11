@@ -5,4 +5,4 @@ class Helper:
     def external_dependency_url(self,url_string,url_string2):
         return "https://"+url_string
     def web_asset_url(self,url_string):
-        return "pyra:public"+url_string
+        return None

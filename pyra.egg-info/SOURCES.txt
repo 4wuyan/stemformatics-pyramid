@@ -7,7 +7,6 @@ pytest.ini
 setup.py
 pyra/__init__.py
 pyra/tests.py
-pyra/views.py
 pyra.egg-info/PKG-INFO
 pyra.egg-info/SOURCES.txt
 pyra.egg-info/dependency_links.txt

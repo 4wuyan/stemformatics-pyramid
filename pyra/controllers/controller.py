@@ -14,8 +14,6 @@ class MyController(BaseController):
     def contact_us(self):
         # set up C
         c.title = "S4M_title"
-        c.production = "true"
-        c.debug = None
         c.header = ""
         c.user = ""
         c.uid = 0
