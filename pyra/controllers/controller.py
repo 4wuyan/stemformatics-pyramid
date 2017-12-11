@@ -21,5 +21,6 @@ class MyController(BaseController):
         c.notifycation = "hello?"
         c.header_selected = "contents"
         # set up H
-        helper = h()
+        helper = h(self.request)
+
         return {'c': c, 'h': helper, 'project_url': '/'}
