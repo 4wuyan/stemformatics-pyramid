@@ -7,4 +7,5 @@ class Helper:
     def external_dependency_url(self,url_string,url_string2):
         return "https://"+url_string
     def web_asset_url(self,url_string):
-        return self.request.static_path('pyra:public'+url_string,_scheme='https')
+        site_name="www-pyramid1.stemformatics.org"
+        return site_name+"/screen/"+url_string
