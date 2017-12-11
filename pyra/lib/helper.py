@@ -7,4 +7,4 @@ class Helper:
     def external_dependency_url(self,url_string,url_string2):
         return "https://"+url_string
     def web_asset_url(self,url_string):
-        return self.request.static_url("pyra:public"+url_string)
+        return self.request.static_url("pyra:public"+url_string,url_sheme='https')
