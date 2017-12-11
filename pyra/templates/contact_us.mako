@@ -1,7 +1,7 @@
 <%inherit file="default.html"/>\
 <%namespace name="Base" file="base.mako"/>
 <%def name="includes()">
-    <link href="${h.web_asset_url("css/sass/stylesheets/screen.css")}" rel="stylesheet">
+    <link href="${h.web_asset_url("/css/sass/stylesheets/screen.css")}" rel="stylesheet">
 </%def>
 
 
