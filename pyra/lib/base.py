@@ -1,4 +1,3 @@
-from pyramid_handlers import action
 from pyra.lib.carrier import EmpClass as c
 from pyra.lib.helper import Helper as h
 
@@ -8,7 +7,7 @@ class BaseController():
         #set up the protocol
         self.request=request
         self.response=request.response
-        #
+        #set up c
         c.site_name = "Stemformatics"
         c.feedback_email = "S4M@unimelb.edu.au"
         c.stemformatics_version = 1.0
@@ -17,3 +16,6 @@ class BaseController():
         c.role="user"
         c.production = "true"
         c.debug = None
+        # set up h
+        self.helper = h(self.request)
+

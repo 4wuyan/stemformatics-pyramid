@@ -43,8 +43,19 @@
 
     <link href="${h.web_asset_url('/css/sass/stylesheets/screen.css')}" type="text/css" rel="stylesheet"/>
 
+<%doc>
+    <script type="text/javascript">
+    <%
+      basePath = config['proxy-path'] if 'proxy-path' in config and config['proxy-path'] is not None else '/'
+      basePath += '/' if basePath[-1] != '/' else ''
+    %>
+        var BASE_PATH = "${basePath}";
+    var DELIMITER = "${config['delimiter']}";
+    var SITE_NAME = "${c.site_name}";
+    check_browser(); // this relies on main.js
+    </script>
 
-
+</%doc>
 
 
 
