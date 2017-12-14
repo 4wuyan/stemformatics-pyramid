@@ -1,11 +1,12 @@
 from pyramid_handlers import action
-from pyra.lib.carrier import EmpClass as c
+from pyra.lib.empty_class import EmpClass as c
 from pyra.lib.base import BaseController
 
 class ContentsController(BaseController):
 
-    @action(renderer="templates/contact_us.mako")
+    __autoexpose__ = None
 
+    @action(renderer="templates/contact_us.mako")
     def contact_us(self):
         # set up C
         c.title = "S4M_title"

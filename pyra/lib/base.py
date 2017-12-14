@@ -1,4 +1,4 @@
-from pyra.lib.carrier import EmpClass as c
+from pyra.lib.empty_class import EmpClass as c
 from pyra.lib.helper import Helper as h
 
 class BaseController():
