@@ -1,12 +1,14 @@
 <%inherit file="default.html"/>\
 <%namespace name="Base" file="base.mako"/>
 <%def name="includes()">
-    <link href="${request.static_url('pyra:public/css/sass/stylesheets/screen.css') }" rel="stylesheet">
+    <%doc>the original mako uses h.url</%doc>
+    <link href="${h.web_asset_url("/css/sass/stylesheets/screen.css")}" rel="stylesheet">
 </%def>
 
 
 <div class="content">
     <div class="content_left_column">
+        <%doc>url.environ['pylons.routes_dict']['action'] is replaced with None</%doc>
         ${Base.content_menu(None)}
     </div>
 

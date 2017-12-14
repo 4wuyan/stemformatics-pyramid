@@ -1,5 +1,5 @@
 from pyramid.config import Configurator
-from pyra.controller import MyController
+from pyra.controllers.contents import ContentsController
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -7,11 +7,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include('pyramid_mako')
     config.include('pyramid_handlers')
-    config.add_static_view('static', 'static', cache_max_age=3600)
-    #config.add_route('home', '/')
-    #config.add_route('contact_us','/contact_us')
-    config.add_static_view(name='screen',path='pyra:public')
-    config.add_handler('home','/home',handler=MyController,action='test')
-    config.add_handler('contact_us','/contact_us',handler=MyController,action='contact_us')
+    config.add_static_view(name='static_views',path='public')
+    config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.scan()
     return config.make_wsgi_app()
