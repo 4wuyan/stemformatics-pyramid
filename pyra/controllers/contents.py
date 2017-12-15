@@ -35,3 +35,15 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - Our Publications"
         return {'c': c, 'h': self.helper, 'project_url': '/'}
+
+    @action(renderer="templates/contents/disclaimer.mako")
+    def disclaimer(self):
+        # set up C
+        c.title = c.site_name + " - Disclaimer"
+        return {'c': c, 'h': self.helper, 'project_url': '/'}
+
+    @action(renderer="templates/contents/privacy_policy.mako")
+    def privacy_policy(self):
+        # set up C
+        c.title = c.site_name + " - Privacy Policy"
+        return {'c': c, 'h': self.helper, 'project_url': '/'}
