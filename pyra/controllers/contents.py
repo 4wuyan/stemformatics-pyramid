@@ -23,3 +23,15 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - Faq"
         return {'c': c, 'h': self.helper, 'project_url': '/'}
+
+    @action(renderer="templates/contents/our_data.mako")
+    def our_data(self):
+        # set up C
+        c.title = c.site_name + " - Our Data"
+        return {'c': c, 'h': self.helper, 'project_url': '/'}
+    #faq page wouldn't work without the data_publication
+    @action(renderer="templates/contents/our_publications.mako")
+    def our_publications(self):
+        # set up C
+        c.title = c.site_name + " - Our Publications"
+        return {'c': c, 'h': self.helper, 'project_url': '/'}
