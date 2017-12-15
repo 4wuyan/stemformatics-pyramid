@@ -6,15 +6,20 @@ class ContentsController(BaseController):
 
     __autoexpose__ = None
 
-    @action(renderer="templates/contact_us.mako")
+    @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
         # set up C
-        c.title = "S4M_title"
-        c.header = ""
-        c.user = ""
-        c.uid = 0
-        c.full_name = ""
-        c.notifycation = ""
-        c.header_selected = "contents"
+        c.title=c.site_name+" - Contact_us"
+        return {'c': c, 'h': self.helper, 'project_url': '/'}
 
+    @action(renderer="templates/contents/about_us.mako")
+    def about_us(self):
+        # set up C
+        c.title = c.site_name + " - About_us"
+        return {'c': c, 'h': self.helper, 'project_url': '/'}
+    #faq page wouldn't work without the tutorial list
+    @action(renderer="templates/contents/faq.mako")
+    def faq(self):
+        # set up C
+        c.title = c.site_name + " - Faq"
         return {'c': c, 'h': self.helper, 'project_url': '/'}

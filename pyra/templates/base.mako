@@ -771,7 +771,7 @@ for row_count in c.view_data.xaxis_labels['full']:
         </a>
 
 </%def>
-<%doc>
+
 <%def name="citation_content()">
 
        <div class="content_box">
@@ -819,6 +819,7 @@ Wells CA et al Stemformatics: Visualisation and sharing of stem cell gene expres
                 <a id="${text.search_button_id}"  class="searchButton"><span>${text.search_name}</span><img src="${h.url('/images/show_genes.png')}"/></a>
             </div>
 </%def>
+<%doc>
 
 
 <%def name="enclosed_search_box(text,show_all_option)">

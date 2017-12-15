@@ -16,6 +16,13 @@ class BaseController():
         c.role="user"
         c.production = "true"
         c.debug = None
+        c.title = "S4M_title"
+        c.header = ""
+        c.user = ""
+        c.uid = 0
+        c.full_name = ""
+        c.notifycation = ""
+        c.header_selected = "contents"
         # set up h
-        self.helper = h(self.request)
+        self.helper = h(self.request,"localhost:5000")
 

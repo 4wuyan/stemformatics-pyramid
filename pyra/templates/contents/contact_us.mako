@@ -1,21 +1,20 @@
-<%inherit file="default.html"/>\
-<%namespace name="Base" file="base.mako"/>
+<%inherit file="../default.html"/>\
+<%namespace name="Base" file="../base.mako"/>
 <%def name="includes()">
-    <%doc>the original mako uses h.url</%doc>
-    <link href="${h.web_asset_url("/css/sass/stylesheets/screen.css")}" rel="stylesheet">
+    <link href="${h.url("/css/sass/stylesheets/screen.css")}" rel="stylesheet">
 </%def>
 
 
 <div class="content">
     <div class="content_left_column">
         <%doc>url.environ['pylons.routes_dict']['action'] is replaced with None</%doc>
-        ${Base.content_menu(None)}
+        ${Base.content_menu('contact_us')}
     </div>
 
     <div class="content_right_column">
         <div class="content_box">
             <div class="header_1">
-${c.site_name} prides itself on being responsive
+            ${c.site_name} prides itself on being responsive
             </div>
             <div class="text">
 <p>
