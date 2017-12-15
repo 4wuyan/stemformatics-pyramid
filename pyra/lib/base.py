@@ -23,6 +23,6 @@ class BaseController():
         c.full_name = ""
         c.notifycation = ""
         c.header_selected = "contents"
-        # set up h
+        # set up h(Note that the site url is hard coded)
         self.helper = h(self.request,"localhost:5000")
 
