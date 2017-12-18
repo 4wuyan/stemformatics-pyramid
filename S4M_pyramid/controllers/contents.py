@@ -1,7 +1,7 @@
 from pyramid_handlers import action
-from pyra.lib.empty_class import EmpClass as c
-from pyra.lib.base import BaseController
-from pyra.config import *
+from S4M_pyramid.lib.empty_class import EmpClass as c
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.config import *
 import psycopg2
 import psycopg2.extras
 class ContentsController(BaseController):

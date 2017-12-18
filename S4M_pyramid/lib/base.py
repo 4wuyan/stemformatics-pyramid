@@ -1,6 +1,6 @@
-from pyra.lib.empty_class import EmpClass as c
-from pyra.lib.helper import Helper as h
-from pyra.config import *
+from S4M_pyramid.lib.empty_class import EmpClass as c
+from S4M_pyramid.lib.helper import Helper as h
+from S4M_pyramid.config import *
 
 class BaseController():
 

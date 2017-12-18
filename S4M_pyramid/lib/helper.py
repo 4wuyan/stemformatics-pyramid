@@ -11,4 +11,4 @@ class Helper:
         return "https://"+url_string
 
     def web_asset_url(self,url_string):
-        return self.request.static_url("pyra:public"+url_string)
+        return self.request.static_url("S4M_pyramid:public"+url_string)

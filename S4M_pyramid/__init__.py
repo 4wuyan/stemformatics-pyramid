@@ -1,5 +1,5 @@
 from pyramid.config import Configurator
-from pyra.controllers.contents import ContentsController
+from S4M_pyramid.controllers.contents import ContentsController
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
