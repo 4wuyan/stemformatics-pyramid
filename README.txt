@@ -14,3 +14,7 @@ This is how you run the project,you might need to set up your enviroment for pyr
 - $VENV/bin/pserve development.ini
 
 This is also a PyCharm project, so you can use PyCharm IDE for more convenient editing and running.
+
+---------------
+DB info
+host='localhost' dbname='portal_beta' user='portaladmin'
