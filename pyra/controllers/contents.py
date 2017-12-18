@@ -3,7 +3,7 @@ from pyra.lib.empty_class import EmpClass as c
 from pyra.lib.base import BaseController
 from pyra.config import *
 import psycopg2
-
+import psycopg2.extras
 class ContentsController(BaseController):
 
     __autoexpose__ = None

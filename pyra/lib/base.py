@@ -24,5 +24,6 @@ class BaseController():
         c.notifycation = ""
         c.header_selected = "contents"
         # set up h(Note that the site url is hard coded)
-        self.helper = h(self.request,"localhost:5000")
+        # site url for VM1:'https://www-pyramid1.stemformatics.org'
+        self.helper = h(self.request,'https://www-pyramid1.stemformatics.org')
 
