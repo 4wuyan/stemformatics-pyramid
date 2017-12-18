@@ -10,15 +10,6 @@ class ContentsController(BaseController):
 
     @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
-        conn_string = config['psycopg2_conn_string']
-        conn = psycopg2.connect(conn_string)
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = "select ref_type,ref_id from stemformatics.configs;"
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        print(result)
         # set up C
         c.title=c.site_name+" - Contact_us"
 

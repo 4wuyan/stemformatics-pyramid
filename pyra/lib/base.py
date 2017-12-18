@@ -1,5 +1,6 @@
 from pyra.lib.empty_class import EmpClass as c
 from pyra.lib.helper import Helper as h
+from pyra.config import *
 
 class BaseController():
 
@@ -8,7 +9,7 @@ class BaseController():
         self.request=request
         self.response=request.response
         #set up c
-        c.site_name = "Stemformatics"
+        c.site_name = config['site_name']
         c.feedback_email = "S4M@unimelb.edu.au"
         c.stemformatics_version = 1.0
         c.hostname = "S4M_Host_Name"
