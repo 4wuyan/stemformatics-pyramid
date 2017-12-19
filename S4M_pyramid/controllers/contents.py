@@ -6,7 +6,7 @@ import psycopg2
 import psycopg2.extras
 class ContentsController(BaseController):
 
-    __autoexpose__ = None
+   
 
     @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
