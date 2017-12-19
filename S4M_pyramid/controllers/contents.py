@@ -1,5 +1,5 @@
 from pyramid_handlers import action
-from S4M_pyramid.lib.empty_class import EmpClass as c
+from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import *
 import psycopg2
