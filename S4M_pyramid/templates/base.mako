@@ -232,7 +232,7 @@ href="${h.url('/auth/show_private_datasets')}">My datasets</a>
                         </div>
 
                     </div>
-                    ${self.help_icon()}
+                   <%doc> ${self.help_icon()}</%doc>
                 </div>
             </div>
             <div id="menus">
