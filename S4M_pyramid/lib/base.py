@@ -36,4 +36,3 @@ class BaseController():
         # set up h(Note that the site url is hard coded)
         # site url for VM1:'https://www-pyramid1.stemformatics.org'
         self.helper = h(self.request,'https://www-pyramid1.stemformatics.org')
-

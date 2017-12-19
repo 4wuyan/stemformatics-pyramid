@@ -136,7 +136,7 @@ cc.initialise({
 <%
 this_path = '/'+'contents' + '/' +'contact_us'
  %>
-                % for tutorial, start_page in c.tutorials.iteritems():
+                % for tutorial, start_page in c.tutorials.items():
         <%
 class_text= 'class = in_page_tutorial_link' if this_path == start_page else ''
 import string
