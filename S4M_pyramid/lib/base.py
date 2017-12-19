@@ -25,6 +25,7 @@ class BaseController():
         c.role="user"
         c.debug = None
         c.header = ""
+        c.breadcrumbs = []
 
         # set up h(Note that the site url is hard coded)
         # site url for VM1:'https://www-pyramid1.stemformatics.org'

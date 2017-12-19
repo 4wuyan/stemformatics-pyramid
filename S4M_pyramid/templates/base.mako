@@ -43,9 +43,10 @@
 
     <link href="${h.web_asset_url('/css/sass/stylesheets/screen.css')}" type="text/css" rel="stylesheet"/>
 
-<%doc>
+
     <script type="text/javascript">
     <%
+      from S4M_pyramid.config import config
       basePath = config['proxy-path'] if 'proxy-path' in config and config['proxy-path'] is not None else '/'
       basePath += '/' if basePath[-1] != '/' else ''
     %>
@@ -54,8 +55,6 @@
     var SITE_NAME = "${c.site_name}";
     check_browser(); // this relies on main.js
     </script>
-
-</%doc>
 
 
 
@@ -70,9 +69,25 @@
 
 
 
+    % if 'turn_on_google_analytics' in config and config['turn_on_google_analytics'] == 'true':
+	<script type="text/javascript" >
+      var _gaq = _gaq || [];
 
+      _gaq.push(['_setAccount', '${config['google_analytics_tracking_id']}']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
 
-% if 1==1:
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    % endif
+
+% if 'turn_on_cookie_consent_plugin' in config and config['turn_on_cookie_consent_plugin'] == 'true':
 
 <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
 <script type="text/javascript">
@@ -102,11 +117,9 @@ cc.initialise({
 
 
 </%def>
-
 <%doc>
-
 <%def name="help_icon()">
-    <div class="help_icon"><a href="${h.url('/contents/faq')}"><img src="public/images/icons/help_icon.png"></img></a>
+    <div class="help_icon"><a href="${h.url('/contents/faq')}"><img src="/images/icons/help_icon.png"></img></a>
         <ul class="main_help_menu" >
         %try:
             %if  c.tutorials_for_page['page_guide'] is not None:
@@ -139,11 +152,9 @@ import string
     </div>
 </%def>
 </%doc>
-
-
 <%def name="default_inclusions_wb()">
-    <link rel="stylesheet" type="text/css" href="${h.web_asset_url('/css/workbench/wb_default.css')}" >
-    <script type="text/javascript" src="${h.web_asset_url('/js/workbench/wb_main.js')}"></script>
+    <link rel="stylesheet" type="text/css" href="${h.url('/css/workbench/wb_default.css')}" >
+    <script type="text/javascript" src="${h.url('/js/workbench/wb_main.js')}"></script>
 </%def>
 
 <%def name="wb_breadcrumbs()">
@@ -179,6 +190,7 @@ import string
     <div class="clear"></div>
 
 </%def>
+
 <%def name="header()">
         % try:
             %if c.header is not None and c.header != '':
@@ -189,7 +201,7 @@ import string
                 <% project_url ='/' %>
             %endif
         % except AttributeError:
-            < id="header">
+            <div id="header">
         % endtry
                 <div class="limitedHeader">
                     ##% if c.production:
@@ -215,12 +227,12 @@ import string
                             % else:
                                 <a id="logout_link" href="${h.url('/auth/logout')}">Logout </a>|<a href="${h.url('/auth/history/show')}">History</a>|<a class="no_padding_right" href="${h.url('/auth/update_details')}">My account</a><br/><a href="${h.url('/ensembl_upgrade/index')}">Ensembl upgrade</a>|<a class="no_padding_right"
 href="${h.url('/auth/show_private_datasets')}">My datasets</a>
-                                <%doc><!-- |<a ${'id=unread_notifications' if c.notifications > 0 else ''} href="${h.url('/auth/notifications')}">My Notifications (${c.notifications})</a> --></%doc>
+                                <!-- |<a ${'id=unread_notifications' if c.notifications > 0 else ''} href="${h.url('/auth/notifications')}">My Notifications (${c.notifications})</a> -->
                             % endif
                         </div>
 
                     </div>
-                    <%doc>${self.help_icon()}</%doc>
+                    ${self.help_icon()}
                 </div>
             </div>
             <div id="menus">
@@ -424,7 +436,7 @@ Updated citation to follow.
 
 
 </%def>
-<%doc>
+
 <%def name="sideColumnBiologists()">
             <div id="searchListSide" class="clear">
                 <div class="search"><a href="${h.url('/contents/site_features')}">SITE FEATURES >></a></div>
@@ -725,7 +737,7 @@ for row_count in c.view_data.xaxis_labels['full']:
         </a>
 </%def>
 
-</%doc>
+
 <%def name="content_menu(action)">
         <a class="about_us" href="${h.url('/contents/about_us')}">
             <div class="contact_menu ${'selected' if action == 'about_us' else ''}">
@@ -819,12 +831,11 @@ Wells CA et al Stemformatics: Visualisation and sharing of stem cell gene expres
                 <a id="${text.search_button_id}"  class="searchButton"><span>${text.search_name}</span><img src="${h.url('/images/show_genes.png')}"/></a>
             </div>
 </%def>
-<%doc>
 
 
 <%def name="enclosed_search_box(text,show_all_option)">
 
-    <% 
+    <%
     try:
         extra_class = text.extra_class
     except:
@@ -1034,4 +1045,3 @@ Wells CA et al Stemformatics: Visualisation and sharing of stem cell gene expres
             </div>
         </a> -->
 </%def>
-</%doc>
