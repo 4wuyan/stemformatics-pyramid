@@ -32,8 +32,7 @@ class BaseController():
         #set tutorial page
         c.tutorials_for_page = Stemformatics_Help.get_help_for_page("contents/contact_us",request.params)
         c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
-        print(c.tutorials_for_page)
-
+        c.tutorials = Stemformatics_Help.get_tutorial_list()
         # set up h(Note that the site url is hard coded)
         # site url for VM1:'https://www-pyramid1.stemformatics.org'
         self.helper = h(self.request,'https://www-pyramid1.stemformatics.org')
