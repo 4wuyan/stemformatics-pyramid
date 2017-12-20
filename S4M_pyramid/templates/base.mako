@@ -117,7 +117,7 @@ cc.initialise({
 
 
 </%def>
-<%doc>
+
 <%def name="help_icon()">
     <div class="help_icon"><a href="${h.url('/contents/faq')}"><img src="/images/icons/help_icon.png"></img></a>
         <ul class="main_help_menu" >
@@ -134,9 +134,9 @@ cc.initialise({
 
             <li class="sep"></li>
 <%
-this_path = '/'+url.environ['pylons.routes_dict']['controller'] + '/' + url.environ['pylons.routes_dict']['action']
+this_path = '/'+'contents' + '/' +'contact_us'
  %>
-                % for tutorial, start_page in c.tutorials.iteritems():
+                % for tutorial, start_page in c.tutorials.items():
         <%
 class_text= 'class = in_page_tutorial_link' if this_path == start_page else ''
 import string
@@ -151,7 +151,7 @@ import string
                                            </ul>
     </div>
 </%def>
-</%doc>
+
 <%def name="default_inclusions_wb()">
     <link rel="stylesheet" type="text/css" href="${h.url('/css/workbench/wb_default.css')}" >
     <script type="text/javascript" src="${h.url('/js/workbench/wb_main.js')}"></script>
@@ -232,7 +232,7 @@ href="${h.url('/auth/show_private_datasets')}">My datasets</a>
                         </div>
 
                     </div>
-                    ${self.help_icon()}
+                   ${self.help_icon()}
                 </div>
             </div>
             <div id="menus">
