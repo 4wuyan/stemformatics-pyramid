@@ -1,4 +1,5 @@
 <%def name="default_inclusions()">
+    <% from S4M_pyramid.config import config %>
     <title>${c.title}</title>
     <meta name="google-site-verification" content="eKfRHsSQKFfEQDBulOvJy8P1H6d5PpjgRp8IoMXgE0A"/>
 	<!-- <meta http-equiv="content-language" content="en-us" /> -->
@@ -46,7 +47,6 @@
 
     <script type="text/javascript">
     <%
-      from S4M_pyramid.config import config
       basePath = config['proxy-path'] if 'proxy-path' in config and config['proxy-path'] is not None else '/'
       basePath += '/' if basePath[-1] != '/' else ''
     %>
