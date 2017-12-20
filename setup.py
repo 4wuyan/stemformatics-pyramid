@@ -10,9 +10,13 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 
 requires = [
     'pyramid',
-	'pyramid_mako',
+    'pyramid_mako',
     'pyramid_debugtoolbar',
     'waitress',
+    'pyramid_handlers',
+    'psycopg2',
+    'sqlalchemy',
+    'redis'
     ]
 
 tests_require = [
@@ -21,9 +25,9 @@ tests_require = [
     'pytest-cov',
     ]
 
-setup(name='pyra',
+setup(name='S4M_pyramid',
       version='0.0',
-      description='pyra',
+      description='S4M_pyramid',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
           "Programming Language :: Python",
@@ -44,6 +48,6 @@ setup(name='pyra',
       install_requires=requires,
       entry_points="""\
       [paste.app_factory]
-      main = pyra:main
+      main = S4M_pyramid:main
       """,
       )
