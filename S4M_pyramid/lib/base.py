@@ -13,7 +13,7 @@ class BaseController():
         self.request=request
         self.response=request.response
         #set up url.environ
-        self.url = environ_helper.generate_environ()
+        self.url = environ_helper.generate_environ(request.url)
         #set up c,those are directly retrieved fro the DB
         c.site_name = config['site_name']
         c.feedback_email = config['feedback_email']
