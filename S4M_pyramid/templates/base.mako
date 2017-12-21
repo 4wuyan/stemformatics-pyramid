@@ -134,7 +134,7 @@ cc.initialise({
 
             <li class="sep"></li>
 <%
-this_path = '/'+'contents' + '/' +'contact_us'
+this_path = '/'+url.environ['pylons.routes_dict']['controller'] + '/' + url.environ['pylons.routes_dict']['action']
  %>
                 % for tutorial, start_page in c.tutorials.items():
         <%
