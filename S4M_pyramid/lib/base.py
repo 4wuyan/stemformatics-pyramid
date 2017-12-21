@@ -4,7 +4,7 @@ from S4M_pyramid.config import *
 from S4M_pyramid.model.stemformatics.stemformatics_help import *
 from S4M_pyramid.lib import environ_helper
 import json
-
+import socket
 class BaseController():
 
     #this is invoked every time an action is called
@@ -25,9 +25,8 @@ class BaseController():
         c.uid = 0
         c.full_name = ""
         c.notifycation = ""
-        c.header_selected = "contents"
-        c.hostname = "S4M_Host_Name"
-        c.json_tutorials_for_page = "json_tute"
+        c.header_selected = self.url.environ['pylons.routes_dict']['controller']
+        c.hostname = socket.gethostname()
         c.role="user"
         c.debug = None
         c.header = ""

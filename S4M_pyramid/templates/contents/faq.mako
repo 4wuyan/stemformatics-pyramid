@@ -35,7 +35,7 @@ This is the Help and Frequently Asked Questions page for ${c.site_name}
             </div>
             <div class="text">
                 <ul class="tutorialList">
-                % for tutorial, start_page in c.tutorials.iteritems():
+                % for tutorial, start_page in c.tutorials.items():
                     <li><a href="${h.url(start_page + '#tutorial=' + tutorial)}" onclick="return audit_help_log ('${tutorial}', 'help_tutorial'); ">${tutorial.replace("_", " ").capitalize()}</a></li>
                 % endfor
                 </ul>
