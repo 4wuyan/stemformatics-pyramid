@@ -12,8 +12,7 @@ class ContentsController(BaseController):
     def contact_us(self):
         # set up C
         c.title=c.site_name+" - Contact_us"
-
-        return {'c': c, 'h': self.helper, 'project_url': '/'}
+        return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
 
     @action(renderer="templates/contents/about_us.mako")
     def about_us(self):

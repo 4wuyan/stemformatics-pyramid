@@ -8,7 +8,7 @@
 <div class="content">
     <div class="content_left_column">
         <%doc>url.environ['pylons.routes_dict']['action'] is replaced with None</%doc>
-        ${Base.content_menu('contact_us')}
+        ${Base.content_menu(url.environ['pylons.routes_dict']['action'])}
     </div>
 
     <div class="content_right_column">

@@ -3,7 +3,6 @@ class Helper:
         self.request=request
         self.site_url=site_url
 
-    #h.url is not in use right now
     def url(self,url_string):
         return self.site_url+url_string
 

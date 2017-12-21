@@ -8,7 +8,7 @@
 
 <div class="content">
     <div class="content_left_column">
-        ${Base.content_menu('our_publications')}
+        ${Base.content_menu()}
     </div>
     <div class="content_right_column">
         <div class="content_box">
