@@ -7,7 +7,7 @@
 
 <div class="content">
     <div class="content_left_column">
-        ${Base.content_menu('privacy_policy')}
+        ${Base.content_menu(url.environ['pylons.routes_dict']['action'])}
     </div>
     <div class="content_right_column">
         <div class="content_box">
