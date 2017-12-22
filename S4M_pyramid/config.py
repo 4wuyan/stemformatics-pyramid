@@ -26,4 +26,4 @@ for row in result:
     result_dir[ref_type] = ref_id
 
 for key in result_dir:
- config[key] = result_dir[key]
+    config[key] = result_dir[key]

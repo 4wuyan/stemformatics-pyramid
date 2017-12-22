@@ -24,7 +24,7 @@ class BaseController():
         c.user = ""
         c.uid = 0
         c.full_name = ""
-        c.notifycation = ""
+        c.notification = ""
         c.header_selected = self.url.environ['pylons.routes_dict']['controller']
         c.hostname = socket.gethostname()
         c.role="user"
@@ -39,3 +39,4 @@ class BaseController():
         # set up h(Note that the site url is hard coded)
         # site url for VM1:'https://www-pyramid1.stemformatics.org'
         self.helper = h(self.request,'https://www-pyramid1.stemformatics.org')
+
