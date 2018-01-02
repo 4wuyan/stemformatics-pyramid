@@ -1,9 +1,11 @@
 from pyramid_handlers import action
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 from S4M_pyramid.config import *
 import psycopg2
 import psycopg2.extras
+
 class ContentsController(BaseController):
 
    
@@ -31,11 +33,12 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - Our Data"
         return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
-    #faq page wouldn't work without the data_publication
+    #data_publication page wouldn't work without the data_publication
     @action(renderer="templates/contents/our_publications.mako")
     def our_publications(self):
         # set up C
         c.title = c.site_name + " - Our Publications"
+        c.data_publications = Stemformatics_Dataset.get_data_publications()
         return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
 
     @action(renderer="templates/contents/disclaimer.mako")
