@@ -8,7 +8,19 @@ import psycopg2.extras
 
 class ContentsController(BaseController):
 
-   
+
+    @action(renderer="templates/contents/index.mako")
+    def index(self):
+        c.header_selected = ''
+        c.speed_up_page = 'true'
+        c.title = c.site_name + " - Find expression data from leading stem cell laboratories in a format that is easy to search, easy to visualise and easy to export"
+
+        c.tweets = []
+
+        c.number_of_public_samples = 0#Stemformatics_Dataset.get_number_public_samples(db)
+        c.number_of_public_datasets = 0#Stemformatics_Dataset.get_number_of_datasets(db)['Public']
+        return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
+
 
     @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
@@ -21,7 +33,7 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - About_us"
         return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
-    #faq page wouldn't work without the tutorial list
+
     @action(renderer="templates/contents/faq.mako")
     def faq(self):
         # set up C
@@ -33,7 +45,7 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - Our Data"
         return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
-    #data_publication page wouldn't work without the data_publication
+
     @action(renderer="templates/contents/our_publications.mako")
     def our_publications(self):
         # set up C

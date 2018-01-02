@@ -11,6 +11,7 @@ def main(global_config, **settings):
     config_static_views(config)
     #this dynamically routes the url to the actions
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
+    config.add_handler("index","/",handler=ContentsController,action="index")
     config.scan()
     return config.make_wsgi_app()
 
