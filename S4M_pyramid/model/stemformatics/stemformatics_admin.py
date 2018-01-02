@@ -14,7 +14,7 @@ __all__ = ['Stemformatics_Admin']
 import datetime, os, subprocess, hashlib
 import psycopg2
 import psycopg2.extras
-from S4M_pyramid.config import *
+from S4M_pyramid.config import config
 
 class Stemformatics_Admin(object):
     def __init__(self):

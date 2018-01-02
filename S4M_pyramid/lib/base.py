@@ -1,6 +1,6 @@
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.helper import Helper as h
-from S4M_pyramid.config import *
+from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_help import *
 from S4M_pyramid.lib import environ_helper
 import json

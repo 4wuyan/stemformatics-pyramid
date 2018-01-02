@@ -3,7 +3,7 @@ from pyramid_handlers import action
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.config import *
+from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 import psycopg2
 import psycopg2.extras

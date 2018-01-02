@@ -1,4 +1,4 @@
-from S4M_pyramid.config import *
+from S4M_pyramid.config import config
 import psycopg2
 import psycopg2.extras
 
