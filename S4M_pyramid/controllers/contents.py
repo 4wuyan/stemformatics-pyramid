@@ -4,9 +4,21 @@ from pyramid_handlers import action
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import *
+from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 import psycopg2
 import psycopg2.extras
 class ContentsController(BaseController):
+    @action(renderer="templates/contents/index.mako")
+    def index(self):
+        c.header_selected = ''
+        c.speed_up_page = 'true'
+        c.title = c.site_name + " - Find expression data from leading stem cell laboratories in a format that is easy to search, easy to visualise and easy to export"
+
+        c.tweets = []
+
+        c.number_of_public_samples = Stemformatics_Dataset.get_number_public_samples()
+        c.number_of_public_datasets = Stemformatics_Dataset.get_number_of_datasets()['Public']
+        return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
