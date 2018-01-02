@@ -12,8 +12,10 @@ class BaseController():
         #set up the protocol
         self.request=request
         self.response=request.response
+
         #set up url.environ
         self.url = environ_helper.generate_environ(request.url)
+
         #set up c,those are directly retrieved fro the DB
         c.site_name = config['site_name']
         c.feedback_email = config['feedback_email']
@@ -40,4 +42,7 @@ class BaseController():
         # set up h
         # request.host_url returns the url through the host (e.g. https://www-pyramid2.stemformatics.org/)
         self.helper = h(self.request, self.request.host_url)
+
+        # should be put at last, when self.helper and self.url have been declared
+        self.deprecated_pylons_data_for_view = {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
 
