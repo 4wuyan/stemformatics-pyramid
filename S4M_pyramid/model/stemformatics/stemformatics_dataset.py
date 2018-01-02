@@ -9,21 +9,21 @@ from datetime import datetime, timedelta
 
 # for list_authorised_users
 import hmac
-import S4M_pyramid.lib.helpers as h
+import S4M_pyramid.lib.helper as h
 
-import psycopg2, cPickle
+import psycopg2, _pickle as cPickle
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.config import *
-from S4M_pyramid.lib.state import *
-from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
-from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
+#from S4M_pyramid.lib.state import *
+#from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
+#from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , urllib2 , codecs , redis ,pylons,subprocess , re , string , json, datetime,glob
-from poster.encode import multipart_encode
-from poster.streaminghttp import register_openers
+import formencode.validators as fe, time ,os , codecs , redis ,subprocess , re , string , json, datetime,glob#urllib2
+#from poster.encode import multipart_encode
+#from poster.streaminghttp import register_openers
 
 
 POS_INT = fe.Int(min=1, not_empty=True)
