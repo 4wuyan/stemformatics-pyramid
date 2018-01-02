@@ -44,5 +44,5 @@ class BaseController():
         self.helper = h(self.request, self.request.host_url)
 
         # should be put at last, when self.helper and self.url have been declared
-        self.dictionary_returned_by_controllers = {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
+        self.deprecated_pylons_data_for_view = {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
 
