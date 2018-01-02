@@ -5,7 +5,7 @@ Try to use branching when commiting any changes
 
 Getting Started
 ---------------
-This is how you run the project,you might need to set up your enviroment for pyramid first.
+This is how you run the project, you might need to set up your enviroment for pyramid first.
 
 - cd <directory containing this file>
 
