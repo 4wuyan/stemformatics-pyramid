@@ -1,5 +1,5 @@
-<%inherit file="/default.html"/>\
-<%namespace name="Base" file="/base.mako"/>
+<%inherit file="../default.html"/>\
+<%namespace name="Base" file="../base.mako"/>
 
 <%def name="includes()">
     <link href="${h.web_asset_url('/css/contents/index.css')}" type="text/css" rel="stylesheet">
