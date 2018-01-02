@@ -2067,7 +2067,7 @@ All functions have a try that will return None if errors are found
         return show_text
 
     @staticmethod
-    def get_number_of_datasets(db):
+    def get_number_of_datasets():
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -2086,7 +2086,7 @@ All functions have a try that will return None if errors are found
         return dataset_breakdown
 
     @staticmethod
-    def get_number_public_samples(db):
+    def get_number_public_samples():
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

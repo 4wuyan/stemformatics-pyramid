@@ -17,8 +17,8 @@ class ContentsController(BaseController):
 
         c.tweets = []
 
-        c.number_of_public_samples = {'Human':0,'Mouse':0}#Stemformatics_Dataset.get_number_public_samples(db)
-        c.number_of_public_datasets = 0#Stemformatics_Dataset.get_number_of_datasets(db)['Public']
+        c.number_of_public_samples = Stemformatics_Dataset.get_number_public_samples()
+        c.number_of_public_datasets = Stemformatics_Dataset.get_number_of_datasets()['Public']
         return {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
 
 
