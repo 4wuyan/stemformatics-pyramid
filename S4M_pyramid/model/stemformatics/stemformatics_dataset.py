@@ -210,9 +210,21 @@ All functions have a try that will return None if errors are found
 
 
     # Could remove the uid for getHandle but doesn't do anything
-    # Now getHandle does nothing
     @staticmethod
-    def getHandle(ds_id,uid=None): #CRITICAL-2
+    def getHandle(db,ds_id,uid=None): #CRITICAL-2
+
+        # check if valid ds_id
+        try:
+            ds_id = POS_INT.to_python(ds_id)
+            # Ignore the check for handle - too minor
+            db.schema = 'public'
+            ds = db.datasets
+            dataSet = ds.filter(ds.id == ds_id).first()
+
+            new_handle = Stemformatics_Dataset.add_extra_to_handle(db,dataSet.handle,dataSet.private,dataSet.show_limited)
+            return new_handle
+
+        except:
             return None
 
     @staticmethod

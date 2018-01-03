@@ -5,6 +5,7 @@ from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
+from S4M_pyramid.model.stemformatics import db
 import psycopg2
 import psycopg2.extras
 class ExpressionsController(BaseController):
@@ -47,5 +48,5 @@ class ExpressionsController(BaseController):
         c.ds_id = int(self.request.params.get('ds_id'))
         c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-        c.handle = Stemformatics_Dataset.getHandle(c.ds_id)
+        c.handle = Stemformatics_Dataset.getHandle(db,c.ds_id)
         return self.deprecated_pylons_data_for_view
