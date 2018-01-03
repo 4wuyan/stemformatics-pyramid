@@ -3,8 +3,9 @@ import logging
 log = logging.getLogger(__name__)
 
 from S4M_pyramid.lib.base import BaseController
-    #from pylons import request, response, session, url, tmpl_context as c
+    #from pylons import request, response, session, url
     #from pylons.controllers.util import abort, redirect
+
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 
@@ -19,8 +20,7 @@ from S4M_pyramid.config import config
 
 from paste.deploy.converters import asbool
 
-# for some reason it is not applied in guide/lib/base.py
-import guide.lib.helpers as h
+from S4M_pyramid.lib.helper import Helper as h
 
 from datetime import datetime, timedelta
 
