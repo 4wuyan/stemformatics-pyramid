@@ -14,6 +14,8 @@ S4M_pyramid.egg-info/not-zip-safe
 S4M_pyramid.egg-info/requires.txt
 S4M_pyramid.egg-info/top_level.txt
 S4M_pyramid/model/__init__.py
+S4M_pyramid/model/s4m_psycopg2.py
 S4M_pyramid/model/stemformatics/__init__.py
 S4M_pyramid/model/stemformatics/stemformatics_admin.py
+S4M_pyramid/model/stemformatics/stemformatics_dataset.py
 S4M_pyramid/model/stemformatics/stemformatics_help.py

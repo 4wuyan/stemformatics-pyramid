@@ -16,7 +16,8 @@ requires = [
     'pyramid_handlers',
     'psycopg2',
     'sqlalchemy',
-    'redis'
+    'redis',
+    'formencode'
     ]
 
 tests_require = [
