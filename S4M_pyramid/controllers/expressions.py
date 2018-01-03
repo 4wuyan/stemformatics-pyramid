@@ -11,8 +11,8 @@ class ExpressionsController(BaseController):
     # 'sca' is short for scatter.  Makes validity checking easier.
     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'line', 'lin': 'line'}
 
-    def __init__(self):
-        super(ExpressionsController, self)
+    def __init__(self,request):
+        super().__init__(request)
 
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
