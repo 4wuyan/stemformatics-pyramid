@@ -26,7 +26,7 @@ class ExpressionsController(BaseController):
         c.title = c.site_name + ' Graphs - Home'
         return self.deprecated_pylons_data_for_view
 
-    @action(renderer="templates/expressions/index.mako")
+    @action(renderer="templates/expressions/gene_expression_graph.mako")
     def gene_expression_graph(self):
         return self.deprecated_pylons_data_for_view
 
