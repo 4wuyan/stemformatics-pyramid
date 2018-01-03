@@ -1,4 +1,4 @@
-<%inherit file="/default.html"/>\
+<%inherit file="../default.html"/>\
 <%namespace name="Base" file="../base.mako"/>
 <%def name="includes()">
 

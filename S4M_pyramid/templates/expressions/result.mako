@@ -1,4 +1,4 @@
-<%inherit file="/default.html"/>\
+<%inherit file="../default.html"/>\
 <%namespace name="Base" file="../base.mako"/>
 <%def name="includes()">
             <script src="${h.external_dependency_url('cdn.jsdelivr.net/kineticjs/4.5.4/kinetic.min.js','/js/external_asset_dependencies/kinetic-4.5.4.min.js')}"  ></script>

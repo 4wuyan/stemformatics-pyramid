@@ -26,3 +26,19 @@ class ExpressionsController(BaseController):
         c.title = c.site_name + ' Graphs - Home'
         return self.deprecated_pylons_data_for_view
 
+    @action(renderer="templates/expressions/index.mako")
+    def gene_expression_graph(self):
+        return self.deprecated_pylons_data_for_view
+
+    @action(renderer="templates/expressions/multi_view.mako")
+    def multi_view(self):
+        return self.deprecated_pylons_data_for_view
+
+    @action(renderer="templates/expressions/yugene.mako")
+    def yugene(self):
+        return self.deprecated_pylons_data_for_view
+
+    @action(renderer="templates/expressions/multi_gene_graph.mako")
+    def multi_gene_graph(self):
+        return self.deprecated_pylons_data_for_view
+
