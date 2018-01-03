@@ -9,10 +9,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sqlalchemy import *
-from sqlalchemy.ext.sqlsoup import SqlSoup
-
-
-from stemformatics_dataset import *
+import sqlsoup
+#from stemformatics_dataset import *
 
 import zlib
 import json
@@ -53,7 +51,7 @@ def init_model(db_engine):
 
     log.debug('just setting up sqlsoup')
 
-    db = SqlSoup(engine, use_labels=True)
+    db = sqlsoup.SqlSoup(engine, use_labels=True)
 
     log.debug('just finished setting up sqlsoup')
 
