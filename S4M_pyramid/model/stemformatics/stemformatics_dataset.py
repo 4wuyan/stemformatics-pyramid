@@ -61,7 +61,7 @@ All functions have a try that will return None if errors are found
     Pass in the ds_id and return the db_id which gives you information on the species and eventually, Ensembl version of this dataset
     """
     @staticmethod
-    def get_db_id(db,ds_id):
+    def get_db_id(ds_id):
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -178,7 +178,7 @@ All functions have a try that will return None if errors are found
 
 
     @staticmethod
-    def getChipType(db,ds_id): #CRITICAL-2
+    def getChipType(ds_id): #CRITICAL-2
         try:
 
             conn_string = config['psycopg2_conn_string']
@@ -216,9 +216,7 @@ All functions have a try that will return None if errors are found
         # check if valid ds_id
         try:
             ds_id = POS_INT.to_python(ds_id)
-
             # Ignore the check for handle - too minor
-
             db.schema = 'public'
             ds = db.datasets
             dataSet = ds.filter(ds.id == ds_id).first()
