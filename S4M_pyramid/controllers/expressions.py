@@ -42,3 +42,10 @@ class ExpressionsController(BaseController):
     def multi_gene_graph(self):
         return self.deprecated_pylons_data_for_view
 
+    @action(renderer="expressions/probe_expression_graph.mako")
+    def probe_expression_graph(self):
+        c.ds_id = int(self.request.params.get('ds_id'))
+        c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
+        c.handle = Stemformatics_Dataset.getHandle(c.ds_id)
+        return self.deprecated_pylons_data_for_view
