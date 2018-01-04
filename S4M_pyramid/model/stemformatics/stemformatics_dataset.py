@@ -213,9 +213,9 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def getHandle(db,ds_id,uid=None): #CRITICAL-2
 
-        # check if valid ds_id
-        try:
-            ds_id = POS_INT.to_python(ds_id)
+        # check if valid ds_i
+            
+            #ds_id = POS_INT.to_python(ds_id)
             # Ignore the check for handle - too minor
             db.schema = 'public'
             ds = db.datasets
@@ -224,9 +224,7 @@ All functions have a try that will return None if errors are found
             new_handle = Stemformatics_Dataset.add_extra_to_handle(db,dataSet.handle,dataSet.private,dataSet.show_limited)
             return new_handle
 
-        except:
-            return None
-
+    
     @staticmethod
     def get_handle_title_and_species(ds_ids):
         conn_string = config['psycopg2_conn_string']

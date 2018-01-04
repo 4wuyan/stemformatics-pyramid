@@ -5,9 +5,11 @@ from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
-from S4M_pyramid.model.stemformatics import db
+from S4M_pyramid.model.stemformatics import *
 import psycopg2
 import psycopg2.extras
+from sqlalchemy import create_engine
+import sqlsoup
 class ExpressionsController(BaseController):
     # 'sca' is short for scatter.  Makes validity checking easier.
     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'line', 'lin': 'line'}
@@ -45,9 +47,11 @@ class ExpressionsController(BaseController):
 
     @action(renderer="templates/expressions/probe_expression_graph.mako")
     def probe_expression_graph(self):
+        # ds_id = 5012 is a valid entry for testing
         c.ds_id = int(self.request.params.get('ds_id'))
-        #c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
-        c.db_id = 2
+        c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
+        engine=create_engine('postgresql://portaladmin@localhost/portal_beta')
+        db = sqlsoup.SQLSoup(engine)
         c.handle = Stemformatics_Dataset.getHandle(db,c.ds_id)
         return self.deprecated_pylons_data_for_view
