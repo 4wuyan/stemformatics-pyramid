@@ -15,7 +15,8 @@
         <div class="landing_page_header graphs block">
             <div class="left_square">
 <% 
-graph_title = "Fake title"
+graph_title = "Fake title"  # c.assay_platform_dict[c.chip_type]['probe_name']
+    # I couldn't find where c.assay_platform_dict was set atm
 %>
                 <div class="header">Select Individual ${graph_title} </div>
                 <div class="logo geg_logo"></div>
