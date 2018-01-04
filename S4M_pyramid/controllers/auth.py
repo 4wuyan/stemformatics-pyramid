@@ -1,16 +1,27 @@
+print("start importing auth.py")
+
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
 
 from S4M_pyramid.lib.base import BaseController
-    #from pylons import request, response, session, url
+
+# correspond to: from pylons import request
+from pyramid.request import Request as request
+
+# correspond to: from pylons import response
+from pyramid.response import Response as response
+
+# correspond to: from pylons import url
+from routes.util import URLGenerator as url
+    #from pylons import session
     #from pylons.controllers.util import abort, redirect
 
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 
 # trying to find where db is set
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth
+#from S4M_pyramid.model.stemformatics import Stemformatics_Auth
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -20,7 +31,7 @@ from S4M_pyramid.config import config
 
 from paste.deploy.converters import asbool
 
-from S4M_pyramid.lib.helper import Helper as h
+#import S4M_pyramid.lib.helpers as h
 
 from datetime import datetime, timedelta
 
@@ -28,18 +39,20 @@ CAPTCHA_ENABLED = asbool(config['captcha.enabled'])
 
 import hashlib
 
-
 class AuthController(BaseController):
-
-    def __before__(self):
-
-        super(AuthController, self).__before__ ()
-
-        # clear out expired users first
-        Stemformatics_Auth.clear_expired_unconfirmed_users(db)
-
-        # clear out expired password resets too
-        Stemformatics_Auth.clear_expired_password_resets(db)
-        c.guest_username = config['guest_username']
+    pass
+#
+#    def __before__(self):
+#
+#        super(AuthController, self).__before__ ()
+#
+#        # clear out expired users first
+#        Stemformatics_Auth.clear_expired_unconfirmed_users(db)
+#
+#        # clear out expired password resets too
+#        Stemformatics_Auth.clear_expired_password_resets(db)
+#        c.guest_username = config['guest_username']
 
 # heading off to Stemformatics_Auth
+
+print("finish importing auth.py")

@@ -17,7 +17,8 @@ requires = [
     'psycopg2',
     'sqlalchemy',
     'redis',
-    'formencode'
+    'formencode',
+    'routes'
     ]
 
 tests_require = [
