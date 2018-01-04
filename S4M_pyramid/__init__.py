@@ -1,6 +1,7 @@
 from pyramid.config import Configurator
 from S4M_pyramid.controllers.contents import ContentsController
 from S4M_pyramid.controllers.expressions import ExpressionsController
+from S4M_pyramid.controllers.auth import AuthController
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.

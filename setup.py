@@ -18,7 +18,8 @@ requires = [
     'sqlalchemy',
     'redis',
     'formencode',
-    'routes'
+    'routes',
+    'sqlsoup'
     ]
 
 tests_require = [
