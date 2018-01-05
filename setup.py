@@ -19,7 +19,12 @@ requires = [
     'redis',
     'formencode',
     'routes',
-    'sqlsoup'
+    'sqlsoup',
+    'pyramid_beaker',
+    'webhelpers2',
+    'paginate',
+    'recaptcha',
+    'decorator'
     ]
 
 tests_require = [

@@ -11,10 +11,11 @@ import re
 import string
 import json
 
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
     #from pylons import request, response, session, tmpl_context as c, url
     #from pylons.controllers.util import abort, redirect
 
-from S4M.lib.state import *
+from S4M_pyramid.lib.state import *
 
     #from pylons import config
 
@@ -40,7 +41,7 @@ from random import random
 
 import datetime
 
-import guide.lib.helpers as h
+import S4M_pyramid.lib.helpers as h
 import redis
 
 
@@ -75,6 +76,8 @@ class Stemformatics_Auth(object):
 
     @staticmethod
     def set_smart_redirect(redirect_url):
+        magic_globals.fetch()
+        session = magic_globals.session
         session['redirect_url'] = redirect_url
         session.save()
         return True
@@ -114,6 +117,8 @@ class Stemformatics_Auth(object):
 
     @staticmethod
     def get_smart_redirect(default_redirect_url):
+        magic_globals.fetch()
+        session = magic_globals.session
         if 'redirect_url' in session:
             redirect_url = session['redirect_url']
         else:
@@ -145,6 +150,9 @@ class Stemformatics_Auth(object):
 
         log.debug('start of authorise')
 
+        magic_globals.fetch()
+        session = magic_globals.session
+        request = magic_globals.request
         if 'path_before_login' in session:
             del session['path_before_login']
             session.save()
@@ -161,7 +169,8 @@ class Stemformatics_Auth(object):
                 c.user = None
                 session['path_before_login'] = request.path_info + '?' + request.query_string
                 session.save()
-                redirect(h.url('/auth/login'))
+                magic_globals.fetch()
+                redirect(magic_globals.url('/auth/login'))
 
         return decorator(check_authorised)
 

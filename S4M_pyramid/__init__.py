@@ -9,6 +9,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include('pyramid_mako')
     config.include('pyramid_handlers')
+    config.include('pyramid_beaker')
     #set the path for static views
     config_static_views(config)
     #this dynamically routes the url to the actions
