@@ -213,7 +213,7 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def getHandle(db,ds_id,uid=None): #CRITICAL-2
 
-        # check if valid ds_i
+        # check if valid ds_id
         try:
             ds_id = POS_INT.to_python(ds_id)
             # Ignore the check for handle - too minor
