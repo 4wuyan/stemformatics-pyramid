@@ -1,5 +1,3 @@
-print("start importing auth.py")
-
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
@@ -47,4 +45,3 @@ class AuthController(BaseController):
 
 # heading off to Stemformatics_Auth
 
-print("finish importing auth.py")
