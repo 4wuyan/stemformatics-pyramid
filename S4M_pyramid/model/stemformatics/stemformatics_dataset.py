@@ -223,10 +223,9 @@ All functions have a try that will return None if errors are found
 
             new_handle = Stemformatics_Dataset.add_extra_to_handle(db,dataSet.handle,dataSet.private,dataSet.show_limited)
             return new_handle
-
         except:
             return None
-
+    
     @staticmethod
     def get_handle_title_and_species(ds_ids):
         conn_string = config['psycopg2_conn_string']

@@ -3,12 +3,18 @@ from S4M_pyramid.lib.helper import Helper as h
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_help import Stemformatics_Help
 from S4M_pyramid.lib import environ_helper
+from S4M_pyramid.model import init_model
 import json
 import socket
+from sqlalchemy import create_engine
+import sqlsoup
 class BaseController():
 
     #this is invoked every time an action is called
     def __init__(self,request):
+        #set up DB var for ORM
+        engine = create_engine(config['orm_conn_string'])
+        self.db_deprecated_pylons_orm = sqlsoup.SQLSoup(engine)
         #set up the protocol
         self.request=request
         self.response=request.response

@@ -15,7 +15,8 @@
         <div class="landing_page_header graphs block">
             <div class="left_square">
 <% 
-graph_title = c.assay_platform_dict[c.chip_type]['probe_name']
+graph_title = "Fake title"  # c.assay_platform_dict[c.chip_type]['probe_name']
+    # I couldn't find where c.assay_platform_dict was set atm
 %>
                 <div class="header">Select Individual ${graph_title} </div>
                 <div class="logo geg_logo"></div>
@@ -35,7 +36,7 @@ graph_title = c.assay_platform_dict[c.chip_type]['probe_name']
         <%def name="show_all_option_null()"> </%def>
         ${Base.pre_enclosed_search_box()}
         <% 
-        text.title = graph_title + " for "+c.handle
+        text.title = graph_title + " for " +c.handle
         text.help = "Enter an ID into the search box below. It will provide suggestions via an autocomplete after two characters."
         text.input_id = "probeSearch"
         text.search_button_id = "viewGenes"

@@ -2,7 +2,8 @@ import psycopg2
 import psycopg2.extras
 
 config = {
- 'psycopg2_conn_string':"host='localhost' dbname='portal_beta' user='portaladmin'"
+ 'psycopg2_conn_string':"host='localhost' dbname='portal_beta' user='portaladmin'",
+    'orm_conn_string':'postgresql://portaladmin@localhost/portal_beta'
 }
 
 conn_string = config['psycopg2_conn_string']
