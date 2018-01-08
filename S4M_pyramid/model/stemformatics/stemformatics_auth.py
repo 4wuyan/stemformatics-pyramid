@@ -12,13 +12,11 @@ import string
 import json
 
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
-    #from pylons import request, response, session, tmpl_context as c, url
-    #from pylons.controllers.util import abort, redirect
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
+# c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
+from S4M_pyramid.lib.empty_class import EmptyClass as c
 
-from S4M_pyramid.lib.state import *
-
-    #from pylons import config
-
+from S4M_pyramid.config import config
 from decorator import decorator
 import smtplib
 
