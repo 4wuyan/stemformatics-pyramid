@@ -23,7 +23,6 @@ requires = [
     'pyramid_beaker',
     'webhelpers2',
     'paginate',
-    'recaptcha',
     'decorator'
     ]
 
