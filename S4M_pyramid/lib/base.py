@@ -13,8 +13,7 @@ import socket
 from sqlalchemy import create_engine
 import sqlsoup
 import re
-from pyramid.renderers import render
-from pyramid.response import Response
+from pyramid.renderers import render_to_response
 
 
 class tempData(object):
@@ -78,7 +77,7 @@ class BaseController():
                 c.user = None
                 self.request.session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
                 self.request.session.save()
-                redirect(h.url('/auth/login'))
+                redirect(self.helper.url('/auth/login'))
             else:
                 redirect(url(controller='contents', action='index'), code=404)
                 self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
@@ -96,7 +95,7 @@ class BaseController():
             #error_handling_for_invalid_search_string()
             c.title = "Invalid Gene Search"
             c.message = "You have not entered a proper gene. Please go back and enter in another gene."
-            self._temp.render = Response(render ('templates/workbench/error_message.mako'))
+            self._temp.render = render_to_response("templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
             # return render ('workbench/error_message.mako')
             #redirect(this_url(controller='contents', action='index'), code=404)
@@ -111,7 +110,7 @@ class BaseController():
         if result == None or len(result) == 0:
             c.title = "Invalid Gene Search"
             c.message = "You have not entered a gene that was found. Please press your browser's back button and enter another gene. |"+h.url('/genes/search?gene='+str(geneSearch))+":Or click here to go to gene search"
-            self._temp.render = Response(render ('templates/workbench/error_message.mako'))
+            self._temp.render = render_to_response("templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
 
         if len(result) == 1 :
@@ -142,7 +141,7 @@ class BaseController():
             c.url = re.sub('&db_id=[0-9]{2}','',c.url)
             c.url = re.sub('&db_id=','',c.url)
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
-            self._temp.render =  render('workbench/choose_from_multiple_genes.mako')
+            self._temp.render = render_to_response("templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "many"
 
         self._temp.ensemblID = ensemblID
