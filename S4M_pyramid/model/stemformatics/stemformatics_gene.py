@@ -68,7 +68,7 @@ class Stemformatics_Gene(object):
             name = row['model_id']
             species_dict[db_id] = {'sci_name': sci_name, 'name': name}
 
-            from S4M_pyramid.model.stemformatics.stemformatics_gene_set import *
+            #from S4M_pyramid.model.stemformatics.stemformatics_gene_set import *
             result = Stemformatics_Gene_Set.get_first_kegg_gene_list(db_id)
             if result != []:
                 default_kegg_gene_list_id = result[0]['id']
@@ -76,7 +76,7 @@ class Stemformatics_Gene(object):
                 default_kegg_gene_list_id = None
             species_dict[db_id]['default_kegg_gene_list_id'] = default_kegg_gene_list_id
 
-            from S4M_pyramid.model.stemformatics.stemformatics_dataset import *
+            #from S4M_pyramid.model.stemformatics.stemformatics_dataset import *
             ds_id = Stemformatics_Dataset.get_default_dataset(db_id)
             species_dict[db_id]['default_ds_id'] = ds_id
 
