@@ -1,2 +1,4 @@
 # pyc files are all in __pychache__ folders
 *.pyc
+
+*.egg-info
