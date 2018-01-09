@@ -23,7 +23,7 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 
 #CRITICAL-6
-from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
+from S4M_pyramid.model.stemformatics.stemformatics_gene import * #wouldn't work with Stemformatics_Gene
 from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin
 
 # check strong password
