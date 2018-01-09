@@ -11,7 +11,7 @@ import re
 import string
 import json
 
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
@@ -167,8 +167,7 @@ class Stemformatics_Auth(object):
                 c.user = None
                 session['path_before_login'] = request.path_info + '?' + request.query_string
                 session.save()
-                magic_globals.fetch()
-                redirect(magic_globals.url('/auth/login'))
+                redirect(h.url('/auth/login'))
 
         return decorator(check_authorised)
 
