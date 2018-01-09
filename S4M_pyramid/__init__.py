@@ -15,6 +15,7 @@ def main(global_config, **settings):
     #this dynamically routes the url to the actions
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
+    config.add_handler("auth","/auth/{action}",handler=AuthController)
     config.add_handler("index","/",handler=ContentsController,action="index")
     config.scan()
     return config.make_wsgi_app()
