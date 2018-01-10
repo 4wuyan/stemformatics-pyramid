@@ -302,6 +302,7 @@ All functions have a try that will return None if errors are found
         r_server = redis.Redis(unix_socket_path=config['redis_server'])
         label_name = 'choose_dataset_details'
         result = r_server.get(label_name)
+        result = result.decode('utf-8')
         temp_datasets = json.loads(result)
         choose_datasets = {}
 

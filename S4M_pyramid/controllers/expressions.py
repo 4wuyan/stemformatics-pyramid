@@ -110,10 +110,10 @@ class ExpressionsController(BaseController):
         """ This simply get the output of the graph oo code ready for the mako templates """
         # self._set_outputs_for_graph()
 
-        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': url,
+        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': self.url,
                       'request': self.request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': self.url, 'request': self.request,
                       'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 

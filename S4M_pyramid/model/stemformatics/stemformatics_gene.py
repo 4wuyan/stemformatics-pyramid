@@ -429,9 +429,9 @@ class Stemformatics_Gene(object):
                     showSymbol = showSymbol + ' ' + symbol
 
             if showSymbol.lower().startswith(geneSearch.lower()):
-                returnListFirst.append(showSymbol.encode('utf-8'))
+                returnListFirst.append(showSymbol)
             else:
-                returnListSecond.append(showSymbol.encode('utf-8'))
+                returnListSecond.append(showSymbol)
 
             gene_details[showSymbol] = {'description':description,'ensembl_id':ensembl_id,'symbol':symbol,'db_id':db_id,'aliases':aliases,'species':species}
 

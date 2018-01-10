@@ -58,7 +58,9 @@ class BaseController():
         c.tutorials_for_page = Stemformatics_Help.get_help_for_page("contents/contact_us",request.params)
         c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
         c.tutorials = Stemformatics_Help.get_tutorial_list()
-
+        single_gene_url = "http://www.innatedb.com/getGeneCard.do?id="
+        multiple_gene_url = "http://www.innatedb.com/batchSearch.do"
+        c.innate_db_object = innateDB(single_gene_url,multiple_gene_url)
         # set up h
         # request.host_url returns the url through the host (e.g. https://www-pyramid2.stemformatics.org/)
         self.helper = h(self.request, self.request.host_url)
@@ -115,7 +117,7 @@ class BaseController():
             return "0"
 
         if len(result) == 1 :
-            temp_gene = result.itervalues().next()
+            temp_gene = next(iter(result.values()))
             ensemblID = temp_gene['EnsemblID']
             self._temp.db_id = db_id = temp_gene['db_id']
 
