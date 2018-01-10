@@ -96,7 +96,7 @@ class BaseController():
             #error_handling_for_invalid_search_string()
             c.title = "Invalid Gene Search"
             c.message = "You have not entered a proper gene. Please go back and enter in another gene."
-            self._temp.render = render_to_response("templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
+            self._temp.render = render_to_response("S4M_pyramid:templates/workbench/error_message.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
             # return render ('workbench/error_message.mako')
             #redirect(this_url(controller='contents', action='index'), code=404)
@@ -111,7 +111,7 @@ class BaseController():
         if result == None or len(result) == 0:
             c.title = "Invalid Gene Search"
             c.message = "You have not entered a gene that was found. Please press your browser's back button and enter another gene. |"+self.helper.url('/genes/search?gene='+str(geneSearch))+":Or click here to go to gene search"
-            self._temp.render = render_to_response("S4M_pyramid:templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
+            self._temp.render = render_to_response("S4M_pyramid:templates/workbench/error_message.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
 
         if len(result) == 1 :
