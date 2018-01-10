@@ -7,6 +7,7 @@ from S4M_pyramid.model.stemformatics.stemformatics_help import Stemformatics_Hel
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
 from S4M_pyramid.lib import environ_helper
+from S4M_pyramid.templates.external_db import *
 from S4M_pyramid.model import init_model
 import json
 import socket
@@ -58,9 +59,13 @@ class BaseController():
         c.tutorials_for_page = Stemformatics_Help.get_help_for_page("contents/contact_us",request.params)
         c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
         c.tutorials = Stemformatics_Help.get_tutorial_list()
+        #set up external db
         single_gene_url = "http://www.innatedb.com/getGeneCard.do?id="
         multiple_gene_url = "http://www.innatedb.com/batchSearch.do"
         c.innate_db_object = innateDB(single_gene_url,multiple_gene_url)
+
+        single_gene_url = "http://string-db.com/newstring_cgi/show_network_section.pl?identifier="
+        c.string_db_object = stringDB(single_gene_url)
         # set up h
         # request.host_url returns the url through the host (e.g. https://www-pyramid2.stemformatics.org/)
         self.helper = h(self.request, self.request.host_url)
