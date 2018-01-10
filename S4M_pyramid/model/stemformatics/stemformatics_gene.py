@@ -188,7 +188,7 @@ class Stemformatics_Gene(object):
     @staticmethod
     def get_genes(db,species_dict,geneSearch,db_id,explicitSearch,maxNumber): #CRITICAL-2 #CRITICAL-4
         
-        geneSearch = geneSearch.encode('utf-8')
+       # geneSearch = geneSearch.encode('utf-8')
         geneSearchFinal = Stemformatics_Gene._preGeneSearch(geneSearch)
         if geneSearchFinal == None:
            return None
@@ -496,7 +496,7 @@ class Stemformatics_Gene(object):
 
     @staticmethod
     def _preGeneSearch(geneSearch):
-        try:
+        
             geneSearch = geneSearch.strip()
 
             genes = re.findall("[\/\w\.\-\@]{1,}",geneSearch)
@@ -518,8 +518,7 @@ class Stemformatics_Gene(object):
                     geneSearchFinal = geneSearchFinal + genes[i]
 
             return geneSearchFinal
-        except:
-            return None
+        
 
     @staticmethod
     def get_ensembl_from_probe(db,probe_list,db_id):
