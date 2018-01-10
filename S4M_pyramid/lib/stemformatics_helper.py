@@ -129,8 +129,9 @@ def get_citations_part(ds_id,citations,key):
 
 
 def setup_email_to_contributing_author(dataset,ds_id,username,external_base_url):
-    from guide.lib.stemformatics_helper import setup_accession_ids_for_viewing
-    from pylons import url, config
+    from S4M_pyramid.lib.stemformatics_helper import setup_accession_ids_for_viewing
+    from S4M_pyramid.lib.deprecated_pylons_globals import url
+    from S4M_pyramid.config import config
     site_name = config['site_name']
     accession_url = setup_accession_ids_for_viewing(dataset)
     dataset_url = url('/datasets/search?ds_id='+str(ds_id),qualified=True)
@@ -219,7 +220,8 @@ def create_letter_for_annotator(ds_id,uid,user,handle,external_base_url):
     return text
 
 def web_asset_url(relative_url):
-    from pylons import url, config
+    from S4M_pyramid.lib.deprecated_pylons_globals import url
+    from S4M_pyramid.config import config
     use_cdn = config['use_cdn']
     try:
         cdn_base_url = config['cdn_base_url']
@@ -238,7 +240,8 @@ def external_dependency_url(external_url,fallback_url):
     # As of Sept 2017, stemformatics website requests will be served on https
     new_external_url = 'https://'+external_url
 
-    from pylons import url, config
+    from S4M_pyramid.lib.deprecated_pylons_globals import url
+    from S4M_pyramid.config import config
     use_cdn = config['use_cdn']
 
     try:
