@@ -52,7 +52,7 @@ class BaseController():
         c.debug = None
         c.header = ""
         c.breadcrumbs = []
-
+        c.species_dict = Stemformatics_Gene.get_species(self.db_deprecated_pylons_orm)
         #set tutorial page
         c.tutorials_for_page = Stemformatics_Help.get_help_for_page("contents/contact_us",request.params)
         c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
@@ -101,7 +101,7 @@ class BaseController():
             #redirect(this_url(controller='contents', action='index'), code=404)
 
         select_all_ambiguous = True
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
         gene_list = []
         gene_list.append(geneSearch)
         get_description = True
@@ -109,7 +109,7 @@ class BaseController():
         result = Stemformatics_Gene.get_genes(db, c.species_dict, geneSearch, db_id, False, None)
         if result == None or len(result) == 0:
             c.title = "Invalid Gene Search"
-            c.message = "You have not entered a gene that was found. Please press your browser's back button and enter another gene. |"+h.url('/genes/search?gene='+str(geneSearch))+":Or click here to go to gene search"
+            c.message = "You have not entered a gene that was found. Please press your browser's back button and enter another gene. |"+self.helper.url('/genes/search?gene='+str(geneSearch))+":Or click here to go to gene search"
             self._temp.render = render_to_response("templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
 
