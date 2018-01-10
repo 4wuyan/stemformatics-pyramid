@@ -8,12 +8,13 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from .stemformatics_auth import Stemformatics_Auth
 import zlib
 import json
 
 # we are trying to avoid using "import *" in the new pyramid code,
 # therefore __all__ might also need to be avoided
-__all__ = [
+#__all__ = [
 
     # From imported modules ...
     #'Stemformatics_Dataset',
@@ -32,7 +33,7 @@ __all__ = [
     #'Stemformatics_Msc_Signature',
     #'Stemformatics_Gene_Set',
     #'Stemformatics_Help'
-]
+#]
 
 
 # ------------------------------------------------------------------------------
