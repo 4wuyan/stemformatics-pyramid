@@ -142,7 +142,7 @@ class BaseController():
             c.url = re.sub('&db_id=[0-9]{2}','',c.url)
             c.url = re.sub('&db_id=','',c.url)
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
-            self._temp.render = render_to_response("S4M_pyramid:templates/contents/index.mako",self.deprecated_pylons_data_for_view,request=self.request)
+            self._temp.render = render_to_response("S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "many"
 
         self._temp.ensemblID = ensemblID
