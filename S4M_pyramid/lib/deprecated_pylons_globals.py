@@ -27,6 +27,17 @@ class url_generator:
         else:
             url = self.request.route_url(controller_string, action = action_string)
         return url
+    def set_environ(self, request = None):
+        if not request:
+            self.request = pyramid.threadlocal.get_current_request()
+        else:
+            self.request = request
+        current_url = self.request.url
+        url_tokens = current_url.split("/")
+        action = url_tokens[-1]
+        controller = url_tokens[-2]
+        url_var_map = {'action':action,'controller':controller}
+        self.environ = {'pylons.routes_dict':url_var_map}
     def set_request(self, request):
         self.request = request
 

@@ -6,7 +6,6 @@ from S4M_pyramid.lib.base import BaseController
 
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
-from S4M_pyramid.lib.deprecated_pylons_render import render
 
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
@@ -60,8 +59,7 @@ class AuthController(BaseController):
 
 
         #Mark user as logged in
-        magic_globals.fetch()
-        session = magic_globals.session
+        session = self.request.session
         session['user'] = db_user.username
         session['uid'] = db_user.uid
         session['full_name'] = db_user.full_name
@@ -69,7 +67,7 @@ class AuthController(BaseController):
         session.save()
 
 
-        response = magic_globals.response
+        response = self.request.response
         response.delete_cookie('stay_signed_in')
         response.delete_cookie('stay_signed_in_md5')
 
@@ -80,15 +78,13 @@ class AuthController(BaseController):
         """Show login form. Submits to /login/submit."""
         c.error_message = ""
         c.username = ""
-        #return render('auth/signin.mako')
         return self.deprecated_pylons_data_for_view
 
     @action()
     def submit(self): #CRITICAL-4
-        magic_globals.fetch()
-        request = magic_globals.request
-        response = magic_globals.response
-        session = magic_globals.session
+        request = self.request
+        response = request.response
+        session = request.session
         db = self.db_deprecated_pylons_orm
 
         """Verify username and password."""
