@@ -187,11 +187,11 @@ class Stemformatics_Gene(object):
     """
     @staticmethod
     def get_genes(db,species_dict,geneSearch,db_id,explicitSearch,maxNumber): #CRITICAL-2 #CRITICAL-4
-
+        
         geneSearch = geneSearch.encode('utf-8')
         geneSearchFinal = Stemformatics_Gene._preGeneSearch(geneSearch)
         if geneSearchFinal == None:
-            return None
+           return None
 
         # explicit search on gene id
         conn_string = config['psycopg2_conn_string']
@@ -212,7 +212,6 @@ class Stemformatics_Gene(object):
         result = cursor.fetchall()
         cursor.close()
         conn.close()
-
         # Always return if we get an exact match. No need to go into more searches
         if len(result) == 1:
             row_result = result[0]
