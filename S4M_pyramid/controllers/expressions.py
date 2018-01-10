@@ -9,6 +9,7 @@ from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gen
 from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
 from S4M_pyramid.lib.deprecated_pylons_globals import url
 import formencode.validators as fe
+from pyramid.renderers import render_to_response
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
 
 
@@ -57,7 +58,6 @@ class ExpressionsController(BaseController):
     #    c.handle = Stemformatics_Dataset.getHandle(self.db_deprecated_pylons_orm,c.ds_id)
     #    return self.deprecated_pylons_data_for_view
 
-    @action(renderer="templates/expressions/result.mako")
     def result(self):
         """ These three functions set what is needed in self._type to be
         used in the graph object orientated code  """
@@ -114,7 +114,7 @@ class ExpressionsController(BaseController):
                       'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return self.deprecated_pylons_data_for_view
+        return render_to_response("templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
