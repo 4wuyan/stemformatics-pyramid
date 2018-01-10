@@ -1199,7 +1199,7 @@ class Stemformatics_Gene(object):
             return "0"
 
         if len(result) == 1:
-            temp_gene = result.itervalues().next()
+            temp_gene = next(iter(result.values()))#result.itervalues().next()
             ensemblID = temp_gene['EnsemblID']
             return "1"
 
