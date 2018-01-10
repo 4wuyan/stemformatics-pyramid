@@ -8,7 +8,7 @@ class externalDB(object):
 
     def get_single_gene_url(self, ensembl_id):
         # check that ensembl_id is valid and url is valid
-        if (isinstance(ensembl_id, unicode) or isinstance(ensembl_id, str)) and isinstance(self.single_gene_url, str):
+        if  isinstance(ensembl_id, str) and isinstance(self.single_gene_url, str):
             url = self.single_gene_url + ensembl_id
         else:
             url = "#"
