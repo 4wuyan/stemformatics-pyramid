@@ -114,8 +114,8 @@ class ExpressionsController(BaseController):
                       'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return render_to_response("templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
-
+        return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
+    
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
