@@ -48,7 +48,7 @@ class ExpressionsController(BaseController):
     def multi_gene_graph(self):
         return self.deprecated_pylons_data_for_view
 
-    #This action(and its page) is longer in use
+    '''This action(and its page) is longer in use'''
     #@action(renderer="templates/expressions/probe_expression_graph.mako")
     #def probe_expression_graph(self):
         # ds_id = 5012 is a valid entry for testing on the pyramid-1 VM
@@ -58,6 +58,9 @@ class ExpressionsController(BaseController):
     #    c.handle = Stemformatics_Dataset.getHandle(self.db_deprecated_pylons_orm,c.ds_id)
     #    return self.deprecated_pylons_data_for_view
 
+    '''Note that this function doesn't use action decorator. because it has more than one possible
+    renderer, therefore, render_to_response is used inside the function to respond using different
+    renderer'''
     def result(self):
         """ These three functions set what is needed in self._type to be
         used in the graph object orientated code  """
@@ -115,7 +118,7 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
-    
+
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
