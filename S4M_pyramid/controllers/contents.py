@@ -1,5 +1,6 @@
 from pyramid_handlers import action
-
+from pyramid.response import Response
+from pyramid.renderers import render_to_response
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
@@ -63,4 +64,4 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - Privacy Policy"
         return self.deprecated_pylons_data_for_view
-
+    
