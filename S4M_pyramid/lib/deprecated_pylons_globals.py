@@ -1,8 +1,10 @@
 # inspired by https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/pylons/index.html
 # author: WU Yan
-# date: 5 Jan 2018
+# original date: 5 Jan 2018
+# last modified: 11 Jan 2018
 
 import pyramid
+from S4M_pyramid.lib.resolve_path_info import path_resolver
 
 
 class tmpl_context:
@@ -32,12 +34,10 @@ class url_generator:
             self.request = pyramid.threadlocal.get_current_request()
         else:
             self.request = request
-        current_url = self.request.url
-        url_tokens = current_url.split("/")
-        action = url_tokens[-1]
-        controller = url_tokens[-2]
-        url_var_map = {'action':action,'controller':controller}
-        self.environ = {'pylons.routes_dict':url_var_map}
+        self.environ = request.environ
+        resolver = path_resolver(self.request.path_info)
+        resolver.resolve_path_info()
+        self.environ['pylons.routes_dict'] = resolver.result
     def set_request(self, request):
         self.request = request
 
