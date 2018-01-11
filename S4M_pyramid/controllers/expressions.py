@@ -186,13 +186,12 @@ class ExpressionsController(BaseController):
         error_data =""
         self._check_dataset_status()
         # now check the dataset status
-        if self._temp.dataset_status != "Available":
-            error_data = self._temp.error_message
+        if self._temp.dataset_status == "Available":
+            error_data = "Error"#self._temp.error_message
             return json.dumps({"data":None,"error":error_data})
-
         dataset_metadata = Stemformatics_Dataset.get_expression_dataset_metadata(ds_id)
         json_dataset_metadata = json.dumps(dataset_metadata)
-        return json.dumps({"data":json_dataset_metadata,"error":error_data})
+        return json.dumps({"error":error_data,"data":json_dataset_metadata})
 
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False

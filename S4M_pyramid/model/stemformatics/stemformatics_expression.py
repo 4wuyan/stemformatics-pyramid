@@ -1072,7 +1072,7 @@ class Stemformatics_Expression(object):
         else:
             # get cumulative probe expression rows from redis
             expression_rows = Stemformatics_Expression.get_expression_rows(ds_id,probes_not_in_redis)
-            chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            chip_type = Stemformatics_Dataset.getChipType(ds_id)
             sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
 
             # now get the multi mapping info for for all probes
