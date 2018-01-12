@@ -4,7 +4,7 @@
 # last modified: 11 Jan 2018
 
 import pyramid
-from S4M_pyramid.lib.resolve_path_info import path_resolver
+#from S4M_pyramid.lib.resolve_path_info import path_resolver
 
 
 class tmpl_context:
@@ -29,15 +29,15 @@ class url_generator:
         else:
             url = self.request.route_url(controller_string, action = action_string)
         return url
-    def set_environ(self, request = None):
-        if not request:
-            self.request = pyramid.threadlocal.get_current_request()
-        else:
-            self.request = request
-        self.environ = request.environ
-        resolver = path_resolver(self.request.path_info)
-        resolver.resolve_path_info()
-        self.environ['pylons.routes_dict'] = resolver.result
+    #def set_environ(self, request = None):
+    #    if not request:
+    #        self.request = pyramid.threadlocal.get_current_request()
+    #    else:
+    #        self.request = request
+    #    self.environ = request.environ
+    #    resolver = path_resolver(self.request.path_info)
+    #    resolver.resolve_path_info()
+    #    self.environ['pylons.routes_dict'] = resolver.result
     def set_request(self, request):
         self.request = request
 

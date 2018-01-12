@@ -24,7 +24,6 @@ class BaseController():
 
     #this is invoked every time an action is called
     def __init__(self, request):
-        url.set_environ(request)
 
         self._temp = tempData()
         #set up DB var for ORM
@@ -33,6 +32,11 @@ class BaseController():
         #set up the protocol
         self.request=request
         self.response=request.response
+
+        # set up url.environ
+        url.environ = self.request.environ
+        url.environ['pylons.routes_dict'] = {'controller': self.request.matched_route.name}
+        url.environ['pylons.routes_dict'].update(self.request.matchdict)
 
         #set up c,those are directly retrieved fro the DB
         c.site_name = config['site_name']
