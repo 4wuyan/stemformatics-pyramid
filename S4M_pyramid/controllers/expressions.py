@@ -129,8 +129,8 @@ class ExpressionsController(BaseController):
         # check the gene/ dataset validity
         # than get the data
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
-        self._temp.geneSearch =ref_id = str(self.request.params.get("ref_id"))
-        ref_type = str(self.request.params.get("ref_type"))
+        self._temp.geneSearch = ref_id = "ENSG00000266359"#str(self.request.params.get("ref_id"))
+        ref_type = "ensemblID"#str(self.request.params.get("ref_type"))
         self._temp.db_id = db_id = int(self.request.params.get("db_id"))
         format_type = str(self.request.params.get("format_type"))
         graphType = str(self.request.params.get("graphType"))
@@ -146,10 +146,9 @@ class ExpressionsController(BaseController):
             pass
             #redirect(url(controller='contents', action='index'), code=404)
             #redirect is not yet implemented
-
         if ref_type == "ensemblID":
             result = self._check_gene_status()  #This is in lib/base.py
-
+            print(result)
             if result == "0":
                 error_data = "You have not entered a gene that was found."
                 return json.dumps({"data": None, "error": error_data})

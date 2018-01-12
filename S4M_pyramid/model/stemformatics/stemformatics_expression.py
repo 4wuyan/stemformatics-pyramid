@@ -512,7 +512,7 @@ class Stemformatics_Expression(object):
 
         label_name = 'gct_labels'+delimiter+str(ds_id)
         try:
-            label_names = r_server.get(label_name).split(delimiter)
+            label_names = r_server.get(label_name).decode("utf-8").split(delimiter)
             return label_names
         except:
             return None
@@ -524,7 +524,7 @@ class Stemformatics_Expression(object):
 
         result = {}
         for probe in probe_list:
-            temp_row = r_server.get('gct_values'+delimiter+str(ds_id)+delimiter+probe)
+            temp_row = r_server.get('gct_values'+delimiter+str(ds_id)+delimiter+probe).decode("utf-8")
             if temp_row is not None:
                 row = temp_row.split(delimiter)
                 result[probe] = row
@@ -953,8 +953,10 @@ class Stemformatics_Expression(object):
     def get_expression_graph_data(ds_id,ref_id,ref_type,db_id):
         # ref_type can be ensemblID,gene_set_id,probeID,miRNA
         # ref_id passed is a list of ref_id's
-        #ref_id = "ENSG00000266359"
-        #ref_type = "ensemblID"
+        print(ref_id)# = "ENSG00000266359"
+        print(ref_type)# = "ensemblID"
+        print(ds_id)# = 2000
+        print(db_id)# = 56
         if ref_type == "ensemblID":
             data = Stemformatics_Expression.get_expression_data_from_genes(ref_id, ds_id, db_id)
             return data
