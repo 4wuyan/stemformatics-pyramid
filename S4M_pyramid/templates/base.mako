@@ -927,7 +927,7 @@ Wells CA et al Stemformatics: Visualisation and sharing of stem cell gene expres
                     </thead>
                     <tbody>
                         %for ds_id in datasets:
-                            %if not datasets[ds_id].has_key('has_data') or datasets[ds_id]['has_data'] == 'yes':
+                            %if 'has_data' not in datasets[ds_id] or datasets[ds_id]['has_data'] == 'yes':
                                 <%  organism = datasets[ds_id]['organism'] %>
                                 <%
                                     show_row = True
