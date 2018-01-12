@@ -123,6 +123,8 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
+    
+    @action(renderer="json")
     def graph_data(self):
         # check the gene/ dataset validity
         # than get the data
@@ -180,7 +182,7 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
-
+    @action(renderer="json")
     def dataset_metadata(self):
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
         error_data =""
@@ -190,9 +192,10 @@ class ExpressionsController(BaseController):
             error_data = "Error"#self._temp.error_message
             return json.dumps({"data":None,"error":error_data})
         dataset_metadata = Stemformatics_Dataset.get_expression_dataset_metadata(ds_id)
+
         json_dataset_metadata = json.dumps(dataset_metadata)
         return json.dumps({"error":error_data,"data":json_dataset_metadata})
-
+    
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')

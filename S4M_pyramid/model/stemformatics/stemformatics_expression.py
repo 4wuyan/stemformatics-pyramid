@@ -953,6 +953,8 @@ class Stemformatics_Expression(object):
     def get_expression_graph_data(ds_id,ref_id,ref_type,db_id):
         # ref_type can be ensemblID,gene_set_id,probeID,miRNA
         # ref_id passed is a list of ref_id's
+        #ref_id = "ENSG00000266359"
+        #ref_type = "ensemblID"
         if ref_type == "ensemblID":
             data = Stemformatics_Expression.get_expression_data_from_genes(ref_id, ds_id, db_id)
             return data

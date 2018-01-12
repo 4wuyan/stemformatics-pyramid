@@ -2797,7 +2797,7 @@ All functions have a try that will return None if errors are found
             data[ds_id] = mapping_id
 
         label_name = "dataset_mapping_data"
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         mapping_id_data = Stemformatics_Expression.pickle_expression_data(data)
         result = r_server.set(label_name,mapping_id_data)
         if result == True:
