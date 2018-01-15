@@ -42,7 +42,7 @@
 <%
     probe_name = c.probe_name
 %>
-
+<div>${c.ref_type}</div>
 <div class="hidden" id="probe_name">${probe_name}</div>
 <div class="content">
         <div id="db_id" class="hidden">${c.db_id}</div>
