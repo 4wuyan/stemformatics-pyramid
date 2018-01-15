@@ -953,10 +953,12 @@ class Stemformatics_Expression(object):
     def get_expression_graph_data(ds_id,ref_id,ref_type,db_id):
         # ref_type can be ensemblID,gene_set_id,probeID,miRNA
         # ref_id passed is a list of ref_id's
+        #ref_id = ["ENSG00000134574"]
         print(ref_id)# = "ENSG00000266359"
         print(ref_type)# = "ensemblID"
         print(ds_id)# = 2000
         print(db_id)# = 56
+       
         if ref_type == "ensemblID":
             data = Stemformatics_Expression.get_expression_data_from_genes(ref_id, ds_id, db_id)
             return data
@@ -985,6 +987,7 @@ class Stemformatics_Expression(object):
         gene_mapping_data = Stemformatics_Gene.get_mapping_for_genes(ref_id,ds_id,db_id)
         probe_list = gene_mapping_data[0]
         # now get the data for all the probes
+        print("reached here")
         data = Stemformatics_Expression.get_expression_data_from_probes(probe_list,ds_id,db_id)
         return data
 
@@ -1127,7 +1130,7 @@ class Stemformatics_Expression(object):
                 chip_id = sample_labels[sample_count]
                 standard_deviation = Stemformatics_Expression.get_standard_deviation(ds_id,chip_id,probe_id)
                 sample_count += 1
-                metaDataValues = g.all_sample_metadata[chip_type][chip_id][ds_id]
+                metaDataValues = Stemformatics_Expression.setup_all_sample_metadata()[chip_type][chip_id][ds_id]#g.all_sample_metadata[chip_type][chip_id][ds_id]
                 sample_id = metaDataValues['Replicate Group ID']
                 limitSortby_data = {}
                 for value in limitSortBy_values:
