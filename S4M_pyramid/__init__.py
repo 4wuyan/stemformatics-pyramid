@@ -1,5 +1,5 @@
 from pyramid.config import Configurator
-#from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound
 from S4M_pyramid.controllers.contents import ContentsController
 from S4M_pyramid.controllers.expressions import ExpressionsController
 from S4M_pyramid.controllers.auth import AuthController
@@ -18,25 +18,25 @@ def main(global_config, **settings):
     # the routing order is consistent with the order in pylons project
 
     # Custom routes are placed first
-    #redirect_shortcut(config, '/project_grandiose', '/projects/project_grandiose')
-    #redirect_shortcut(config, '/leukomics', '/projects/leukomics')
-    #redirect_shortcut(config, '/', '/contents/index')
-    #redirect_shortcut(config, '/hamlet/index', '/contents/removal_of_hamlet')
-    #redirect_shortcut(config, '/tests', '/main/tests')
-    #redirect_shortcut(config, '/genes', '/genes/search')
-    #redirect_shortcut(config, '/genes/', '/genes/search')
-    #redirect_shortcut(config, '/genes/summary', '/expressions/yugene_graph')
-    #redirect_shortcut(config, '/workbench/gene_set_index', '/genes/gene_set_index')
-    #redirect_shortcut(config, '/workbench/public_gene_set_index', '/genes/public_gene_set_index')
-    #redirect_shortcut(config, '/workbench/gene_set_view/{id}', '/genes/gene_set_view/{id}')
-    #redirect_shortcut(config, '/workbench/gene_set_bulk_import_manager', '/genes/gene_set_bulk_import_manager')
-    #redirect_shortcut(config, '/workbench/merge_gene_sets', '/genes/merge_gene_sets')
-    #redirect_shortcut(config, '/admin/check_redis_consistency_for_datasets', '/api/check_redis_consistency_for_datasets')
-    #redirect_shortcut(config, '/workbench/histogram_wizard', '/expressions/histogram_wizard')
-    #redirect_shortcut(config, '/expressions', '/contents/index')
-    #redirect_shortcut(config, '/expressions/', '/contents/index')
-    #redirect_shortcut(config, '/datasets', '/datasets/search')
-    #redirect_shortcut(config, '/datasets/', '/datasets/search')
+    redirect_shortcut(config, '/project_grandiose', '/projects/project_grandiose')
+    redirect_shortcut(config, '/leukomics', '/projects/leukomics')
+    redirect_shortcut(config, '/', '/contents/index')
+    redirect_shortcut(config, '/hamlet/index', '/contents/removal_of_hamlet')
+    redirect_shortcut(config, '/tests', '/main/tests')
+    redirect_shortcut(config, '/genes', '/genes/search')
+    redirect_shortcut(config, '/genes/', '/genes/search')
+    redirect_shortcut(config, '/genes/summary', '/expressions/yugene_graph')
+    redirect_shortcut(config, '/workbench/gene_set_index', '/genes/gene_set_index')
+    redirect_shortcut(config, '/workbench/public_gene_set_index', '/genes/public_gene_set_index')
+    redirect_shortcut(config, '/workbench/gene_set_view/{id}', '/genes/gene_set_view/{id}')
+    redirect_shortcut(config, '/workbench/gene_set_bulk_import_manager', '/genes/gene_set_bulk_import_manager')
+    redirect_shortcut(config, '/workbench/merge_gene_sets', '/genes/merge_gene_sets')
+    redirect_shortcut(config, '/admin/check_redis_consistency_for_datasets', '/api/check_redis_consistency_for_datasets')
+    redirect_shortcut(config, '/workbench/histogram_wizard', '/expressions/histogram_wizard')
+    redirect_shortcut(config, '/expressions', '/contents/index')
+    redirect_shortcut(config, '/expressions/', '/contents/index')
+    redirect_shortcut(config, '/datasets', '/datasets/search')
+    redirect_shortcut(config, '/datasets/', '/datasets/search')
 
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
@@ -45,12 +45,12 @@ def main(global_config, **settings):
     config.add_handler("auth","/auth/{action}",handler=AuthController)
     return config.make_wsgi_app()
 
-#def redirect_shortcut(config, old_path_pattern, new_path_pattern):
-#    def redirect_view(request):
-#        return HTTPFound(location = new_path_pattern.format(**request.matchdict))
-#    route_name = 'route_name for ' + 'old_path_pattern'.format(controller='controller', action='action', id='id')
-#    config.add_route(route_name, old_path_pattern)
-#    config.add_view(redirect_view, route_name=route_name)
+def redirect_shortcut(config, old_path_pattern, new_path_pattern):
+    def redirect_view(request):
+        return HTTPFound(location = new_path_pattern.format(**request.matchdict))
+    route_name = 'route_name for ' + old_path_pattern.format(controller='controller', action='action', id='id')
+    config.add_route(route_name, old_path_pattern)
+    config.add_view(redirect_view, route_name=route_name)
 
 def config_static_views(config):
     config.add_static_view(name='static_views', path='public')
