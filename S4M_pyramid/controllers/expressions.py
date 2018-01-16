@@ -148,7 +148,6 @@ class ExpressionsController(BaseController):
             #redirect is not yet implemented
         if ref_type == "ensemblID":
             result = self._check_gene_status()  #This is in lib/base.py
-            print(result)
             if result == "0":
                 error_data = "You have not entered a gene that was found."
                 return json.dumps({"data": None, "error": error_data})
@@ -199,7 +198,8 @@ class ExpressionsController(BaseController):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
         c.select_probes = select_probes = self.request.params.get('select_probes')
-        print(c.select_probes)
+        # in pyramid,if there is no parameter provided, the variable will be set to None instead of ""
+        # therefore, in the js,select != "" will always be true, and the ref_id is lost(Line 641 expression/graph_new.js)
         if c.select_probes == None:
             c.select_probes = select_probes = ""
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(self.request.params.get('gene'))
