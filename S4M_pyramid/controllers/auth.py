@@ -157,6 +157,7 @@ class AuthController(BaseController):
     @action()
     def show_private_datasets(self):
         """ Display private datasets a user has access to. """
+        session = self.request.session
         if 'user' in session:
             user = session['user']
             uid = int(session['uid'])
