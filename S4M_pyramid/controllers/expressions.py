@@ -21,7 +21,7 @@ class ExpressionsController(BaseController):
 
     def __init__(self,request):
         super().__init__(request)
-
+        c.debug = "True"#turned on debug for result.mako
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         self.default_human_dataset = config['default_human_dataset']
