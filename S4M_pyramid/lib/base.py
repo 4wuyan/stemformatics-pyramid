@@ -24,6 +24,7 @@ class BaseController():
 
     #this is invoked every time an action is called
     def __init__(self, request):
+        # set up url.environ
         url.set_environ(request)
 
         self._temp = tempData()
