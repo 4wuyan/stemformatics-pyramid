@@ -150,3 +150,35 @@ class AuthController(BaseController):
 
             else: # if previous target is unknown just send the user to a welcome page
                 return redirect(url('/workbench/index'))
+
+    # Controller for displaying the private datasets a user has access to
+    # and their respective access rights
+    @Stemformatics_Auth.authorise()
+    @action()
+    def show_private_datasets(self):
+        """ Display private datasets a user has access to. """
+        if 'user' in session:
+            user = session['user']
+            uid = int(session['uid'])
+            role = session['role']
+        else:
+            c.error_message = ""
+            c.username = ""
+            c.org = ""
+            c.name = ""
+            return render_to_response('S4M_pyramid:templates/auth/signin.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        # Get list of user datasets and metadata
+        user_dataset_list = Stemformatics_Auth.get_list_users_private_datasets(uid)
+
+        # If it is none an error has occured (i.e there was a low level error such as the
+        # uid wasn't an int. User_dataset_list will come back as empty if the user doens't
+        # have any specific access None != {}
+        if user_dataset_list is None:
+            # Raise error
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        # Get the metadata for each of the datasets
+        c.user_datasets = Stemformatics_Auth.get_dict_users_private_datasets_metadata(user_dataset_list)
+        return render_to_response('S4M_pyramid:templates/auth/show_private_datasets.mako', self.deprecated_pylons_data_for_view, request=self.request)
+

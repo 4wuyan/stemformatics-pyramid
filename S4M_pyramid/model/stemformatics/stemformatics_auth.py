@@ -136,7 +136,7 @@ class Stemformatics_Auth(object):
         pass
 
     @staticmethod
-    def authorise(db):
+    def authorise(db=None):
         """\
 
             Usage:
