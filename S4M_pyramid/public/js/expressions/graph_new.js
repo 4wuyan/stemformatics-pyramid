@@ -639,7 +639,7 @@ $(document).ready(function() {
     main_title = return_title(ref_type_for_title,symbol,sortBy);
 
     if (select_probes != "") { // select_probes is the one causes the parameter bug
-      graph_data_url = '/expressions/graph_data?db_id='+db_id+'&ds_id='+ds_id+'&ref_id='+encodeURIComponent(select_probes)+'&ref_type=' + 'ensemblID'  + '&graph_type=' + graphType;
+      graph_data_url = '/expressions/graph_data?db_id='+db_id+'&ds_id='+ds_id+'&ref_id='+encodeURIComponent(select_probes)+'&ref_type=' + 'probeID'  + '&graph_type=' + graphType;
     }
     else {
           

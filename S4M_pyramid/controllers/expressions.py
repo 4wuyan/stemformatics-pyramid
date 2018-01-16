@@ -128,8 +128,8 @@ class ExpressionsController(BaseController):
         # check the gene/ dataset validity
         # than get the data
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
-        self._temp.geneSearch = ref_id = "ENSG00000266359"#str(self.request.params.get("ref_id"))
-        ref_type = "ensemblID"#str(self.request.params.get("ref_type"))
+        self._temp.geneSearch = ref_id = str(self.request.params.get("ref_id"))
+        ref_type = str(self.request.params.get("ref_type"))
         self._temp.db_id = db_id = int(self.request.params.get("db_id"))
         format_type = str(self.request.params.get("format_type"))
         graphType = str(self.request.params.get("graphType"))
@@ -139,6 +139,7 @@ class ExpressionsController(BaseController):
             self._temp.url += '?' + self.request.environ['QUERY_STRING']
         self._check_dataset_status()
         error_data = ""
+
 
         # now check the dataset status
         if self._temp.dataset_status != "Available":
@@ -198,6 +199,8 @@ class ExpressionsController(BaseController):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
         c.select_probes = select_probes = self.request.params.get('select_probes')
+        if c.select_probes == None:
+            c.select_probes = select_probes = ""
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(self.request.params.get('gene'))
         feature_type = self.request.params.get('feature_type')
         feature_id = self.request.params.get('feature_id')
