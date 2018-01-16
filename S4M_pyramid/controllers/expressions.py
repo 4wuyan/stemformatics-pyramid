@@ -291,32 +291,5 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
-    def feature_result(self):
-        db = self.db_deprecated_pylons_orm
-        self._get_inputs_for_graph()
-        self._check_dataset_status()
-        c.dataset_status = self._temp.dataset_status
-        c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
-        c.ref_type = self._temp.ref_type = self._temp.feature_type
-        c.symbol = c.ref_id = self._temp.ref_id = self._temp.feature_id
-        show_limited = True
-        if self._temp.ref_type == 'miRNA':
-            data_type = self._temp.ref_type
-            c.datasets = Stemformatics_Dataset.get_all_datasets_of_a_data_type(c.uid,data_type)
-        else:
-            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
-
-
-        c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
-
-        # self._temp.this_view = self._setup_graphs(self._temp)
-        # self._set_outputs_for_graph()
-        audit_dict = {'ref_type':'feature_id','ref_id':self._temp.feature_id,'uid':c.uid,'url':url,'request':self.request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-
-        return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
-
-
+    
 
