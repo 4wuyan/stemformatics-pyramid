@@ -23,7 +23,8 @@ requires = [
     'pyramid_beaker',
     'webhelpers2',
     'paginate',
-    'decorator'
+    'decorator',
+    'numpy',
     ]
 
 tests_require = [

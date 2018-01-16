@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 # for list_authorised_users
 import hmac
-import S4M_pyramid.lib.helper as h
+import S4M_pyramid.lib.helpers as h
 
 import psycopg2, _pickle as cPickle
 import psycopg2.extras
@@ -225,7 +225,7 @@ All functions have a try that will return None if errors are found
             return new_handle
         except:
             return None
-    
+
     @staticmethod
     def get_handle_title_and_species(ds_ids):
         conn_string = config['psycopg2_conn_string']
