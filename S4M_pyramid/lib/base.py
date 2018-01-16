@@ -1,12 +1,11 @@
 from S4M_pyramid.lib.empty_class import EmptyClass as c
-from S4M_pyramid.lib.helper import Helper as h
+import S4M_pyramid.lib.helpers as h
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import url
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_help import Stemformatics_Help
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
-from S4M_pyramid.lib import environ_helper
 from S4M_pyramid.templates.external_db import *
 from S4M_pyramid.model import init_model
 import json
@@ -24,7 +23,10 @@ class tempData(object):
 class BaseController():
 
     #this is invoked every time an action is called
-    def __init__(self,request):
+    def __init__(self, request):
+        # set up url.environ
+        url.set_environ(request)
+
         self._temp = tempData()
         #set up DB var for ORM
         engine = create_engine(config['orm_conn_string'])
@@ -32,9 +34,6 @@ class BaseController():
         #set up the protocol
         self.request=request
         self.response=request.response
-
-        #set up url.environ
-        self.url = environ_helper.generate_environ(request.url)
 
         #set up c,those are directly retrieved fro the DB
         c.site_name = config['site_name']
@@ -47,7 +46,7 @@ class BaseController():
         c.uid = 0
         c.full_name = ""
         c.notification = ""
-        c.header_selected = self.url.environ['pylons.routes_dict']['controller']
+        c.header_selected = url.environ['pylons.routes_dict']['controller']
         c.hostname = socket.gethostname()
         c.role="user"
         c.debug = None
@@ -66,12 +65,8 @@ class BaseController():
 
         single_gene_url = "http://string-db.com/newstring_cgi/show_network_section.pl?identifier="
         c.string_db_object = stringDB(single_gene_url)
-        # set up h
-        # request.host_url returns the url through the host (e.g. https://www-pyramid2.stemformatics.org/)
-        self.helper = h(self.request, self.request.host_url)
 
-        # should be put at last, when self.helper and self.url have been declared
-        self.deprecated_pylons_data_for_view = {'c': c, 'h': self.helper, 'project_url': '/','url':self.url}
+        self.deprecated_pylons_data_for_view = {'c': c, 'h': h, 'url':url}
 
     def _check_dataset_status(self):
         db = self.db_deprecated_pylons_orm
@@ -85,7 +80,7 @@ class BaseController():
                 c.user = None
                 self.request.session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
                 self.request.session.save()
-                redirect(self.helper.url('/auth/login'))
+                redirect(h.url('/auth/login'))
             else:
                 redirect(url(controller='contents', action='index'), code=404)
                 self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
@@ -117,7 +112,7 @@ class BaseController():
         result = Stemformatics_Gene.get_genes(db, c.species_dict, geneSearch, db_id, False, None)
         if result == None or len(result) == 0:
             c.title = "Invalid Gene Search"
-            c.message = "You have not entered a gene that was found. Please press your browser's back button and enter another gene. |"+self.helper.url('/genes/search?gene='+str(geneSearch))+":Or click here to go to gene search"
+            c.message = "You have not entered a gene that was found. Please press your browser's back button and enter another gene. |"+h.url('/genes/search?gene='+str(geneSearch))+":Or click here to go to gene search"
             self._temp.render = render_to_response("S4M_pyramid:templates/workbench/error_message.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
 
@@ -148,7 +143,7 @@ class BaseController():
             c.url = re.sub('gene=[\w\-\@]{2,}&','',c.url)
             c.url = re.sub('&db_id=[0-9]{2}','',c.url)
             c.url = re.sub('&db_id=','',c.url)
-            c.breadcrumbs = [[self.helper.url('/genes/search'),'Gene Search']]
+            c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
             self._temp.render = render_to_response("S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "many"
 
