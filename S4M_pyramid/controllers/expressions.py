@@ -199,6 +199,7 @@ class ExpressionsController(BaseController):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
         c.select_probes = select_probes = self.request.params.get('select_probes')
+        print(c.select_probes)
         if c.select_probes == None:
             c.select_probes = select_probes = ""
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(self.request.params.get('gene'))

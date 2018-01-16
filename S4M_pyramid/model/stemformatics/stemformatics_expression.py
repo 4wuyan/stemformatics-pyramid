@@ -953,11 +953,6 @@ class Stemformatics_Expression(object):
     def get_expression_graph_data(ds_id,ref_id,ref_type,db_id):
         # ref_type can be ensemblID,gene_set_id,probeID,miRNA
         # ref_id passed is a list of ref_id's
-        #ref_id = ["ENSG00000134574"]
-        print(ref_id)# = "ENSG00000266359"
-        print(ref_type)# = "ensemblID"
-        print(ds_id)# = 2000
-        print(db_id)# = 56
        
         if ref_type == "ensemblID":
             data = Stemformatics_Expression.get_expression_data_from_genes(ref_id, ds_id, db_id)
@@ -987,7 +982,6 @@ class Stemformatics_Expression(object):
         gene_mapping_data = Stemformatics_Gene.get_mapping_for_genes(ref_id,ds_id,db_id)
         probe_list = gene_mapping_data[0]
         # now get the data for all the probes
-        print("reached here")
         data = Stemformatics_Expression.get_expression_data_from_probes(probe_list,ds_id,db_id)
         return data
 
