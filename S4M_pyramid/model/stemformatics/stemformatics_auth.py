@@ -145,17 +145,17 @@ class Stemformatics_Auth(object):
                 def summary(self):
 
         """
-
-        log.debug('start of authorise')
-
-        magic_globals.fetch()
-        session = magic_globals.session
-        request = magic_globals.request
-        if 'path_before_login' in session:
-            del session['path_before_login']
-            session.save()
-
         def check_authorised(func, *args, **kwargs):
+
+            log.debug('start of authorise')
+
+            magic_globals.fetch()
+            session = magic_globals.session
+            request = magic_globals.request
+            if 'path_before_login' in session:
+                del session['path_before_login']
+                session.save()
+
             if 'user' in session:
                 c.user = session.get('user').lower()
                 c.uid = session.get('uid')
