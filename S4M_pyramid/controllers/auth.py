@@ -25,8 +25,6 @@ import S4M_pyramid.lib.helpers as h
 
 from datetime import datetime, timedelta
 
-CAPTCHA_ENABLED = asbool(config['captcha.enabled'])
-
 import hashlib
 
 from pyramid_handlers import action
@@ -207,3 +205,100 @@ class AuthController(BaseController):
         c.message = "You have been successfully signed out."
         return self.deprecated_pylons_data_for_view
 
+
+    @action(renderer = 'templates/auth/register.mako')
+    def register(self): #CRITICAL-4
+        session = self.request.session
+        if 'user' in session:
+            return redirect(url('/'))
+
+        username = request.params.get('username')
+        pwd = request.params.get('password')
+        pwd2 = request.params.get('password_confirm')
+        org = request.params.get('organisation')
+        name = request.params.get('name')
+
+        # Story #158 email notifications
+        send_email_marketing = request.params.get('send_email_marketing')
+        send_email_job_notifications = request.params.get('send_email_job_notifications')
+
+        if username is None:
+            c.error_message = ""
+            c.username = ""
+            c.org = ""
+            c.name = ""
+            return self.deprecated_pylons_data_for_view
+
+        if username is not None and pwd is None and pwd2 is None:
+            c.error_message = ""
+            c.username = username
+            c.org = ""
+            c.name = ""
+            return self.deprecated_pylons_data_for_view
+
+        c.username = username
+        c.org = org
+        c.name = name
+
+        if pwd != pwd2:
+            c.error_message = "Pass phrases did not match. Please try again"
+            return self.deprecated_pylons_data_for_view
+
+        if send_email_job_notifications is not None:
+            send_email_job_notifications = True
+        else:
+            send_email_job_notifications = False
+
+        if send_email_marketing is not None:
+            send_email_marketing = True
+        else:
+            send_email_marketing = False
+
+        registration_data = {
+            'username': username,
+            'password': pwd,
+            'organisation': org,
+            'full_name': name,
+            'send_email_marketing': send_email_marketing,
+            'send_email_job_notifications': send_email_job_notifications
+        }
+
+        # return the new user record
+        db = self.db_deprecated_pylons_orm
+        new_user = Stemformatics_Auth.register_new_user(db,registration_data)
+
+        if isinstance(new_user,str) or isinstance(new_user,unicode):
+            c.error_message = new_user
+            return self.deprecated_pylons_data_for_view
+
+        # Used to mark user as logged in, now we wait for confirmation email
+        # c.user = username
+        # session['user'] = username
+        # session.save()
+
+        confirm_code = new_user.confirm_code
+
+        # send confirmation email
+        from_email = config['from_email']
+        to_email = username
+        subject = c.site_name+" - Registration confirmation"
+        external_base_url = url('/',qualified=True)
+        body = "Welcome to %s! Please click here to confirm your registration. \n%sauth/confirm_new_user/%s?rego=%s\n\nIf you did not intend to register at %s, please ignore this email and no action will be taken." % (c.site_name,external_base_url,confirm_code.strip(),new_user.uid,external_base_url)
+
+
+        message =  """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (from_email, to_email, subject,body)
+        # Send the message via our own SMTP server, but don't include the
+        # envelope header.
+
+        success = Stemformatics_Notification.send_email(from_email,to_email,subject,body)
+
+        if not success:            # instead of deleting, just change status to 2
+            result = Stemformatics_Auth.update_user_status(db,new_user.uid,2)
+
+            if result:
+                c.error_message = "There was an issue with sending the email, please re-enter your details"
+            else:
+                c.error_message = "There was an issue with sending the email and removing your account, please re-enter a new email or wait three days to try again."
+            return self.deprecated_pylons_data_for_view
+
+        redirect(h.url('/contents/registration_submitted'))
