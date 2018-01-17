@@ -66,7 +66,7 @@ class BaseController():
         single_gene_url = "http://string-db.com/newstring_cgi/show_network_section.pl?identifier="
         c.string_db_object = stringDB(single_gene_url)
 
-        self.deprecated_pylons_data_for_view = {'c': c, 'h': h, 'url':url}
+        self.deprecated_pylons_data_for_view = {'c': c, 'h': h, 'url':url, 'config':config}
 
     def _check_dataset_status(self):
         db = self.db_deprecated_pylons_orm
