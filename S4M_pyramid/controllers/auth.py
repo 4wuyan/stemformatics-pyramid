@@ -212,6 +212,7 @@ class AuthController(BaseController):
         if 'user' in session:
             return redirect(url('/'))
 
+        request = self.request
         username = request.params.get('username')
         pwd = request.params.get('password')
         pwd2 = request.params.get('password_confirm')
