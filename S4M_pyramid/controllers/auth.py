@@ -184,3 +184,26 @@ class AuthController(BaseController):
         c.user_datasets = Stemformatics_Auth.get_dict_users_private_datasets_metadata(user_dataset_list)
         return render_to_response('S4M_pyramid:templates/auth/show_private_datasets.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
+
+    @action(renderer = 'templates/workbench/error_message.mako')
+    def logout(self):
+        """Log out the user and display a confirmation message."""
+        session = self.request.session
+        if 'user' in session:
+            del session['user']
+        if 'uid' in session:
+            del session['uid']
+        session.save()
+        c.user = ""
+        c.uid = ""
+        c.full_name = ""
+        c.notifications = 0
+
+        response = self.request.response
+        response.delete_cookie('stay_signed_in')
+        response.delete_cookie('stay_signed_in_md5')
+
+        c.title = "Logged out"
+        c.message = "You have been successfully signed out."
+        return self.deprecated_pylons_data_for_view
+
