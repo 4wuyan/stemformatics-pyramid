@@ -7,7 +7,9 @@ from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_
 from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
 from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
+from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
 from S4M_pyramid.lib.deprecated_pylons_globals import url
+import json
 import formencode.validators as fe
 from pyramid.renderers import render_to_response
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
@@ -19,7 +21,7 @@ class ExpressionsController(BaseController):
 
     def __init__(self,request):
         super().__init__(request)
-
+        c.debug = "True"#turned on debug for result.mako
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         self.default_human_dataset = config['default_human_dataset']
@@ -93,6 +95,9 @@ class ExpressionsController(BaseController):
         c.symbol = self._temp.symbol
         c.dataset_status = self._temp.dataset_status
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
+        c.db_id = self._temp.db_id  # c.db_id is not set in the pylons code,this line is added in pyramid
+        # and it gives the error when calling for ucsc data in line 103.
+        # still try to work out why the pylons code can get away with not setting up c.db_id
 
         c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
 
@@ -100,7 +105,7 @@ class ExpressionsController(BaseController):
             c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db, c.uid, c.db_id)
             c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db, c.db_id, c.ref_id)
             c.data = Stemformatics_Gene.get_genes(db, c.species_dict, self._temp.geneSearch, c.db_id, True, None)
-
+  
         show_limited = True
         if self._temp.ref_type == 'miRNA':
             c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited,
@@ -110,19 +115,93 @@ class ExpressionsController(BaseController):
         """ This simply get the output of the graph oo code ready for the mako templates """
         # self._set_outputs_for_graph()
 
-        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': self.url,
+        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': url,
                       'request': self.request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': self.url, 'request': self.request,
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
                       'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
+    
+    @action(renderer="json")
+    def graph_data(self):
+        # check the gene/ dataset validity
+        # than get the data
+        self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
+        self._temp.geneSearch = ref_id = str(self.request.params.get("ref_id"))
+        ref_type = str(self.request.params.get("ref_type"))
+        self._temp.db_id = db_id = int(self.request.params.get("db_id"))
+        format_type = str(self.request.params.get("format_type"))
+        graphType = str(self.request.params.get("graphType"))
+        select_probes = str(self.request.params.get("select_probes"))
+        self._temp.url = self.request.environ.get('PATH_INFO')
+        if self.request.environ.get('QUERY_STRING'):
+            self._temp.url += '?' + self.request.environ['QUERY_STRING']
+        self._check_dataset_status()
+        error_data = ""
 
+
+        # now check the dataset status
+        if self._temp.dataset_status != "Available":
+            pass
+            #redirect(url(controller='contents', action='index'), code=404)
+            #redirect is not yet implemented
+        if ref_type == "ensemblID":
+            result = self._check_gene_status()  #This is in lib/base.py
+            if result == "0":
+                error_data = "You have not entered a gene that was found."
+                return json.dumps({"data": None, "error": error_data})
+            if result == "many":
+                error_data = "list of genes found"
+                return json.dumps({"data": None, "error": error_data})
+            if result == "1":
+                ref_id = self._temp.ensemblID
+        ref_id = ref_id.split(" ")
+        data = Stemformatics_Expression.get_expression_graph_data(ds_id,ref_id,ref_type,db_id)
+        if data == [] :
+            data = None
+            error_data = "Data Not found for Selected Parameters. Please choose different Parameters."
+
+        if format_type == "tsv":
+            self._temp.formatted_data = Stemformatics_Expression.change_graph_data_format(data,"tsv")
+        else:
+            self._temp.formatted_data = Stemformatics_Expression.change_graph_data_format(data,"json")
+
+        # add to audit
+        if ref_type == 'gene_set_id':
+            ref_type = 'gene_set_id'
+            #we dont want ref_type 'gene_id' and ref_id 1993 (which is gene list) , cause than when building redis keys 1993 get picked as gene
+            # everything else could be gene_id , even if miRNA because the level would be gene_id anyway and it need to be broken into probe level data. But for gene_Set_id level is one higher than gene_id and we wantto distinguish
+        else:
+            ref_type = 'gene_id'
+        audit_dict = {'ref_type':ref_type,'ref_id':self._temp.geneSearch,'uid':c.uid,'url':url,'request': self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request': self.request, 'extra_ref_type':ref_type, 'extra_ref_id':self._temp.geneSearch}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return json.dumps({"data":self._temp.formatted_data, "error": error_data})
+    @action(renderer="json")
+    def dataset_metadata(self):
+        self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
+        error_data =""
+        self._check_dataset_status()
+        # now check the dataset status
+        if self._temp.dataset_status != "Available":
+            error_data = self._temp.error_message
+            return json.dumps({"data":None,"error":error_data})
+        dataset_metadata = Stemformatics_Dataset.get_expression_dataset_metadata(ds_id)
+
+        json_dataset_metadata = json.dumps(dataset_metadata)
+        return json.dumps({"error":error_data,"data":json_dataset_metadata})
+    
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
         c.select_probes = select_probes = self.request.params.get('select_probes')
+        # in pyramid,if there is no parameter provided, the variable will be set to None instead of ""
+        # therefore, in the js,select != "" will always be true, and the ref_id is lost(Line 641 expression/graph_new.js)
+        if c.select_probes == None:
+            c.select_probes = select_probes = ""
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(self.request.params.get('gene'))
         feature_type = self.request.params.get('feature_type')
         feature_id = self.request.params.get('feature_id')
@@ -187,3 +266,30 @@ class ExpressionsController(BaseController):
         self._temp.large = self.request.params.get('size') == "large"
 
         c.url = self._temp.url
+
+    def probe_result(self):
+        db=self.db_deprecated_pylons_orm
+        self._get_inputs_for_graph()
+        c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
+        self._check_dataset_status()
+        c.dataset_status = self._temp.dataset_status
+        c.ref_type = self._temp.ref_type = 'probeID'
+        show_limited = True
+        if self._temp.ref_type == 'miRNA':
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+        c.symbol = c.ref_id = self._temp.ref_id = self._temp.probeSearch
+        if self._temp.select_probes is None:
+            self._temp.select_probes = self._temp.probeSearch
+
+        c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
+
+        # self._temp.this_view = self._setup_graphs(self._temp)
+        # self._set_outputs_for_graph()
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
+
+    
+
