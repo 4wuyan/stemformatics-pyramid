@@ -36,7 +36,7 @@ $(document).ready(function() {
   multiview_graph = "no";
   choose_dataset_immediately = $('#choose_dataset_immediately').html();
   probe_list = $("#probe_list").html().replace(/\[|]/g, '').replace(/ /g, '').replace(/','/g,';').replace(/'/g,'').split(';');
-  ref_type = '';
+  ref_type = 'probeID';
   var window_url = window.location.href;
   graph_status  = "loading";
   http_variable = window_url.split("stemformatics")[0];
