@@ -115,10 +115,10 @@ class ExpressionsController(BaseController):
         """ This simply get the output of the graph oo code ready for the mako templates """
         # self._set_outputs_for_graph()
 
-        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': self.url,
+        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': url,
                       'request': self.request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': self.url, 'request': self.request,
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
                       'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
@@ -174,9 +174,9 @@ class ExpressionsController(BaseController):
             # everything else could be gene_id , even if miRNA because the level would be gene_id anyway and it need to be broken into probe level data. But for gene_Set_id level is one higher than gene_id and we wantto distinguish
         else:
             ref_type = 'gene_id'
-        audit_dict = {'ref_type':ref_type,'ref_id':self._temp.geneSearch,'uid':c.uid,'url':self.url,'request': self.request}
+        audit_dict = {'ref_type':ref_type,'ref_id':self._temp.geneSearch,'uid':c.uid,'url':url,'request': self.request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':self.url,'request': self.request, 'extra_ref_type':ref_type, 'extra_ref_id':self._temp.geneSearch}
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request': self.request, 'extra_ref_type':ref_type, 'extra_ref_id':self._temp.geneSearch}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
