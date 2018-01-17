@@ -2,8 +2,13 @@ import psycopg2
 import psycopg2.extras
 
 config = {
- 'psycopg2_conn_string':"host='localhost' dbname='portal_beta' user='portaladmin'",
-    'orm_conn_string':'postgresql://portaladmin@localhost/portal_beta'
+    'psycopg2_conn_string': "host='localhost' dbname='portal_beta' user='portaladmin'",
+    'orm_conn_string': 'postgresql://portaladmin@localhost/portal_beta',
+
+    # The configuration below should be imported from the stemformatics.configs table in the database.
+    # But for now, we just do some hack here, since we don't have access to that database table.
+    'validation_regex': '(?=^.{12,}$)(?=.*\s+).*$',
+    'validation_warning': 'Your password must be at least 12 characters in length, and must contain at least one space (a pass phra    se if you will - more secure, and easier to remember).'
 }
 
 conn_string = config['psycopg2_conn_string']

@@ -1,5 +1,4 @@
 <%def name="default_inclusions()">
-    <% from S4M_pyramid.config import config %>
     <title>${c.title}</title>
     <meta name="google-site-verification" content="eKfRHsSQKFfEQDBulOvJy8P1H6d5PpjgRp8IoMXgE0A"/>
 	<!-- <meta http-equiv="content-language" content="en-us" /> -->
@@ -232,7 +231,7 @@ href="${h.url('/auth/show_private_datasets')}">My datasets</a>
                         </div>
 
                     </div>
-                   ${self.help_icon()}
+                    ${self.help_icon()}
                 </div>
             </div>
             <div id="menus">
@@ -754,6 +753,12 @@ for row_count in c.view_data.xaxis_labels['full']:
         <a class="our_data" href="${h.url('/contents/our_data')}">
             <div class="contact_menu ${'selected' if action == 'our_data' else ''}">
                 <div class="contact_menu_title">Our Data</div>
+                <div class="clear"></div>
+            </div>
+        </a>
+        <a class="our_data" href="${h.url('/contents/our_code')}">
+            <div class="contact_menu ${'selected' if action == 'our_code' else ''}">
+                <div class="contact_menu_title">Our Code</div>
                 <div class="clear"></div>
             </div>
         </a>
