@@ -1114,14 +1114,14 @@ All functions have a try that will return None if errors are found
         delimiter = config['redis_delimiter']
         label_name = "user_dataset_availability"+delimiter+str(uid)
         try:
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
+            #.decode('utf-8') is added for python3
             status= dict_uid[str(ds_id)]
 
             if status in ("Annotate","Admin"):
                 status = "Available"
         except:
             status = "Unavailable"
-
         return status
 
     @staticmethod
@@ -2797,7 +2797,7 @@ All functions have a try that will return None if errors are found
             data[ds_id] = mapping_id
 
         label_name = "dataset_mapping_data"
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         mapping_id_data = Stemformatics_Expression.pickle_expression_data(data)
         result = r_server.set(label_name,mapping_id_data)
         if result == True:
@@ -3096,7 +3096,7 @@ All functions have a try that will return None if errors are found
         ds_md_for_graph["yAxisLabel"] = ds_md["yAxisLabel"]
         ds_md_for_graph["sampleTypeDisplayGroups"] = sampleTypeDisplayGroups=  ds_md["sampleTypeDisplayGroups"]
         # get colours
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         ds_md_for_graph['sampleTypeDisplayGroupColours'] = Stemformatics_Expression.return_sample_type_display_group_colours(sampleTypeDisplayGroups)
         ds_md_for_graph['probeColours'] = Stemformatics_Expression.get_colours_for_graph(user_id,ds_id)
         if "lineGraphOrdering" in ds_md:
@@ -3117,7 +3117,7 @@ All functions have a try that will return None if errors are found
 
         label_name = "dataset_metadata"+ delimiter + str(ds_id)
         # pickle the data
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         data = Stemformatics_Expression.pickle_expression_data(dataset_metadata)
         # store pickled data in redis with labelname
         result = r_server.set(label_name,data)
@@ -3135,7 +3135,7 @@ All functions have a try that will return None if errors are found
 
         label_name = "dataset_metadata"+ delimiter + str(ds_id)
         result = r_server.get(label_name)
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         if result is not None:
             result = Stemformatics_Expression.unpickle_expression_data(result)
         return result

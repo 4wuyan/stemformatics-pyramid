@@ -730,7 +730,7 @@ module.exports = biojsvisboxplot = function (init_options)
 
     /*  Setting up the graph including y and x axes */
     setup_graph = function(graph){
-        // setup all the graph elements
+        // setup all the graph element
 	    graph.graph_type = "Box Plot";
         options = graph.options;
         var label_padding = options.x_axis_label_padding;
@@ -774,7 +774,7 @@ module.exports = biojsvisboxplot = function (init_options)
         graph = setup_box_plot(graph);
         graph =  setup_watermark(graph);
         if (options.display.legend  === "yes") {
-             graph = setup_D3_legend(graph, options.legend_list);
+            // graph = setup_D3_legend(graph, options.legend_list);
         }
         //graph = setup_vertical_lines(graph);
 

@@ -738,8 +738,8 @@ setup_D3_legend = function (graph, sample_list, class_name) {
 
                      legend_num ++;
                      if(d.length > (2 * max_legend_name_length)) {
-                         rows = Math.ceil((d.length/max_legend_name_length)/2); //calculates how many rows are required by legend_name and as one row can handle two text rows, thus divided by 2
-                         legend_num++;
+                        rows = Math.ceil((d.length/max_legend_name_length)/2); //calculates how many rows are required by legend_name and as one row can handle two text rows, thus divided by 2
+                        legend_num++;
                      }
                      else {
                        rows = 1;

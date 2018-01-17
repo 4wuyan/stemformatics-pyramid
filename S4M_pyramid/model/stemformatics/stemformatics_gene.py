@@ -1211,13 +1211,11 @@ class Stemformatics_Gene(object):
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         # setting db = None as we don't use it when getting chip Type
         db = None
-
         unique_gene_list = set(gene_list)
         r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         # get the mapping id for ds_id
         result = r_server.get("dataset_mapping_data")
-
         if not result:
             # get the mapping id from db if mapping id not available
             mapping_id = Stemformatics_Dataset.get_dataset_mapping_id(ds_id)
