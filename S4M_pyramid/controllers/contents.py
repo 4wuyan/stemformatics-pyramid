@@ -46,6 +46,11 @@ class ContentsController(BaseController):
         c.title = c.site_name + " - Our Data"
         return self.deprecated_pylons_data_for_view
 
+    @action(renderer="templates/contents/our_code.mako")
+    def our_code(self):
+        c.title = c.site_name+" - Our Code"
+        return self.deprecated_pylons_data_for_view
+
     #faq page wouldn't work without the data_publication
     @action(renderer="templates/contents/our_publications.mako")
     def our_publications(self):
@@ -64,4 +69,4 @@ class ContentsController(BaseController):
         # set up C
         c.title = c.site_name + " - Privacy Policy"
         return self.deprecated_pylons_data_for_view
-    
+
