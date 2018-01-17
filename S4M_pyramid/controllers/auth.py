@@ -177,6 +177,7 @@ class AuthController(BaseController):
         # have any specific access None != {}
         if user_dataset_list is None:
             # Raise error
+            c.message = 'You do not have any private dataset.'
             return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         # Get the metadata for each of the datasets
