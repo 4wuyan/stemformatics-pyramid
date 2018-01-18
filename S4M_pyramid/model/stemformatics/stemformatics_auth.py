@@ -322,7 +322,7 @@ class Stemformatics_Auth(object):
 
         validation_regex = re.compile(validation_regex_text)
 
-        m = validation_regex.match(registration_data['password'].encode('utf-8'))
+        m = validation_regex.match(registration_data['password'])
 
         if m is None:
             return config['validation_warning']
