@@ -290,15 +290,30 @@ class AuthController(BaseController):
         # Send the message via our own SMTP server, but don't include the
         # envelope header.
 
-        success = Stemformatics_Notification.send_email(from_email,to_email,subject,body)
 
-        if not success:            # instead of deleting, just change status to 2
-            result = Stemformatics_Auth.update_user_status(db,new_user.uid,2)
-
-            if result:
-                c.error_message = "There was an issue with sending the email, please re-enter your details"
-            else:
-                c.error_message = "There was an issue with sending the email and removing your account, please re-enter a new email or wait three days to try again."
-            return self.deprecated_pylons_data_for_view
-
+####### '''
+####### email notification temporarily disabled!!!!!
+####### '''
+#######
+#######
+####### success = Stemformatics_Notification.send_email(from_email,to_email,subject,body)
+#######
+#######
+#######
+####### if not success:            # instead of deleting, just change status to 2
+#######     result = Stemformatics_Auth.update_user_status(db,new_user.uid,2)
+#######
+#######     if result == True:
+#######         # use "if result == True" instead of "if result", because the returned result from the model will
+#######         # be either true or an error string.
+#######         # The else condition will never be executed if using "if result"
+#######         c.error_message = "There was an issue with sending the email, please re-enter your details"
+#######     else:
+#######         c.error_message = "There was an issue with sending the email and removing your account, please re-enter a new email or wait three days to try again."
+#######     return self.deprecated_pylons_data_for_view
+#######
+####### '''
+####### remove the following line after enabling email!
+####### '''
+        Stemformatics_Auth.update_user_status(db,new_user.uid,1)
         redirect(h.url('/contents/registration_submitted'))

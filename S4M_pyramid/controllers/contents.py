@@ -70,3 +70,9 @@ class ContentsController(BaseController):
         c.title = c.site_name + " - Privacy Policy"
         return self.deprecated_pylons_data_for_view
 
+    @action(renderer='templates/workbench/error_message.mako')
+    def registration_submitted(self):
+        c.message = "Thank you for registering! Please confirm your registration by following instructions in your confirmation email."
+        c.title = "Registration submitted"
+        return self.deprecated_pylons_data_for_view
+
