@@ -8,7 +8,8 @@ config = {
     # The configuration below should be imported from the stemformatics.configs table in the database.
     # But for now, we just do some hack here, since we don't have access to that database table.
     'validation_regex': '(?=^.{12,}$)(?=.*\s+).*$',
-    'validation_warning': 'Your password must be at least 12 characters in length, and must contain at least one space (a pass phra    se if you will - more secure, and easier to remember).'
+    'validation_warning': 'Your password must be at least 12 characters in length, and must contain at least one space (a pass phra    se if you will - more secure, and easier to remember).',
+    'from_email': 'noreply@stemformatics.org',
 }
 
 conn_string = config['psycopg2_conn_string']

@@ -8,7 +8,6 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from .stemformatics_auth import Stemformatics_Auth
 import zlib
 import json
 

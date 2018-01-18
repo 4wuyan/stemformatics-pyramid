@@ -10,8 +10,7 @@ from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
 from S4M_pyramid.lib.empty_class import EmptyClass as c
 
-# trying to find where db is set
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth
+from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -268,7 +267,7 @@ class AuthController(BaseController):
         db = self.db_deprecated_pylons_orm
         new_user = Stemformatics_Auth.register_new_user(db,registration_data)
 
-        if isinstance(new_user,str) or isinstance(new_user,unicode):
+        if isinstance(new_user, str) or isinstance(new_user, bytes):
             c.error_message = new_user
             return self.deprecated_pylons_data_for_view
 
