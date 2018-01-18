@@ -5,8 +5,6 @@ log = logging.getLogger(__name__)
 from paste.deploy.converters import asbool
 import json
 from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
-from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin
-from S4M_pyramid.config import config
 
 
 class Globals(object):
@@ -38,10 +36,6 @@ class Globals(object):
         # This task uses the gene_mappings.raw to manufacture the in memory list for quick access.
         # Get the probe mappings and gene mappings setup for bulk import manager
 
-        if 'show_x_platform_graphing' in config:
-            self.show_x_platform_graphing = asbool(config['show_x_platform_graphing'])
-        else:
-            self.show_x_platform_graphing = False
 
         """
         This is the only place I could find that runs purely on startup once.
