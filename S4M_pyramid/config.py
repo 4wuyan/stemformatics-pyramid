@@ -1,6 +1,5 @@
 import psycopg2
 import psycopg2.extras
-from S4M_pyramid.lib import app_globals
 
 config = {
     'psycopg2_conn_string': "host='localhost' dbname='portal_beta' user='portaladmin'",
@@ -34,6 +33,3 @@ for row in result:
 
 for key in result_dir:
     config[key] = result_dir[key]
-
-config["app_globals"]= app_globals.Globals()
-print("hello from config")
