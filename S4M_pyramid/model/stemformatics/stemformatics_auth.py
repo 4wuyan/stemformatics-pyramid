@@ -329,7 +329,7 @@ class Stemformatics_Auth(object):
 
 
 
-        m = re.search('^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$',username)
+        m = re.search('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',username)
 
         if m is None:
             return "This username is not valid, it must be a valid email address"
@@ -340,7 +340,7 @@ class Stemformatics_Auth(object):
         m.update(registration_data['password'].encode('utf-8'))
         sha1_password = m.hexdigest()
 
-        base_confirm_code = m.update(str(random()))
+        base_confirm_code = m.update(str(random()).encode('utf-8'))
         confirm_code = m.hexdigest()
 
         # create new user - but check that it's not an update for an existing user with status of 2
@@ -380,7 +380,7 @@ class Stemformatics_Auth(object):
                 return None
 
             m = hashlib.sha1()
-            base_confirm_code = m.update(str(random()))
+            base_confirm_code = m.update(str(random()).encode('utf-8'))
             confirm_code = m.hexdigest()
 
             now_time = datetime.datetime.now()
@@ -526,7 +526,7 @@ class Stemformatics_Auth(object):
                 return "There was an error finding this user"
 
             m = hashlib.sha1()
-            m.update(password)
+            m.update(password.encode('utf-8'))
             sha1_password = m.hexdigest()
 
             # update user
@@ -635,7 +635,7 @@ class Stemformatics_Auth(object):
         sha1_password = db_user.password
 
         h = hashlib.sha1()
-        h.update(username.encode('utf-8') + sha1_password)
+        h.update(username.encode('utf-8') + sha1_password.encode('utf-8'))
         check_user_and_pwd_md5 = h.hexdigest()
 
         if check_user_and_pwd_md5 == user_and_pwd_md5 :
@@ -654,7 +654,7 @@ class Stemformatics_Auth(object):
         sha1_password = m.hexdigest()
 
         h = hashlib.sha1()
-        h.update(username.encode('utf-8') + sha1_password)
+        h.update(username.encode('utf-8') + sha1_password.encode('utf-8'))
         user_and_pwd_md5 = h.hexdigest()
 
         return user_and_pwd_md5
@@ -1302,7 +1302,7 @@ class Stemformatics_Auth(object):
             date_stamp = result[0]['created']
 
             h = hashlib.sha1()
-            h.update(date_stamp.strftime('%Y-%m-%d') + username.encode('utf-8') + str(uid))
+            h.update((date_stamp.strftime('%Y-%m-%d') + username + str(uid)).encode('utf-8'))
             base_export_key = h.hexdigest()
 
 
@@ -1338,7 +1338,7 @@ class Stemformatics_Auth(object):
             base_export_key = result[0]['base_export_key']
             server_name=url('/',qualified=True)
             h = hashlib.sha1()
-            h.update(datetime.datetime.now().strftime('%Y-%m-%d %H:%i:%s.%f') + username.encode('utf-8') + str(uid))
+            h.update((datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + username + str(uid)).encode('utf-8'))
             export_key = h.hexdigest()
 
             conn = psycopg2.connect(conn_string)
