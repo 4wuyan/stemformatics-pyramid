@@ -29,7 +29,7 @@ POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
 IDENTIFIER = fe.PlainText(not_empty=True)
 URL = fe.URL(not_empty=True)
-
+g = config["app_globals"]
 class tempData(object):
     pass
 
@@ -1124,7 +1124,7 @@ class Stemformatics_Expression(object):
                 chip_id = sample_labels[sample_count]
                 standard_deviation = Stemformatics_Expression.get_standard_deviation(ds_id,chip_id,probe_id)
                 sample_count += 1
-                metaDataValues = Stemformatics_Expression.setup_all_sample_metadata()[chip_type][chip_id][ds_id]#g.all_sample_metadata[chip_type][chip_id][ds_id]
+                metaDataValues = g.all_sample_metadata[chip_type][chip_id][ds_id]
                 sample_id = metaDataValues['Replicate Group ID']
                 limitSortby_data = {}
                 for value in limitSortBy_values:
