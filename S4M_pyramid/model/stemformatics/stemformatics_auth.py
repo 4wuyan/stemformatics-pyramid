@@ -423,6 +423,85 @@ class Stemformatics_Auth(object):
         except:
             return None
 
+
+    @staticmethod
+    def get_users_from_usernames(list_of_usernames):
+
+        if not isinstance(list_of_usernames,list):
+            return []
+
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        sql = "select * from stemformatics.users where username = ANY(%(list_of_usernames)s) ;"
+        cursor.execute(sql,{'list_of_usernames': list_of_usernames})
+
+        # retrieve the records from the database
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        return result
+
+    @staticmethod
+    def set_users_to_be_inactive_from_usernames(string_of_usernames):
+        status_dict_by_name = Stemformatics_Auth.get_status_dict_by_name()
+        status_id = status_dict_by_name['Inactive']
+
+        if not isinstance(string_of_usernames,str) and not isinstance(string_of_usernames,unicode):
+            return []
+
+        list_of_usernames  = re.findall("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", string_of_usernames)
+
+        user_result = Stemformatics_Auth.get_users_from_usernames(list_of_usernames)
+        list_of_uids = []
+        return_dict_of_usernames_and_uids = {}
+        for row in user_result:
+            uid = row['uid']
+            list_of_uids.append(uid)
+            return_dict_of_usernames_and_uids[uid] = row['username']
+
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        sql = "update stemformatics.users set status = %(status_id)s where uid = ANY(%(list_of_uids)s) ;"
+        cursor.execute(sql,{'list_of_uids': list_of_uids,'status_id':status_id})
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return return_dict_of_usernames_and_uids
+
+    @staticmethod
+    def unsubscribe_users_from_outage_critical_notifications(string_of_usernames):
+
+        if not isinstance(string_of_usernames,str) and not isinstance(string_of_usernames,unicode):
+            return []
+
+        list_of_usernames  = re.findall("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", string_of_usernames)
+
+        user_result = Stemformatics_Auth.get_users_from_usernames(list_of_usernames)
+        list_of_uids = []
+        return_dict_of_usernames_and_uids = {}
+        for row in user_result:
+            uid = row['uid']
+            list_of_uids.append(uid)
+            return_dict_of_usernames_and_uids[uid] = row['username']
+
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        sql = "update stemformatics.users set send_email_outages_critical = False where uid = ANY(%(list_of_uids)s) ;"
+        cursor.execute(sql,{'list_of_uids': list_of_uids})
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return return_dict_of_usernames_and_uids
+
+
     @staticmethod
     def get_user_from_username(db,username): #CRITICAL-2
         username = username.lower()
@@ -595,10 +674,21 @@ class Stemformatics_Auth(object):
             return "Error in this application in saving details"
 
     @staticmethod
-    def return_all_users(db): #CRITICAL-2
-        db.schema = 'stemformatics'
-        user = db.users
-        result = db.users.all()
+    def return_all_active_users(db):
+        status_list = Stemformatics_Auth.get_status_dict_by_name()
+        active_status = status_list['Active']
+
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        sql = "select * from stemformatics.users where status= %(status_id)s ;"
+        cursor.execute(sql,{'status_id': active_status})
+
+        # retrieve the records from the database
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
         return result
 
     @staticmethod
