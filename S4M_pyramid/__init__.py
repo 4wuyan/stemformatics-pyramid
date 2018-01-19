@@ -1,5 +1,6 @@
 from pyramid.config import Configurator
 from pyramid.httpexceptions import HTTPFound
+from S4M_pyramid.controllers.workbench import WorkbenchController
 from S4M_pyramid.controllers.contents import ContentsController
 from S4M_pyramid.controllers.expressions import ExpressionsController
 from S4M_pyramid.controllers.auth import AuthController
@@ -40,6 +41,7 @@ def main(global_config, **settings):
 
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
+    config.add_handler("workbench","/workbench/{action}",handler=WorkbenchController)
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)

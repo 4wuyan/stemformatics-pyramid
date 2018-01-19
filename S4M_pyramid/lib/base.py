@@ -6,6 +6,7 @@ from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_help import Stemformatics_Help
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
+from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
 from S4M_pyramid.templates.external_db import *
 from S4M_pyramid.model import init_model
 import json
@@ -35,7 +36,7 @@ class BaseController():
         self.request=request
         self.response=request.response
 
-        #set up c,those are directly retrieved fro the DB
+        #set up c; those are directly retrieved fro the DB
         c.site_name = config['site_name']
         c.feedback_email = config['feedback_email']
         c.production = config['production']
@@ -66,6 +67,49 @@ class BaseController():
         single_gene_url = "http://string-db.com/newstring_cgi/show_network_section.pl?identifier="
         c.string_db_object = stringDB(single_gene_url)
 
+        session = request.session
+        if 'user' in session:
+            c.user = session.get('user')
+            c.uid = session.get('uid')
+            c.full_name = session.get('full_name')
+            c.role = session.get('role')
+            c.notifications = 1
+        else:
+
+            #check cookie
+            username = request.cookies.get('stay_signed_in')
+            user_and_pwd_md5 = request.cookies.get('stay_signed_in_md5')
+            db = self.db_deprecated_pylons_orm
+            cookie_user = Stemformatics_Auth.check_stay_signed_in_md5(db,username,user_and_pwd_md5)
+
+
+            if cookie_user is not None:
+
+                #Mark user as logged in
+                session['user'] = cookie_user.username
+                session['uid'] = cookie_user.uid
+                session['full_name'] = cookie_user.full_name
+                session['role'] = Stemformatics_Auth.get_user_role(db,cookie_user.uid)
+                session.save()
+
+
+                c.user = session.get('user')
+                c.uid = session.get('uid')
+                c.full_name = session.get('full_name')
+                c.role = session.get('role')
+                c.notifications = 1
+
+            else:
+                c.user = ""
+                c.uid = 0
+                c.full_name = ""
+                c.notifications = 0
+                c.role = None
+
+        if not 'page_history' in session:
+            session['page_history'] = []
+
+        c.page_history = session.get('page_history')
         self.deprecated_pylons_data_for_view = {'c': c, 'h': h, 'url':url, 'config':config}
 
     def _check_dataset_status(self):
