@@ -129,7 +129,7 @@ class AuthController(BaseController):
             redirection = session.get('path_before_login')
             del session['path_before_login']
             session.save()
-            redirect(url(str(redirection)))
+            return redirect(url(str(redirection)))
         else:
             if session['page_history'] != []:
                 log.debug('redirected using page history')
@@ -312,7 +312,7 @@ class AuthController(BaseController):
 #######         c.error_message = "There was an issue with sending the email and removing your account, please re-enter a new email or wait three days to try again."
 #######     return self.deprecated_pylons_data_for_view
 #######
-#######  redirect(h.url('/contents/registration_submitted'))
+####### return redirect(h.url('/contents/registration_submitted'))
 #######
 #######
 ####### '''

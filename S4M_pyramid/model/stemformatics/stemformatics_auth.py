@@ -167,7 +167,7 @@ class Stemformatics_Auth(object):
                 c.user = None
                 session['path_before_login'] = request.path_info + '?' + request.query_string
                 session.save()
-                redirect(h.url('/auth/login'))
+                return redirect(h.url('/auth/login'))
 
         return decorator(check_authorised)
 

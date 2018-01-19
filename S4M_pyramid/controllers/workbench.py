@@ -145,14 +145,14 @@ class WorkbenchController(BaseController):
 #         result = Stemformatics_Gene_Set.delete_gene_set_item(db,c.uid,gene_set_item_id)
 #
 #         if result is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         gene_set_id = result
 #
 #         # now delete redis keys for that gene list
 #         Stemformatics_Gene_Set.delete_short_term_redis_keys_for_a_gene_list(gene_set_id)
 #
-#         redirect(url('/workbench/gene_set_view/'+str(gene_set_id)))
+#         return redirect(url('/workbench/gene_set_view/'+str(gene_set_id)))
 #
 #     @Stemformatics_Auth.authorise(db)
 #     def add_gene_to_set(self):
@@ -168,7 +168,7 @@ class WorkbenchController(BaseController):
 #         else:
 #             message = ""
 #
-#         redirect(url('/workbench/gene_set_view/'+str(gene_set_id)+'?message='+message))
+#         return redirect(url('/workbench/gene_set_view/'+str(gene_set_id)+'?message='+message))
 #
 #     @Stemformatics_Auth.authorise(db)
 #     def update_gene_set_name(self):
@@ -184,7 +184,7 @@ class WorkbenchController(BaseController):
 #             message = ""
 #         default_url =url('/workbench/gene_set_view/'+str(gene_set_id))
 #         redirect_url = Stemformatics_Auth.get_smart_redirect(default_url)
-#         redirect(redirect_url)
+#         return redirect(redirect_url)
 #
 #
 #     @Stemformatics_Auth.authorise(db)
@@ -195,11 +195,11 @@ class WorkbenchController(BaseController):
 #
 #         if result is None:
 #             message = "There was an error with deleting the gene list"
-#             redirect(url('/workbench/gene_set_index?message='+message))
+#             return redirect(url('/workbench/gene_set_index?message='+message))
 #         else:
 #             message = ""
 #             default_url =url('/workbench/gene_set_index?message='+message)
-#             redirect(default_url)
+#             return redirect(default_url)
 #
 #
 #
@@ -279,7 +279,7 @@ class WorkbenchController(BaseController):
 #             # check if user has access to gene list
 #             status = Stemformatics_Gene_Set.check_gene_set_availability(gene_set_id,c.uid)
 #             if status == False:
-#                 redirect(url(controller='contents', action='index'), code=404)
+#                 return redirect(url(controller='contents', action='index'), code=404)
 #             species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
 #             gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id)
 #
@@ -383,7 +383,7 @@ class WorkbenchController(BaseController):
 #                 remove_chip_ids.append(remove_chip_id)
 #         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
 #         if c.dataset_status != "Available":
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         base_path = self.StemformaticsQueue
 #
@@ -413,7 +413,7 @@ class WorkbenchController(BaseController):
 #         job_id = Stemformatics_Job.create_job(db,job_details)
 #
 #         if job_id is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         if not os.path.exists(base_path+str(job_id)):
 #             os.mkdir(base_path+str(job_id))
@@ -468,12 +468,12 @@ class WorkbenchController(BaseController):
 #         audit_dict = {'ref_type':'ds_id','ref_id':dataset_id,'uid':c.uid,'url':url,'request':request}
 #         result = Stemformatics_Audit.add_audit_log(audit_dict)
 #
-#         redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
+#         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
 #     @Stemformatics_Auth.authorise(db)
 #     def comparative_marker_selection_wizard(self): #CRITICAL-5 DELETE
-#         redirect(url('/contents/removal_of_comparative_marker_selection'))
+#         return redirect(url('/contents/removal_of_comparative_marker_selection'))
 #
 #
 #     @Stemformatics_Auth.authorise(db)
@@ -507,7 +507,7 @@ class WorkbenchController(BaseController):
 #         analysis_server = job_detail.reference_type
 #
 #         if job_detail is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         # check if this could be a shared resource if user not the job owner
 #         if c.uid != job_detail.uid:
@@ -515,7 +515,7 @@ class WorkbenchController(BaseController):
 #             share_id = job_id
 #             check_shared_resource = Stemformatics_Shared_Resource.check_shared_resource(db,share_type,share_id,c.uid)
 #             if len(check_shared_resource) == 0:
-#                 redirect(url(controller='contents', action='index'), code=404)
+#                 return redirect(url(controller='contents', action='index'), code=404)
 #
 #             use_uid = check_shared_resource[0].from_uid
 #
@@ -542,7 +542,7 @@ class WorkbenchController(BaseController):
 #         c.analysis = job_detail.analysis
 #
 #         if job_detail.analysis == 4: # Annotate gene set redirect straight away
-#             redirect(h.url('/workbench/gene_set_annotation_view/'+str(job_id)))
+#             return redirect(h.url('/workbench/gene_set_annotation_view/'+str(job_id)))
 #
 #         c.title = c.site_name+' Analyses  - View Result for Job #' + str(c.job_id)
 #         # check job queue created
@@ -557,7 +557,7 @@ class WorkbenchController(BaseController):
 #                 dirList = os.listdir(path)
 #
 #         except:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #
 #         if job_detail.analysis == 0: # Hierarchical Cluster
@@ -636,7 +636,7 @@ class WorkbenchController(BaseController):
 #             path = self.GPQueue+str(gp_job_id) + "/"
 #             dirList = os.listdir(path)
 #         except:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         odfList = []
 #
@@ -688,14 +688,14 @@ class WorkbenchController(BaseController):
 #     def job_delete(self,id):
 #         job_id = int(id)
 #         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
-#         redirect(url('/workbench/jobs_index'))
+#         return redirect(url('/workbench/jobs_index'))
 #
 #     @Stemformatics_Auth.authorise(db)
 #     def job_remove_shared(self,id):
 #         job_id = int(id)
 #         result = Stemformatics_Shared_Resource.delete_shared_resource(db,"Job",job_id,c.uid)
 #
-#         redirect(url('/workbench/jobs_index'))
+#         return redirect(url('/workbench/jobs_index'))
 #
 #     def _view_cms_output_file(self,openFile,job_id,use_uid):
 #         f = open(openFile,'r')
@@ -828,7 +828,7 @@ class WorkbenchController(BaseController):
 #             return render('workbench/save_gene_set.mako')
 #
 #
-#         redirect(h.url('/workbench/gene_set_view/'+str(gene_set_id)))
+#         return redirect(h.url('/workbench/gene_set_view/'+str(gene_set_id)))
 #
 #     @Stemformatics_Auth.authorise(db)
 #     def uniquely_identify_gene(self):
@@ -840,7 +840,7 @@ class WorkbenchController(BaseController):
 #         try:
 #             db_id = int(db_id)
 #         except:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #         search_type = 'all'
 #         one_search_term = True
 #         geneSet = [original]
@@ -892,10 +892,10 @@ class WorkbenchController(BaseController):
 #         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 #
 #         if result is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         if result.uid != c.uid:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         c.job = result
 #         c.status = Stemformatics_Job.return_all_status()
@@ -989,7 +989,7 @@ class WorkbenchController(BaseController):
 #         job_id = Stemformatics_Job.create_job(db,job_details)
 #
 #         if job_id is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         if not os.path.exists(base_path+str(job_id)):
 #             os.mkdir(base_path+str(job_id))
@@ -1012,7 +1012,7 @@ class WorkbenchController(BaseController):
 #         audit_dict = {'ref_type':'gene_set_id','ref_id':gene_set_id,'uid':c.uid,'url':url,'request':request}
 #         result = Stemformatics_Audit.add_audit_log(audit_dict)
 #
-#         redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
+#         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
 #     @Stemformatics_Auth.authorise(db)
@@ -1025,7 +1025,7 @@ class WorkbenchController(BaseController):
 #         job_detail = Stemformatics_Job.get_job_details(db,job_id)
 #
 #         if job_detail is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         # check if this could be a shared resource if user not the job owner
 #         if c.uid != job_detail.uid:
@@ -1033,7 +1033,7 @@ class WorkbenchController(BaseController):
 #             share_id = job_id
 #             check_shared_resource = Stemformatics_Shared_Resource.check_shared_resource(db,share_type,share_id,c.uid)
 #             if len(check_shared_resource) == 0:
-#                 redirect(url(controller='contents', action='index'), code=404)
+#                 return redirect(url(controller='contents', action='index'), code=404)
 #
 #             use_uid = check_shared_resource[0].from_uid
 #         else:
@@ -1112,7 +1112,7 @@ class WorkbenchController(BaseController):
 #             gene_set = Stemformatics_Gene_Set.getGeneSet(db,use_uid,gene_set_id)
 #
 #             if gene_set is None:
-#                 redirect(url(controller='contents', action='index'), code=404)
+#                 return redirect(url(controller='contents', action='index'), code=404)
 #
 #             c.message = ""
 #             # get the list of ensemblIDs and then save this against the user
@@ -1165,7 +1165,7 @@ class WorkbenchController(BaseController):
 #
 #         result = Stemformatics_Gene_Set.addGeneSet(db,c.uid,gene_set_name,gene_set_description,db_id,save_genes)
 #
-#         redirect(url('/workbench/gene_set_index'))
+#         return redirect(url('/workbench/gene_set_index'))
 #
 #     """
 #
@@ -1201,7 +1201,7 @@ class WorkbenchController(BaseController):
 #         job_detail = Stemformatics_Job.get_job_details(db,job_id)
 #
 #         if job_detail is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         # check if this could be a shared resource if user not the job owner
 #         if c.uid != job_detail.uid:
@@ -1209,7 +1209,7 @@ class WorkbenchController(BaseController):
 #             share_id = job_id
 #             check_shared_resource = Stemformatics_Shared_Resource.check_shared_resource(db,share_type,share_id,c.uid)
 #             if len(check_shared_resource) == 0:
-#                 redirect(url(controller='contents', action='index'), code=404)
+#                 return redirect(url(controller='contents', action='index'), code=404)
 #
 #             use_uid = check_shared_resource[0].from_uid
 #             c.job_shared = True
@@ -1464,7 +1464,7 @@ class WorkbenchController(BaseController):
 #         job_detail = Stemformatics_Job.get_job_details_check_user(db,job_id,c.uid)
 #
 #         if job_detail is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         base_path = self.StemformaticsQueue + str(job_id) + '/'
 #         gene_pathways_export = base_path + 'pathway_export.tsv'
@@ -1489,7 +1489,7 @@ class WorkbenchController(BaseController):
 #         job_detail = Stemformatics_Job.get_job_details_check_user(db,job_id,c.uid)
 #
 #         if job_detail is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         gene_set_id = job_detail.gene_set_id
 #         dataset_id = job_detail.dataset_id
@@ -1728,7 +1728,7 @@ class WorkbenchController(BaseController):
 #             ds_id = None
 #
 #         if ds_id is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #
 #         choose_dataset_immediately = False
@@ -1837,13 +1837,13 @@ class WorkbenchController(BaseController):
 #
 #         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
 #         if c.dataset_status != "Available":
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #
 #         available = Stemformatics_Dataset.check_dataset_availability(db,c.uid,ds_id)
 #
 #         if not available:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #
 #
@@ -1967,7 +1967,7 @@ class WorkbenchController(BaseController):
 #             return render('workbench/choose_dataset.mako')
 #         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
 #         if c.dataset_status != "Available":
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #
 #
@@ -2041,7 +2041,7 @@ class WorkbenchController(BaseController):
 #
 #         job_id = Stemformatics_Job.create_job(db,job_details)
 #         if job_id is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         if not os.path.exists(base_path+str(job_id)):
 #             os.mkdir(base_path+str(job_id))
@@ -2067,7 +2067,7 @@ class WorkbenchController(BaseController):
 #         audit_dict = {'ref_type':'ds_id','ref_id':dataset_id,'uid':c.uid,'url':url,'request':request}
 #         result = Stemformatics_Audit.add_audit_log(audit_dict)
 #
-#         redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
+#         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
 #     def user_defined_expression_profile(self):
@@ -2086,7 +2086,7 @@ class WorkbenchController(BaseController):
 #
 #         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
 #         if c.dataset_status != "Available":
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         show_limited = False
 #         c.result = Stemformatics_Dataset.getExpressionDatasetMetadata(db,ds_id,c.uid,show_limited)
@@ -2129,7 +2129,7 @@ class WorkbenchController(BaseController):
 #         job_id = Stemformatics_Job.create_job(db,job_details)
 #
 #         if job_id is None:
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         base_path = self.StemformaticsQueue
 #
@@ -2150,7 +2150,7 @@ class WorkbenchController(BaseController):
 #             Stemformatics_Job.update_job_status(db,job_id,status, reference_id, reference_type)
 #
 #             # redirect to 404 as something went wrong and job is not submiteed to galaxy
-#             redirect(url(controller='contents', action='index'), code=404)
+#             return redirect(url(controller='contents', action='index'), code=404)
 #
 #         # connect to galaxy
 #         from guide.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
@@ -2162,7 +2162,7 @@ class WorkbenchController(BaseController):
 #         audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
 #         result = Stemformatics_Audit.add_audit_log(audit_dict)
 #
-#         redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
+#         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
 #     @Stemformatics_Auth.authorise(db)
@@ -2253,7 +2253,7 @@ class WorkbenchController(BaseController):
 #                     Stemformatics_Notification.send_error_email(error_subject,error_body)
 #                     return render ('workbench/error_message.mako')
 #             except:
-#                 redirect(url(controller='contents', action='index'), code=404)
+#                 return redirect(url(controller='contents', action='index'), code=404)
 #         else:
 #             ds_id = 6037 # default to an interesting dataset
 #
