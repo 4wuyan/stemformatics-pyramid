@@ -335,32 +335,33 @@ class AuthController(BaseController):
         # raise Error
 
         return self.deprecated_pylons_data_for_view
-#
-#    def confirm_new_user(self,id):
-#
-#        uid = str(request.params.get('rego'))
-#
-#        confirmed_user = Stemformatics_Auth.confirm_new_user(db,id,uid)
-#
-#
-#        if isinstance(confirmed_user,str):
-#            c.error_message = confirmed_user
-#            c.username = ""
-#            c.org = ""
-#            c.name = ""
-#            if CAPTCHA_ENABLED:
-#                c.recaptcha = h.recaptcha.displayhtml() #insert c.recaptcha into the form
-#            return render('auth/register.mako')
-#
-#        # Do not log user in. Make them log in normally
-#        c.error_message = "You have successfully confirmed your account. You can now login."
-#        c.title = "Registration completed"
-#        c.username = confirmed_user.username
-#        return render('auth/signin.mako')
-#
-#
-#
-#
+
+    @action()
+    def confirm_new_user(self):
+        id = self.request.matchdict['id']
+
+        uid = str(self.request.params.get('rego'))
+
+        db = self.db_deprecated_pylons_orm
+        confirmed_user = Stemformatics_Auth.confirm_new_user(db,id,uid)
+
+
+        if isinstance(confirmed_user,str):
+            c.error_message = confirmed_user
+            c.username = ""
+            c.org = ""
+            c.name = ""
+            return render_to_response('S4M_pyramid:templates/auth/register.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        # Do not log user in. Make them log in normally
+        c.error_message = "You have successfully confirmed your account. You can now login."
+        c.title = "Registration completed"
+        c.username = confirmed_user.username
+        return render_to_response('S4M_pyramid:templates/auth/signin.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+
+
+
 #    def forgot_password(self):
 #        username = str(request.params.get('username'))
 #
