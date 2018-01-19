@@ -2,8 +2,7 @@
 import logging
 
 log = logging.getLogger(__name__)
-from paste.deploy.converters import asbool
-import json
+
 from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
 
 
