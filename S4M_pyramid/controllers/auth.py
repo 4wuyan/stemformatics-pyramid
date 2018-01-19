@@ -325,7 +325,7 @@ class AuthController(BaseController):
         c.title = "(TEST MODE) Registration submitted"
         c.message = "(TEST MODE)"
         c.message += 'Thank you for registering! Please confirm your registration by following instructions in your confirmation email.'
-        c.message += '(TEST MODE): CONFORMATION LINK:'
+        c.message += '(TEST MODE): CONFIRMATION LINK:'
         c.message += body
         return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view)
 
