@@ -372,62 +372,69 @@ class AuthController(BaseController):
         return render_to_response('S4M_pyramid:templates/auth/signin.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
+    @action()
+    def forgot_password(self):
+        request = self.request
+        username = str(request.params.get('username'))
+
+        if username == 'None':
+            c.error_message = ""
+            c.username = ""
+            return render_to_response('S4M_pyramid:templates/auth/forgot_password.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        # firstly, check that the record exists and then return a confirm code if it does and then send it off
+        db = self.db_deprecated_pylons_orm
+        found_user = Stemformatics_Auth.set_confirm_forgot_password(db,username)
+
+        if found_user is not None:
+
+            confirm_code = found_user.confirm_code
+
+            # send confirmation email
+            from_email = config['from_email']
+            external_base_url = url('/',qualified=True)
+            to_email = found_user.username
+            subject = c.site_name+" - Pass phrase reset request"
+            body = "Please click the following link to reset your pass phrase. \n%sauth/confirm_new_password/%s\n\nIf you did not intend to update your password at %s, please ignore this email and no action will be taken." % (url(str(external_base_url)),confirm_code,url(str(external_base_url)))
 
 
-#    def forgot_password(self):
-#        username = str(request.params.get('username'))
-#
-#        if CAPTCHA_ENABLED:
-#            c.recaptcha = h.recaptcha.displayhtml() #insert c.recaptcha into the form
-#
-#        if username == 'None':
-#            c.error_message = ""
-#            c.username = ""
-#            return render('auth/forgot_password.mako')
-#
-#        # check captcha
-#        if CAPTCHA_ENABLED:
-#            recaptcha_response = h.recaptcha.submit()
-#            is_valid = recaptcha_response.is_valid
-#            if not is_valid:
-#                #render the form and try again
-#                c.error_message = "Recaptcha error. Please try again"
-#                c.username = username
-#                return render('auth/forgot_password.mako')
-#
-#        # firstly, check that the record exists and then return a confirm code if it does and then send it off
-#        found_user = Stemformatics_Auth.set_confirm_forgot_password(db,username)
-#
-#        # Don't show difference if no user is shown
-#        if found_user is None:
-#            c.message = "Request for pass phrase reset instructions have been processed. If the details match an existing user an email will be sent to your registered email address."
-#            c.title = "Pass Phrase Reset Sent"
-#            return render ('workbench/error_message.mako')
-#
-#
-#        confirm_code = found_user.confirm_code
-#
-#        # send confirmation email
-#        from_email = config['from_email']
-#        external_base_url = url('/',qualified=True)
-#        to_email = found_user.username
-#        subject = c.site_name+" - Pass phrase reset request"
-#        body = "Please click the following link to reset your pass phrase. \n%sauth/confirm_new_password/%s\n\nIf you did not intend to update your password at %s, please ignore this email and no action will be taken." % (url(str(external_base_url)),confirm_code,url(str(external_base_url)))
-#
-#        # Send the message via our own SMTP server, but don't include the
-#        # envelope header.
-#        success = Stemformatics_Notification.send_email(from_email,to_email,subject,body)
-#        if not success:
-#            c.message = "There was an issue with sending the email to reset your account. Please try again or go to our Contact us page."
-#            c.title = "Pass Phrase Reset Error"
-#            return render ('workbench/error_message.mako')
-#
-#        c.message = "Request for pass phrase reset instructions have been processed. If the details match an existing user an email will be sent to your registered email address."
-#        c.title = "Pass Phrase Reset Sent"
-#        return render ('workbench/error_message.mako')
-#
-#
-#
+########### '''
+########### email notification temporarily disabled!!!!!
+########### '''
+###########
+########### # Send the message via our own SMTP server, but don't include the
+########### # envelope header.
+########### success = Stemformatics_Notification.send_email(from_email,to_email,subject,body)
+########### if not success:
+###########     c.message = "There was an issue with sending the email to reset your account. Please try again or go to our Contact us page."
+###########     c.title = "Pass Phrase Reset Error"
+###########     return render ('workbench/error_message.mako')
+
+        # Don't show difference if no user is shown
+        c.message = "Request for pass phrase reset instructions have been processed. If the details match an existing user an email will be sent to your registered email address."
+
+#######
+#######
+####### '''
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####### REMOVE THE FOLLOWING 2 hacking lines
+#######   AFTER ENABLING EMAIL !!!!!!
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####### '''
+#######
+        if 'body' in locals():
+            c.message += body
+#######
+#######
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#######
+        c.title = "Pass Phrase Reset Sent"
+        return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+
+
 #    def confirm_new_password(self,id):
 #
 #        confirmed_user = Stemformatics_Auth.get_user_from_confirm_code(db,id)
