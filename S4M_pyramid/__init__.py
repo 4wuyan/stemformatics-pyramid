@@ -4,6 +4,7 @@ from S4M_pyramid.controllers.workbench import WorkbenchController
 from S4M_pyramid.controllers.contents import ContentsController
 from S4M_pyramid.controllers.expressions import ExpressionsController
 from S4M_pyramid.controllers.auth import AuthController
+from S4M_pyramid.environment import deprecated_pylons_environment
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -45,6 +46,7 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
+    deprecated_pylons_environment.load_environment()
     return config.make_wsgi_app()
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):

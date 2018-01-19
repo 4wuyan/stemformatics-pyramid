@@ -197,11 +197,8 @@ class ExpressionsController(BaseController):
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
-        c.select_probes = select_probes = self.request.params.get('select_probes')
-        # in pyramid,if there is no parameter provided, the variable will be set to None instead of ""
-        # therefore, in the js,select != "" will always be true, and the ref_id is lost(Line 641 expression/graph_new.js)
-        if c.select_probes == None:
-            c.select_probes = select_probes = ""
+        #sets the variable to "" instead of None,if parameter is not provided.
+        c.select_probes = select_probes = self.request.params.get('select_probes','')
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(self.request.params.get('gene'))
         feature_type = self.request.params.get('feature_type')
         feature_id = self.request.params.get('feature_id')
@@ -238,7 +235,7 @@ class ExpressionsController(BaseController):
 
         graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, self.request.params.get('graphType'),
                                                                       c.list_of_valid_graphs)
-        sortBy = self.request.params.get('sortBy')
+        sortBy = self.request.params.get('sortBy','')
 
         # This was an error with T#2079 where the graphType was originally line, but was changed to box
         # but the sortBy was still LineGraphGroup and that caused an error later on
