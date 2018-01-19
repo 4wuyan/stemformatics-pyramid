@@ -78,7 +78,7 @@ class WorkbenchController(BaseController):
         return self.deprecated_pylons_data_for_view
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_upload(self):
 #
 #         c.title = c.site_name+' Analyses - Upload New Gene List'
@@ -138,7 +138,7 @@ class WorkbenchController(BaseController):
 #         return render('workbench/gene_set_manage_bulk_import.mako')
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def delete_gene_from_set(self,id):
 #         gene_set_item_id = int(id)
 #
@@ -154,7 +154,7 @@ class WorkbenchController(BaseController):
 #
 #         return redirect(url('/workbench/gene_set_view/'+str(gene_set_id)))
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def add_gene_to_set(self):
 #         gene_set_id  = request.params.get('gene_set_id')
 #         db_id  = request.params.get('db_id')
@@ -170,7 +170,7 @@ class WorkbenchController(BaseController):
 #
 #         return redirect(url('/workbench/gene_set_view/'+str(gene_set_id)+'?message='+message))
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def update_gene_set_name(self):
 #         gene_set_id  = int(request.params.get('gene_set_id'))
 #         gene_set_name  = request.params.get('gene_set_name')
@@ -187,7 +187,7 @@ class WorkbenchController(BaseController):
 #         return redirect(redirect_url)
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_delete(self,id):
 #         gene_set_id = int(id)
 #
@@ -203,7 +203,7 @@ class WorkbenchController(BaseController):
 #
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def analysis(self,id):
 #         gene_set_id = int(id)
 #         species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
@@ -216,7 +216,7 @@ class WorkbenchController(BaseController):
 #         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists'],[h.url('/workbench/gene_set_view/'+str(gene_set_id)),'Gene List View'],['','Choose Analysis for Gene List']]
 #         return render('workbench/choose_analysis.mako')
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def hierarchical_cluster_wizard(self): #CRITICAL-5
 #         delimiter = config['redis_delimiter']
 #         c.use_galaxy_server = use_galaxy = config['use_galaxy_server']
@@ -471,12 +471,12 @@ class WorkbenchController(BaseController):
 #         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def comparative_marker_selection_wizard(self): #CRITICAL-5 DELETE
 #         return redirect(url('/contents/removal_of_comparative_marker_selection'))
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def jobs_index(self):
 #         c.status = Stemformatics_Job.return_all_status()
 #         c.analysis = Stemformatics_Job.return_all_analysis()
@@ -495,7 +495,7 @@ class WorkbenchController(BaseController):
 #         return render('workbench/jobs_index.mako')
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def job_view_result(self,id):  #CRITICAL-4
 #         job_id = int(id)
 #         use_galaxy_server = config['use_galaxy_server']
@@ -626,7 +626,7 @@ class WorkbenchController(BaseController):
 #             c.job_id = job_id
 #             return self._view_gene_neighbour_output_file(openFile,job_id,c.db_id,c.p_value,analysis_server)
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def view_cms_image(self):
 #         gp_job_id = int(request.params.get('gp_job_id'))
 #         output_file= int(request.params.get('output_file'))
@@ -660,7 +660,7 @@ class WorkbenchController(BaseController):
 #         return text
 #
 #     # Can set &download=true and it will download instead of display
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def view_image(self):
 #         src = request.params.get('src')
 #         download = request.params.get('download')
@@ -684,13 +684,13 @@ class WorkbenchController(BaseController):
 #
 #         return text
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def job_delete(self,id):
 #         job_id = int(id)
 #         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
 #         return redirect(url('/workbench/jobs_index'))
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def job_remove_shared(self,id):
 #         job_id = int(id)
 #         result = Stemformatics_Shared_Resource.delete_shared_resource(db,"Job",job_id,c.uid)
@@ -782,7 +782,7 @@ class WorkbenchController(BaseController):
 #
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def save_gene_set(self):
 #         db_id  = request.params.get('db_id')
 #         probe_list = request.params.get('probe_list')
@@ -830,7 +830,7 @@ class WorkbenchController(BaseController):
 #
 #         return redirect(h.url('/workbench/gene_set_view/'+str(gene_set_id)))
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def uniquely_identify_gene(self):
 #         original = request.params.get('original')
 #         db_id = request.params.get('db_id')
@@ -854,7 +854,7 @@ class WorkbenchController(BaseController):
 #         return render('workbench/uniquely_identify_gene.mako')
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_gene_preview(self,id):
 #         gene_set_id = int(id)
 #
@@ -871,7 +871,7 @@ class WorkbenchController(BaseController):
 #
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def public_gene_set_gene_preview(self,id):
 #         gene_set_id = int(id)
 #
@@ -886,7 +886,7 @@ class WorkbenchController(BaseController):
 #         # return render('workbench/gene_set_view.mako')
 #         return render('/workbench/gene_set_gene_preview.mako')
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def analysis_confirmation_message(self,id):
 #         job_id = int(id)
 #         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
@@ -906,7 +906,7 @@ class WorkbenchController(BaseController):
 #         return render('workbench/analysis_confirmation_message.mako')
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def help_gene_neighbourhood(self):
 #         c.message  = request.params.get('message')
 #         c.title = c.site_name+' Analyses  - View Gene Neighbourhood Help'
@@ -914,7 +914,7 @@ class WorkbenchController(BaseController):
 #
 #         return render('workbench/help_gene_neighbourhood.mako')
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def help_gene_set_annotation(self):
 #         c.message  = request.params.get('message')
 #         c.title = c.site_name+' Analyses  - View Gene List Annotation Help'
@@ -922,7 +922,7 @@ class WorkbenchController(BaseController):
 #
 #         return render('workbench/help_gene_set_annotation.mako')
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def help_hierarchical_cluster(self):
 #         c.message  = request.params.get('message')
 #         c.title = c.site_name+' Analyses  - View Hierarchical Cluster Help'
@@ -931,7 +931,7 @@ class WorkbenchController(BaseController):
 #         return render('workbench/help_hierarchical_cluster.mako')
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def help_comparative_marker_selection(self):
 #         c.message  = request.params.get('message')
 #         c.title = c.site_name+' Analyses  - View Comparative Marker Selection Help'
@@ -940,7 +940,7 @@ class WorkbenchController(BaseController):
 #         return render('workbench/help_comparative_marker_selection.mako')
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_annotation_wizard(self):  #CRITICAL-5
 #
 #         analysis  = 4
@@ -1015,7 +1015,7 @@ class WorkbenchController(BaseController):
 #         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_annotation_save(self,id): #CRITICAL-4
 #
 #         job_id = int(id)
@@ -1172,7 +1172,7 @@ class WorkbenchController(BaseController):
 #     This is now where the display happens
 #
 #     """
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_annotation_view(self,id): #CRITICAL-4
 #
 #         job_id = int(id)
@@ -1455,7 +1455,7 @@ class WorkbenchController(BaseController):
 #
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_annotation_export_pathways(self,id):
 #
 #         job_id = int(id)
@@ -1480,7 +1480,7 @@ class WorkbenchController(BaseController):
 #
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_set_annotation_export_tx(self,id): #CRITICAL-4
 #
 #         job_id = int(id)
@@ -1895,7 +1895,7 @@ class WorkbenchController(BaseController):
 #
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_neighbour_wizard(self): #CRITICAL-5
 #
 #         analysis  = 2
@@ -2165,7 +2165,7 @@ class WorkbenchController(BaseController):
 #         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 #
 #
-#     @Stemformatics_Auth.authorise(db)
+#     @Stemformatics_Auth.authorise()
 #     def gene_expression_profile_wizard(self):
 #         c.analysis = 7
 #         c.title = c.site_name+' Analyses  - Gene Expression Profile Wizard'

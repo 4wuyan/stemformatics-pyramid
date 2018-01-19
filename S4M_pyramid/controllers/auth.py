@@ -467,7 +467,7 @@ class AuthController(BaseController):
 #            c.title = "Pass phrase Reset"
 #            return render ('workbench/error_message.mako')
 #
-#    @Stemformatics_Auth.authorise(db)
+#    @Stemformatics_Auth.authorise()
 #    def update_details(self):
 #        this_user = Stemformatics_Auth.get_user_from_username(db,c.user)
 #
