@@ -550,7 +550,7 @@ class Stemformatics_Auth(object):
             # reset password
             username = confirmed_user.username.lower()
             updated_user = Stemformatics_Auth.change_password(db,username,password)
-            if isinstance(updated_user,unicode):
+            if isinstance(updated_user, str):
                 return updated_user
 
             # clear out expiry

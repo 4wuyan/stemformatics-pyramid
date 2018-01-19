@@ -435,45 +435,45 @@ class AuthController(BaseController):
 
 
 
-#    def confirm_new_password(self,id):
-#
-#        confirmed_user = Stemformatics_Auth.get_user_from_confirm_code(db,id)
-#
-#        if CAPTCHA_ENABLED:
-#            c.recaptcha = h.recaptcha.displayhtml() #insert c.recaptcha into the form
-#
-#        if confirmed_user is None:
-#            c.error_message = "Error in confirming pass phrase reset, please try again"
-#            c.username = ""
-#            return render ('auth/forgot_password.mako')
-#
-#        c.id = id
-#        pwd = str(request.params.get('password'))
-#        pwd2 = str(request.params.get('password_confirm'))
-#
-#
-#        if pwd == 'None':
-#            c.username = confirmed_user.username
-#            c.error_message = ""
-#            return render ('auth/confirm_password_reset.mako')
-#
-#        if pwd != pwd2:
-#            c.username = confirmed_user.username
-#            c.error_message = "Pass phrases are different"
-#            return render ('auth/confirm_password_reset.mako')
-#
-#
-#        result = Stemformatics_Auth.reset_password(db,confirmed_user,id,pwd)
-#
-#        if result != True:
-#            c.username = confirmed_user.username
-#            c.error_message = "Failed to reset pass phrase. " + result
-#            return render ('auth/confirm_password_reset.mako')
-#        else:
-#            c.message = "Successfully reset your pass phrase"
-#            c.title = "Pass phrase Reset"
-#            return render ('workbench/error_message.mako')
-#
+    def confirm_new_password(self):
+        id = self.request.matchdict['id']
+
+        db = self.db_deprecated_pylons_orm
+        confirmed_user = Stemformatics_Auth.get_user_from_confirm_code(db,id)
+
+        if confirmed_user is None:
+            c.error_message = "Error in confirming pass phrase reset, please try again"
+            c.username = ""
+            return render_to_response('S4M_pyramid:templates/auth/forgot_password.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        c.id = id
+        request = self.request
+        pwd = str(request.params.get('password'))
+        pwd2 = str(request.params.get('password_confirm'))
+
+
+        if pwd == 'None':
+            c.username = confirmed_user.username
+            c.error_message = ""
+            return render_to_response('S4M_pyramid:templates/auth/confirm_password_reset.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        if pwd != pwd2:
+            c.username = confirmed_user.username
+            c.error_message = "Pass phrases are different"
+            return render_to_response('S4M_pyramid:templates/auth/confirm_password_reset.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+
+        result = Stemformatics_Auth.reset_password(db,confirmed_user,id,pwd)
+
+        if result != True:
+            c.username = confirmed_user.username
+            c.error_message = "Failed to reset pass phrase. " + result
+            return render_to_response('S4M_pyramid:templates/auth/confirm_password_reset.mako', self.deprecated_pylons_data_for_view, request=self.request)
+        else:
+            c.message = "Successfully reset your pass phrase"
+            c.title = "Pass phrase Reset"
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
 #    @Stemformatics_Auth.authorise()
 #    def update_details(self):
 #        this_user = Stemformatics_Auth.get_user_from_username(db,c.user)
