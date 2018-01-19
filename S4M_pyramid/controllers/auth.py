@@ -318,21 +318,23 @@ class AuthController(BaseController):
         Stemformatics_Auth.update_user_status(db,new_user.uid,1)
         redirect(h.url('/contents/registration_submitted'))
 
-#
-#    @Stemformatics_Auth.authorise(db)
-#    def history(self,id):
-#
-#        if id == 'clear':
-#            session['page_history'] = []
-#            session.save()
-#
-#        base_history = session.get('page_history')
-#        c.page_history = base_history[:]
-#        c.page_history.reverse()
-#        c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/auth/history'),'My History']]
-#        # raise Error
-#
-#        return render ('auth/history.mako')
+
+    @Stemformatics_Auth.authorise()
+    @action(renderer = 'templates/auth/history.mako')
+    def history(self):
+        id = self.request.matchdict['id']
+        session = self.request.session
+        if id == 'clear':
+            session['page_history'] = []
+            session.save()
+
+        base_history = session.get('page_history')
+        c.page_history = base_history[:]
+        c.page_history.reverse()
+        c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/auth/history'),'My History']]
+        # raise Error
+
+        return self.deprecated_pylons_data_for_view
 #
 #    def confirm_new_user(self,id):
 #
