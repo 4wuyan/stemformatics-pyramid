@@ -312,11 +312,23 @@ class AuthController(BaseController):
 #######         c.error_message = "There was an issue with sending the email and removing your account, please re-enter a new email or wait three days to try again."
 #######     return self.deprecated_pylons_data_for_view
 #######
+#######  redirect(h.url('/contents/registration_submitted'))
+#######
+#######
 ####### '''
-####### remove the following line after enabling email!
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####### REMOVE THE FOLLOWING TEMPORARY HACK
+#######   AFTER ENABLING EMAIL !!!!!!
+####### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ####### '''
-        Stemformatics_Auth.update_user_status(db,new_user.uid,1)
-        redirect(h.url('/contents/registration_submitted'))
+#######
+        c.title = "(TEST MODE) Registration submitted"
+        c.message = "(TEST MODE)"
+        c.message += 'Thank you for registering! Please confirm your registration by following instructions in your confirmation email.'
+        c.message += '(TEST MODE): CONFORMATION LINK:'
+        c.message += body
+        return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view)
+
 
 
     @Stemformatics_Auth.authorise()
