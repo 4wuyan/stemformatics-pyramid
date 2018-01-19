@@ -448,7 +448,7 @@ class Stemformatics_Auth(object):
         status_dict_by_name = Stemformatics_Auth.get_status_dict_by_name()
         status_id = status_dict_by_name['Inactive']
 
-        if not isinstance(string_of_usernames,str) and not isinstance(string_of_usernames,unicode):
+        if not isinstance(string_of_usernames,str) and not isinstance(string_of_usernames,bytes):
             return []
 
         list_of_usernames  = re.findall("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", string_of_usernames)
@@ -476,7 +476,7 @@ class Stemformatics_Auth(object):
     @staticmethod
     def unsubscribe_users_from_outage_critical_notifications(string_of_usernames):
 
-        if not isinstance(string_of_usernames,str) and not isinstance(string_of_usernames,unicode):
+        if not isinstance(string_of_usernames,str) and not isinstance(string_of_usernames,bytes):
             return []
 
         list_of_usernames  = re.findall("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", string_of_usernames)
@@ -976,7 +976,7 @@ class Stemformatics_Auth(object):
         if not isinstance( uid, int ):
             return public_list # at least return public
 
-        if not isinstance( role, str) and not isinstance(role, unicode):
+        if not isinstance( role, str) and not isinstance(role, bytes):
             role = '' # set role to none
 
         if uid == 0:
@@ -1469,7 +1469,7 @@ class Stemformatics_Auth(object):
     @staticmethod
     def get_gid_by_name(group_name):
 
-        if not isinstance( group_name, str ) and not isinstance(group_name,unicode):
+        if not isinstance( group_name, str ) and not isinstance(group_name,bytes):
             return False
 
 
@@ -1511,7 +1511,7 @@ class Stemformatics_Auth(object):
         if not isinstance( uid, int ):
             return False
 
-        if not isinstance( role, str) and not isinstance(role,unicode):
+        if not isinstance( role, str) and not isinstance(role,bytes):
             role = '' # set role to none
 
         # check if uid is admin or annotator
@@ -1558,7 +1558,7 @@ class Stemformatics_Auth(object):
         if not isinstance( uid, int ):
             return False
 
-        if not isinstance( role, str) and not isinstance(role,unicode):
+        if not isinstance( role, str) and not isinstance(role,bytes):
             role = '' # set role to none
 
         if role in ['admin','annotator']:
