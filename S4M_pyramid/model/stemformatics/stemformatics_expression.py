@@ -1124,7 +1124,7 @@ class Stemformatics_Expression(object):
                 chip_id = sample_labels[sample_count]
                 standard_deviation = Stemformatics_Expression.get_standard_deviation(ds_id,chip_id,probe_id)
                 sample_count += 1
-                g = config["app_globals"]
+                g = config["deprecated_pylons_app_globals"]
                 metaDataValues = g.all_sample_metadata[chip_type][chip_id][ds_id]
                 sample_id = metaDataValues['Replicate Group ID']
                 limitSortby_data = {}
