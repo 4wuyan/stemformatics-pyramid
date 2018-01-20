@@ -106,7 +106,7 @@ Pyramid officially recommends returning a redirect, i.e. a `HTTPFound` object th
 
 As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should **remember to add a `return`** when there isn't one.
 ```python
-# This doesn't work if you HTTPFound is returned, but not raised,
+# This doesn't work if HTTPFound is returned, but not raised,
 # because the response object is discarded after this line.
 redirect(some info)
 
