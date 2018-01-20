@@ -19,12 +19,14 @@ class url_generator:
 
         url = ''
 
-        has_path_string = len(args) > 0
-        if has_path_string:
-            host = self.request.application_url
-            if host[-1] != '/':
-                host += '/'
-            url = host + args[0].lstrip('/')
+        if len(args) > 0:
+            if args[0].startswith('http'):
+                url = args[0]
+            else:
+                host = self.request.application_url
+                if host[-1] != '/':
+                    host += '/'
+                url = host + args[0].lstrip('/')
         else:
             url = self.request.route_url(controller_string, action = action_string)
         return url
