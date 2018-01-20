@@ -102,9 +102,9 @@ The `set_environ()` method of the url generator is designed to work around the `
 
 Redirect
 ------------------------
-Pyramid officially recommend returning a redirect, i.e. a `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of `Traceback` in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
+Pyramid officially recommends returning a redirect, i.e. a `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of Traceback in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
 
-As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should remember to add a `return` when there isn't one.
+As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should **remember to add a `return`** when there isn't one.
 ```python
 # This doesn't work if you HTTPFound is returned, but not raised,
 # because the response object is discarded after this line.
