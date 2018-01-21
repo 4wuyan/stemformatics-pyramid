@@ -474,76 +474,77 @@ class AuthController(BaseController):
             c.title = "Pass phrase Reset"
             return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
-#    @Stemformatics_Auth.authorise()
-#    def update_details(self):
-#        this_user = Stemformatics_Auth.get_user_from_username(db,c.user)
-#
-#        c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/auth/update_details'),'My Account']]
-#
-#        if this_user is None:
-#            c.message = "There has been an error. Please logoff and login and try again"
-#            c.title = "Error with User Authentication"
-#            return render ('workbench/error_message.mako')
-#
-#
-#        if config['guest_username'] == this_user.username:
-#            c.message = "You cannot update the guest user account"
-#            c.title = "No Guest changes"
-#            return render ('workbench/error_message.mako')
-#
-#
-#        update = request.params.get('update')
-#        name = request.params.get('name')
-#        org = request.params.get('organisation')
-#
-#        # Story #158 email notifications
-#        send_email_marketing = request.params.get('send_email_marketing')
-#        send_email_job_notifications = request.params.get('send_email_job_notifications')
-#
-#
-#
-#        password = request.params.get('password')
-#        password_confirm = request.params.get('password_confirm')
-#        c.this_user = this_user
-#
-#
-#        if update is None:
-#            c.error_message = ""
-#            return render ('auth/update_details.mako')
-#
-#        if send_email_job_notifications is not None:
-#            send_email_job_notifications = True
-#        else:
-#            send_email_job_notifications = False
-#
-#        if send_email_marketing is not None:
-#            send_email_marketing = True
-#        else:
-#            send_email_marketing = False
-#
-#
-#        if password != "":
-#
-#            if password != password_confirm:
-#                c.error_message = "Pass phrases are not the same"
-#                return render('auth/update_details.mako')
-#
-#            updated_data = { 'password': password, 'organisation': org, 'full_name': name, 'send_email_marketing': send_email_marketing, 'send_email_job_notifications': send_email_job_notifications }
-#        else:
-#            updated_data = { 'organisation': org, 'full_name': name, 'send_email_marketing': send_email_marketing, 'send_email_job_notifications': send_email_job_notifications}
-#
-#        result = Stemformatics_Auth.update_user(db,this_user.username,updated_data)
-#
-#
-#        if isinstance(result,str):
-#            c.error_message = result
-#        else:
-#            c.error_message = "Successfully updated"
-#
-#
-#        return render ('auth/update_details.mako')
-#
-#
+    @Stemformatics_Auth.authorise()
+    @action()
+    def update_details(self):
+        db = self.db_deprecated_pylons_orm
+        this_user = Stemformatics_Auth.get_user_from_username(db,c.user)
+
+        c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/auth/update_details'),'My Account']]
+
+        if this_user is None:
+            c.message = "There has been an error. Please logoff and login and try again"
+            c.title = "Error with User Authentication"
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        if config['guest_username'] == this_user.username:
+            c.message = "You cannot update the guest user account"
+            c.title = "No Guest changes"
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        request = self.request
+        update = request.params.get('update')
+        name = request.params.get('name')
+        org = request.params.get('organisation')
+
+        # Story #158 email notifications
+        send_email_marketing = request.params.get('send_email_marketing')
+        send_email_job_notifications = request.params.get('send_email_job_notifications')
+
+
+
+        password = request.params.get('password')
+        password_confirm = request.params.get('password_confirm')
+        c.this_user = this_user
+
+
+        if update is None:
+            c.error_message = ""
+            return render_to_response('S4M_pyramid:templates/auth/update_details.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+        if send_email_job_notifications is not None:
+            send_email_job_notifications = True
+        else:
+            send_email_job_notifications = False
+
+        if send_email_marketing is not None:
+            send_email_marketing = True
+        else:
+            send_email_marketing = False
+
+
+        if password != "":
+
+            if password != password_confirm:
+                c.error_message = "Pass phrases are not the same"
+                return render_to_response('S4M_pyramid:templates/auth/update_details.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+            updated_data = { 'password': password, 'organisation': org, 'full_name': name, 'send_email_marketing': send_email_marketing, 'send_email_job_notifications': send_email_job_notifications }
+        else:
+            updated_data = { 'organisation': org, 'full_name': name, 'send_email_marketing': send_email_marketing, 'send_email_job_notifications': send_email_job_notifications}
+
+        result = Stemformatics_Auth.update_user(db,this_user.username,updated_data)
+
+
+        if isinstance(result,str):
+            c.error_message = result
+        else:
+            c.error_message = "Successfully updated"
+
+
+        return render_to_response('S4M_pyramid:templates/auth/update_details.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
+
 #    def unsubscribe_job_notification(self,id):
 #
 #        uid = int(id)
