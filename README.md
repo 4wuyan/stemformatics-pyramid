@@ -94,7 +94,7 @@ URL generator
 Pyramid has it's own mechanism to generate urls, which you should follow. The global `url` generator object you can find in `lib.deprecated_pylons_globals` is used to be compatible with the old Pylons patterns, namely:
 ```python
 url(controller = 'c', action = 'a') == 'https://www.host.com/c/a'
-url('/c/a/') ==  'https://www.host.com/c/a'
+url('/c/a') ==  'https://www.host.com/c/a'
 url('https://example.com/index') == 'https://example.com/index'
 ```
 
