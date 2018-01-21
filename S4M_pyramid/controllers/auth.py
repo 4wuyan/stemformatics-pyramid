@@ -545,33 +545,34 @@ class AuthController(BaseController):
         return render_to_response('S4M_pyramid:templates/auth/update_details.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
-#    def unsubscribe_job_notification(self,id):
-#
-#        uid = int(id)
-#
-#        this_user = Stemformatics_Auth.get_user_from_uid(db,uid)
-#
-#        updated_data = { 'organisation': this_user.organisation, 'full_name': this_user.full_name, 'send_email_marketing': this_user.send_email_marketing, 'send_email_job_notifications': False}
-#
-#        result = Stemformatics_Auth.update_user(db,this_user.username,updated_data)
-#
-#        if isinstance(result,str):
-#            c.title = "Email Job Notification error"
-#            c.message = result
-#        else:
-#            c.title = "Email Job Notifications turned off"
-#            c.message = "You have been successfully turned off email job notifications."
-#
-#
-#
-#        return render ('workbench/error_message.mako')
-#
+    @action(renderer = 'S4M_pyramid:templates/workbench/error_message.mako')
+    def unsubscribe_job_notification(self):
+        id = self.request.matchdict['id']
+
+        uid = int(id)
+
+        db = self.db_deprecated_pylons_orm
+        this_user = Stemformatics_Auth.get_user_from_uid(db,uid)
+
+        updated_data = { 'organisation': this_user.organisation, 'full_name': this_user.full_name, 'send_email_marketing': this_user.send_email_marketing, 'send_email_job_notifications': False}
+
+        result = Stemformatics_Auth.update_user(db,this_user.username,updated_data)
+
+        if isinstance(result,str):
+            c.title = "Email Job Notification error"
+            c.message = result
+        else:
+            c.title = "Email Job Notifications turned off"
+            c.message = "You have been successfully turned off email job notifications."
+
+        return self.deprecated_pylons_data_for_view
+
 #    @staticmethod
 #    def _email_template_need_to_register(site_name,share_type,email,external_base_url,feedback_email):
 #        temp_body = "\n\nNOTE: To access this shared %s you will need to register as %s - please click here >> %s/auth/register?username=%s \n If you already have an account then the user who shared this may be using the wrong email address. Please contact us via %s for more details.\n\nWhen you register:\nIt asks for a passphrase instead of a password.\nA \"pass phrase\" is more secure, and easier to remember. eg. \"yoghurt is just as nice as ice cream\".\nThe pass phrase should be a minimum of 12 characters with at least one space\nYou will receive an email to confirm your registration. Once you have confirmed your email address you can then login to %s.\n\n---------------------------------------------------------\n\n" % (share_type,email,external_base_url,email,feedback_email,site_name)
 #        return temp_body
-#
-#
+
+
 #    def share_gene_set(self,id):
 #
 #        return_message = ""
@@ -668,8 +669,8 @@ class AuthController(BaseController):
 #                return_message += "Successful publishing message sent to "+c.site_name+". "
 #
 #        return return_message
-#
-#
+
+
 #    def share_job(self,id):
 #
 #        return_message = ""
@@ -754,12 +755,12 @@ class AuthController(BaseController):
 #            return_message += "Successful sharing for email address: " + email +". "
 #
 #        return return_message
-#
-#
-#
-#
-#
-#
+
+
+
+
+
+
 #    def share_gene_expression(self):
 #        return_message = ""
 #        to_email = request.params.get('to_email')
