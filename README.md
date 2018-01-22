@@ -93,9 +93,18 @@ URL generator
 
 Pyramid has it's own mechanism to generate urls, which you should follow. The global `url` generator object you can find in `lib.deprecated_pylons_globals` is used to be compatible with the old Pylons patterns, namely:
 ```python
-url(controller = 'c', action = 'a') == 'https://www.host.com/c/a'
-url('/c/a') ==  'https://www.host.com/c/a'
-url('https://example.com/index') == 'https://example.com/index'
+url(controller = 'c', action = 'a')
+    -> '/c/a'
+url(controller = 'c', action = 'a', qualified = True)
+    -> 'https://www.s4m.org/c/a'
+url('/c/a')
+    ->  '/c/a'
+url('c/a')
+    ->  'c/a'
+url('c/a', qualified = True)
+    ->  'https://www.s4m.org/c/a'
+url('https://example.com/index')
+    -> 'https://example.com/index'
 ```
 
 The `set_environ()` method of the url generator is designed to work around the `url.environ['pylons.routes_dict']` dictionary used to get the name of the controller or action. It adopts a naive method in which path info is parsed with the pattern `/{controller}/{action}/{id}`. Those special routing rules should redirect to the "orthodox" url first if they need a correct `url.environ['pylons.routes_dict']['controller']` or `url.environ['pylons.routes_dict']['action']` value.
