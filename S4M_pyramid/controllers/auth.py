@@ -1,3 +1,10 @@
+'''
+page_history only shows the empty template, doesn't show history.
+
+share_* and _email_template_* methods not tested.
+'''
+
+
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
@@ -567,274 +574,283 @@ class AuthController(BaseController):
 
         return self.deprecated_pylons_data_for_view
 
-#    @staticmethod
-#    def _email_template_need_to_register(site_name,share_type,email,external_base_url,feedback_email):
-#        temp_body = "\n\nNOTE: To access this shared %s you will need to register as %s - please click here >> %s/auth/register?username=%s \n If you already have an account then the user who shared this may be using the wrong email address. Please contact us via %s for more details.\n\nWhen you register:\nIt asks for a passphrase instead of a password.\nA \"pass phrase\" is more secure, and easier to remember. eg. \"yoghurt is just as nice as ice cream\".\nThe pass phrase should be a minimum of 12 characters with at least one space\nYou will receive an email to confirm your registration. Once you have confirmed your email address you can then login to %s.\n\n---------------------------------------------------------\n\n" % (share_type,email,external_base_url,email,feedback_email,site_name)
-#        return temp_body
+    @staticmethod
+    def _email_template_need_to_register(site_name,share_type,email,external_base_url,feedback_email):
+        temp_body = "\n\nNOTE: To access this shared %s you will need to register as %s - please click here >> %s/auth/register?username=%s \n If you already have an account then the user who shared this may be using the wrong email address. Please contact us via %s for more details.\n\nWhen you register:\nIt asks for a passphrase instead of a password.\nA \"pass phrase\" is more secure, and easier to remember. eg. \"yoghurt is just as nice as ice cream\".\nThe pass phrase should be a minimum of 12 characters with at least one space\nYou will receive an email to confirm your registration. Once you have confirmed your email address you can then login to %s.\n\n---------------------------------------------------------\n\n" % (share_type,email,external_base_url,email,feedback_email,site_name)
+        return temp_body
 
 
-#    def share_gene_set(self,id):
-#
-#        return_message = ""
-#        gene_set_id = int(id)
-#        to_email = request.params.get('to_email')
-#        from_email = config['from_email']
-#        subject = request.params.get('subject')
-#        body = request.params.get('body')
-#        from_uid = c.uid
-#        publish = request.params.get('publish')
-#
-#        available = Stemformatics_Auth.check_real_user(from_uid)
-#        if not available:
-#            return_message += "This email could not be sent. You need to be logged in with your own email address to be able to share links."
-#            return return_message
-#
-#        # convert to_email to be a uid - can be multiple separated by a comma
-#        to_email = to_email.split(',')
-#
-#        external_base_url = url('/',qualified=True)
-#
-#        for email in to_email:
-#
-#            if email == '':
-#                continue
-#
-#
-#            return_result = Stemformatics_Auth.return_uid_from_email_for_sharing(db,email)
-#            return_user_id = return_result[0]
-#            new_user = return_result[1]
-#
-#            if new_user:
-#                share_type = "gene list"
-#                temp_body = body + self._email_template_need_to_register(c.site_name,share_type,email,external_base_url,c.feedback_email)
-#            else:
-#                temp_body = body
-#
-#
-#
-#            # error message - should be an integer if working
-#            if isinstance(return_user_id,str):
-#                if publish is None:
-#                    return_message += "Error sharing for email address: " + email + ". "
-#                else:
-#                    return_message += "Error sending publishing message to "+c.site_name+". "
-#                continue
-#
-#            # copy gene set
-#            to_uid = return_user_id
-#
-#            result = Stemformatics_Gene_Set.copy_gene_set(db,gene_set_id,from_uid,to_uid)
-#
-#            d = datetime.now()
-#
-#            gene_set = result[0]
-#            if publish is None:
-#                gene_set_name = gene_set.gene_set_name + ' (shared from '+ c.user +' '+ c.full_name +')' + str(datetime.now())
-#                gene_set_description = ' (shared from '+ c.user +' '+ c.full_name +' on ' + d.strftime("%d-%m-%Y %H:%M:%S") + ')'
-#            else:
-#                gene_set_description = request.params.get('gene_set_description')
-#                gene_set_name = gene_set.gene_set_name + ' (Permission to publish from '+ c.user +' '+ c.full_name +')' + str(datetime.now())
-#
-#
-#            db_id = gene_set.db_id
-#            mapping_genes = result[1]
-#            list_of_genes = [ gene.gene_id for gene in mapping_genes]
-#
-#            result = Stemformatics_Gene_Set.addGeneSet(db,to_uid,gene_set_name,gene_set_description,db_id,list_of_genes)
-#
-#            if result is None:
-#                if publish is None:
-#                    return_message += "Error sharing by copying gene set for email address: " + email + ". "
-#                else:
-#                    return_message += "Error publishing by copying gene set to Stemformtics. "
-#                continue
-#
-#            # create a notifications record for that user - can skip this for now
-#
-#            # send out an email
-#            sender  = config['from_email']
-#            recipient = email
-#            try:
-#                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
-#            except:
-#                if publish is None:
-#                    return_message += "Successful sharing but error in sending email for email address: " + email +". "
-#                else:
-#                    return_message += "Successful copying for publishing but error in sending email to "+c.site_name+". Please email manually. "
-#                continue
-#
-#            if publish is None:
-#                return_message += "Successful sharing for email address: " + email +". "
-#            else:
-#                return_message += "Successful publishing message sent to "+c.site_name+". "
-#
-#        return return_message
+    def share_gene_set(self):
+        id = self.request.matchdict['id']
+        request = self.request
+        db = self.db_deprecated_pylons_orm
+
+        return_message = ""
+        gene_set_id = int(id)
+        to_email = request.params.get('to_email')
+        from_email = config['from_email']
+        subject = request.params.get('subject')
+        body = request.params.get('body')
+        from_uid = c.uid
+        publish = request.params.get('publish')
+
+        available = Stemformatics_Auth.check_real_user(from_uid)
+        if not available:
+            return_message += "This email could not be sent. You need to be logged in with your own email address to be able to share links."
+            return return_message
+
+        # convert to_email to be a uid - can be multiple separated by a comma
+        to_email = to_email.split(',')
+
+        external_base_url = url('/',qualified=True)
+
+        for email in to_email:
+
+            if email == '':
+                continue
 
 
-#    def share_job(self,id):
-#
-#        return_message = ""
-#        job_id = int(id)
-#        to_email = request.params.get('to_email')
-#        from_email = config['from_email']
-#        subject = request.params.get('subject')
-#        body = request.params.get('body')
-#        from_uid = c.uid
-#
-#        available = Stemformatics_Auth.check_real_user(from_uid)
-#        if not available:
-#            return_message += "This email could not be sent. You need to be logged in with your own email address to be able to share links."
-#            return return_message
-#
-#
-#        # convert to_email to be a uid - can be multiple separated by a comma
-#        to_email = to_email.split(',')
-#
-#        external_base_url = url('/',qualified=True)
-#
-#        for email in to_email:
-#
-#            if email == '':
-#                continue
-#
-#            return_result = Stemformatics_Auth.return_uid_from_email_for_sharing(db,email)
-#            return_user_id = return_result[0]
-#            new_user = return_result[1]
-#
-#            if new_user:
-#                share_type = "job"
-#                temp_body = body + self._email_template_need_to_register(c.site_name,share_type,email,external_base_url,c.feedback_email)
-#            else:
-#                temp_body = body
-#
-#
-#            # error message - should be an integer if working
-#            if isinstance(return_user_id,str):
-#                return_message += "Error sharing for email address: " + email +". "
-#                continue
-#
-#
-#            # check if private dataset
-#            check_private = Stemformatics_Job.check_shared_user_can_access_dataset(db,job_id,return_user_id)
-#
-#            if not check_private:
-#                return_message += "This email address: " + email +" does not have access to this private dataset. "
-#                continue
-#
-#
-#
-#
-#            share_type = 'Job'
-#            share_id = job_id
-#            to_uid = return_user_id
-#
-#            # check shared resource exists first
-#            check_result = Stemformatics_Shared_Resource.check_shared_resource(db,share_type,share_id,to_uid)
-#
-#            if len(check_result) != 0:
-#                return_message += "User with email address: " + email +" already has access to this job. "
-#                continue
-#
-#            result = Stemformatics_Shared_Resource.add_shared_resource(db,share_type,share_id,from_uid,to_uid)
-#
-#            if result is None:
-#                return_message += "Error creating shared resource for email address: " + email +". "
-#                continue
-#
-#            # create a notifications record for that user - can skip this for now
-#
-#            # send out an email
-#            sender  = config['from_email']
-#            recipient = email
-#            try:
-#                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
-#            except:
-#                return_message += "Successful sharing but error in sending email for email address: " + email +". "
-#                continue
-#
-#            return_message += "Successful sharing for email address: " + email +". "
-#
-#        return return_message
+            return_result = Stemformatics_Auth.return_uid_from_email_for_sharing(db,email)
+            return_user_id = return_result[0]
+            new_user = return_result[1]
+
+            if new_user:
+                share_type = "gene list"
+                temp_body = body + self._email_template_need_to_register(c.site_name,share_type,email,external_base_url,c.feedback_email)
+            else:
+                temp_body = body
+
+
+
+            # error message - should be an integer if working
+            if isinstance(return_user_id,str):
+                if publish is None:
+                    return_message += "Error sharing for email address: " + email + ". "
+                else:
+                    return_message += "Error sending publishing message to "+c.site_name+". "
+                continue
+
+            # copy gene set
+            to_uid = return_user_id
+
+            result = Stemformatics_Gene_Set.copy_gene_set(db,gene_set_id,from_uid,to_uid)
+
+            d = datetime.now()
+
+            gene_set = result[0]
+            if publish is None:
+                gene_set_name = gene_set.gene_set_name + ' (shared from '+ c.user +' '+ c.full_name +')' + str(datetime.now())
+                gene_set_description = ' (shared from '+ c.user +' '+ c.full_name +' on ' + d.strftime("%d-%m-%Y %H:%M:%S") + ')'
+            else:
+                gene_set_description = request.params.get('gene_set_description')
+                gene_set_name = gene_set.gene_set_name + ' (Permission to publish from '+ c.user +' '+ c.full_name +')' + str(datetime.now())
+
+
+            db_id = gene_set.db_id
+            mapping_genes = result[1]
+            list_of_genes = [ gene.gene_id for gene in mapping_genes]
+
+            result = Stemformatics_Gene_Set.addGeneSet(db,to_uid,gene_set_name,gene_set_description,db_id,list_of_genes)
+
+            if result is None:
+                if publish is None:
+                    return_message += "Error sharing by copying gene set for email address: " + email + ". "
+                else:
+                    return_message += "Error publishing by copying gene set to Stemformtics. "
+                continue
+
+            # create a notifications record for that user - can skip this for now
+
+            # send out an email
+            sender  = config['from_email']
+            recipient = email
+            try:
+                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+            except:
+                if publish is None:
+                    return_message += "Successful sharing but error in sending email for email address: " + email +". "
+                else:
+                    return_message += "Successful copying for publishing but error in sending email to "+c.site_name+". Please email manually. "
+                continue
+
+            if publish is None:
+                return_message += "Successful sharing for email address: " + email +". "
+            else:
+                return_message += "Successful publishing message sent to "+c.site_name+". "
+
+        return return_message
+
+
+    def share_job(self):
+        request = self.request
+        id = request.matchdict['id']
+        db = self.db_deprecated_pylons_orm
+
+        return_message = ""
+        job_id = int(id)
+        to_email = request.params.get('to_email')
+        from_email = config['from_email']
+        subject = request.params.get('subject')
+        body = request.params.get('body')
+        from_uid = c.uid
+
+        available = Stemformatics_Auth.check_real_user(from_uid)
+        if not available:
+            return_message += "This email could not be sent. You need to be logged in with your own email address to be able to share links."
+            return return_message
+
+
+        # convert to_email to be a uid - can be multiple separated by a comma
+        to_email = to_email.split(',')
+
+        external_base_url = url('/',qualified=True)
+
+        for email in to_email:
+
+            if email == '':
+                continue
+
+            return_result = Stemformatics_Auth.return_uid_from_email_for_sharing(db,email)
+            return_user_id = return_result[0]
+            new_user = return_result[1]
+
+            if new_user:
+                share_type = "job"
+                temp_body = body + self._email_template_need_to_register(c.site_name,share_type,email,external_base_url,c.feedback_email)
+            else:
+                temp_body = body
+
+
+            # error message - should be an integer if working
+            if isinstance(return_user_id,str):
+                return_message += "Error sharing for email address: " + email +". "
+                continue
+
+
+            # check if private dataset
+            check_private = Stemformatics_Job.check_shared_user_can_access_dataset(db,job_id,return_user_id)
+
+            if not check_private:
+                return_message += "This email address: " + email +" does not have access to this private dataset. "
+                continue
 
 
 
 
+            share_type = 'Job'
+            share_id = job_id
+            to_uid = return_user_id
+
+            # check shared resource exists first
+            check_result = Stemformatics_Shared_Resource.check_shared_resource(db,share_type,share_id,to_uid)
+
+            if len(check_result) != 0:
+                return_message += "User with email address: " + email +" already has access to this job. "
+                continue
+
+            result = Stemformatics_Shared_Resource.add_shared_resource(db,share_type,share_id,from_uid,to_uid)
+
+            if result is None:
+                return_message += "Error creating shared resource for email address: " + email +". "
+                continue
+
+            # create a notifications record for that user - can skip this for now
+
+            # send out an email
+            sender  = config['from_email']
+            recipient = email
+            try:
+                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+            except:
+                return_message += "Successful sharing but error in sending email for email address: " + email +". "
+                continue
+
+            return_message += "Successful sharing for email address: " + email +". "
+
+        return return_message
 
 
-#    def share_gene_expression(self):
-#        return_message = ""
-#        to_email = request.params.get('to_email')
-#        from_email = config['from_email']
-#        subject = request.params.get('subject')
-#        body = request.params.get('body')
-#        ds_id = request.params.get('ds_id')
-#        gene_set_id = request.params.get('gene_set_id')
-#
-#        from_uid = c.uid
-#        available = Stemformatics_Auth.check_real_user(from_uid)
-#        if not available:
-#            return_message += "This email could not be sent. You need to be logged in with your own email address to be able to share links."
-#            return return_message
-#
-#        ds_id = int(ds_id)
-#        # convert to_email to be a uid - can be multiple separated by a comma
-#        to_email = to_email.split(',')
-#
-#        external_base_url = url('/',qualified=True)
-#
-#        for email in to_email:
-#
-#            if email == '':
-#                continue
-#
-#            return_result = Stemformatics_Auth.return_uid_from_email_for_sharing(db,email)
-#            return_user_id = return_result[0]
-#            new_user = return_result[1]
-#
-#            if new_user:
-#                share_type = "gene expression graph"
-#                temp_body = body + self._email_template_need_to_register(c.site_name,share_type,email,external_base_url,c.feedback_email)
-#            else:
-#                temp_body = body
-#
-#
-#            # error message - should be an integer if working
-#            if isinstance(return_user_id,str):
-#                return_message += "Error sharing for email address: " + email +". "
-#                continue
-#
-#
-#            # check if private dataset
-#            #check_private = Stemformatics_Job.check_shared_user_can_access_dataset(db,job_id,return_user_id)
-#            available = Stemformatics_Dataset.check_dataset_availability(db,return_user_id,ds_id)
-#
-#            if not available:
-#                return_message += "This email address: " + email +" does not have access to this private dataset. "
-#                continue
-#
-#
-#            try:
-#                gene_set_id = int(gene_set_id)
-#            except:
-#                gene_set_id = None
-#
-#            if gene_set_id is not None and gene_set_id != 0:
-#                available = Stemformatics_Gene_Set.check_gene_set_availability(gene_set_id,return_user_id)
-#                if not available:
-#                    return_message += "This email address: " + email +" does not have access to this gene list. You can only share public gene lists at this time. "
-#                    continue
-#
-#
-#            # send out an email
-#            sender  = config['from_email']
-#            recipient = email
-#            try:
-#                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
-#            except:
-#                return_message += "Error in sending email for email address: " + email +". "
-#                continue
-#
-#            return_message += "Successful sharing for email address: " + email +". "
-#
-#        return return_message
-#
+
+
+
+
+    def share_gene_expression(self):
+        request = self.request
+        db = self.db_deprecated_pylons_orm
+
+        return_message = ""
+        to_email = request.params.get('to_email')
+        from_email = config['from_email']
+        subject = request.params.get('subject')
+        body = request.params.get('body')
+        ds_id = request.params.get('ds_id')
+        gene_set_id = request.params.get('gene_set_id')
+
+        from_uid = c.uid
+        available = Stemformatics_Auth.check_real_user(from_uid)
+        if not available:
+            return_message += "This email could not be sent. You need to be logged in with your own email address to be able to share links."
+            return return_message
+
+        ds_id = int(ds_id)
+        # convert to_email to be a uid - can be multiple separated by a comma
+        to_email = to_email.split(',')
+
+        external_base_url = url('/',qualified=True)
+
+        for email in to_email:
+
+            if email == '':
+                continue
+
+            return_result = Stemformatics_Auth.return_uid_from_email_for_sharing(db,email)
+            return_user_id = return_result[0]
+            new_user = return_result[1]
+
+            if new_user:
+                share_type = "gene expression graph"
+                temp_body = body + self._email_template_need_to_register(c.site_name,share_type,email,external_base_url,c.feedback_email)
+            else:
+                temp_body = body
+
+
+            # error message - should be an integer if working
+            if isinstance(return_user_id,str):
+                return_message += "Error sharing for email address: " + email +". "
+                continue
+
+
+            # check if private dataset
+            #check_private = Stemformatics_Job.check_shared_user_can_access_dataset(db,job_id,return_user_id)
+            available = Stemformatics_Dataset.check_dataset_availability(db,return_user_id,ds_id)
+
+            if not available:
+                return_message += "This email address: " + email +" does not have access to this private dataset. "
+                continue
+
+
+            try:
+                gene_set_id = int(gene_set_id)
+            except:
+                gene_set_id = None
+
+            if gene_set_id is not None and gene_set_id != 0:
+                available = Stemformatics_Gene_Set.check_gene_set_availability(gene_set_id,return_user_id)
+                if not available:
+                    return_message += "This email address: " + email +" does not have access to this gene list. You can only share public gene lists at this time. "
+                    continue
+
+
+            # send out an email
+            sender  = config['from_email']
+            recipient = email
+            try:
+                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+            except:
+                return_message += "Error in sending email for email address: " + email +". "
+                continue
+
+            return_message += "Successful sharing for email address: " + email +". "
+
+        return return_message
+
