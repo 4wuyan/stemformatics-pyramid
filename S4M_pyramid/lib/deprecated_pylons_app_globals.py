@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
 from sqlalchemy import create_engine
 import sqlsoup
-
+from S4M_pyramid.config import config
 
 class Globals(object):
     """Globals acts as a container for objects available throughout the
@@ -44,6 +44,6 @@ class Globals(object):
         """
         #Stemformatics_Admin.trigger_update_configs()
 
-
-engine = create_engine('postgresql://portaladmin@localhost/portal_beta')
+#setup the orm variable
+engine = create_engine(config['orm_conn_string'])
 db_deprecated_pylons_orm = sqlsoup.SQLSoup(engine)
