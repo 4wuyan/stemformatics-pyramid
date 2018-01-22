@@ -289,7 +289,7 @@ class ExpressionsController(BaseController):
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
     
-    @action(render="/expressions/choose_dataset.mako")
+    @action(renderer="/expressions/choose_dataset.mako")
     def choose_dataset(self):
         graphType = self.request.params.get("graphType","")
         gene = self.request.params.get("gene","")
