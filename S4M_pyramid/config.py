@@ -9,6 +9,7 @@ config = {
     # But for now, we just do some hack here, since we don't have access to that database table.
     'validation_regex': '(?=^.{12,}$)(?=.*\s+).*$',
     'from_email': 'noreply@stemformatics.org',
+    'secret_hash_parameter_for_unsubscribe': 'I LOVE WY',
 }
 
 conn_string = config['psycopg2_conn_string']

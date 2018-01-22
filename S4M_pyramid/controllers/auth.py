@@ -554,7 +554,16 @@ class AuthController(BaseController):
 
     @action(renderer = 'S4M_pyramid:templates/workbench/error_message.mako')
     def unsubscribe_job_notification(self):
-        id = self.request.matchdict['id']
+        id_and_sha1 = self.request.matchdict['id'].split('_')
+        id = id_and_sha1[0]
+        sha1 = id_and_sha1[1]
+
+        c.title = "Email Job Notifications turned off"
+        c.message = "You have been successfully turned off email job notifications."
+
+        # For security, let it pretend to be successful, if uid doesn't match sha1
+        if Stemformatics_Auth.get_secret_unsubscribe_sha1(id) != sha1:
+            return self.deprecated_pylons_data_for_view
 
         uid = int(id)
 
@@ -568,10 +577,6 @@ class AuthController(BaseController):
         if isinstance(result,str):
             c.title = "Email Job Notification error"
             c.message = result
-        else:
-            c.title = "Email Job Notifications turned off"
-            c.message = "You have been successfully turned off email job notifications."
-
         return self.deprecated_pylons_data_for_view
 
     @staticmethod
