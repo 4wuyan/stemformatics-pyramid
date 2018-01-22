@@ -9,10 +9,13 @@ from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gen
 from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
 from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
 from S4M_pyramid.lib.deprecated_pylons_globals import url
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
 from pyramid.renderers import render_to_response
+import S4M_pyramid.lib.helpers as h
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
+import pyramid.httpexceptions as e
 
 
 class ExpressionsController(BaseController):
@@ -76,9 +79,10 @@ class ExpressionsController(BaseController):
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if result != "1":
+        if isinstance(result,e.HTTPFound):
+            return result
+        elif result != "1":
             return self._temp.render
-
         """ This sets the type of graph that will be available. So you can have options
         such as miRNA,gene_set_id  and probeID with an appropriate ref_id.  """
         self._temp.ref_type = 'ensemblID'
@@ -143,9 +147,7 @@ class ExpressionsController(BaseController):
 
         # now check the dataset status
         if self._temp.dataset_status != "Available":
-            pass
-            #redirect(url(controller='contents', action='index'), code=404)
-            #redirect is not yet implemented
+            redirect(url(controller='contents', action='index'), code=404)
         if ref_type == "ensemblID":
             result = self._check_gene_status()  #This is in lib/base.py
             if result == "0":
@@ -289,4 +291,23 @@ class ExpressionsController(BaseController):
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
     
+    @action(renderer="/expressions/choose_dataset.mako")
+    def choose_dataset(self):
+        graphType = self.request.params.get("graphType","")
+        gene = self.request.params.get("gene","")
+        db_id = self.request.params.get("db_id","")
+        gene_set_id = self.request.params.get("gene_set_id","")
+        c.db_id = int(db_id)
+        db=self.db_deprecated_pylons_orm
 
+        if gene_set_id is None:
+            c.url = h.url('/expressions/result?graphType='+str(graphType)+'&gene='+str(gene)+'&db_id='+str(db_id))
+            show_limited = True
+
+        else:
+            c.url = h.url('/workbench/histogram_wizard?gene_set_id='+str(gene_set_id)+'&gene='+str(gene)+'&db_id='+str(db_id))
+        c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+
+        c.species = Stemformatics_Dataset.returnSpecies(c.db_id)
+
+        return self.deprecated_pylons_data_for_view

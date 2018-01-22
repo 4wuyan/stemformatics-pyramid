@@ -47,6 +47,7 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
+    #load_enviroment now loads app_globals and the ORM variable prior to server start-up
     deprecated_pylons_environment.load_environment()
     return config.make_wsgi_app()
 

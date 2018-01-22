@@ -11,10 +11,9 @@ from S4M_pyramid.templates.external_db import *
 from S4M_pyramid.model import init_model
 import json
 import socket
-from sqlalchemy import create_engine
-import sqlsoup
 import re
 from pyramid.renderers import render_to_response
+
 
 
 class tempData(object):
@@ -30,8 +29,7 @@ class BaseController():
 
         self._temp = tempData()
         #set up DB var for ORM
-        engine = create_engine(config['orm_conn_string'])
-        self.db_deprecated_pylons_orm = sqlsoup.SQLSoup(engine)
+        self.db_deprecated_pylons_orm = config["deprecated_pylons_orm"]
         #set up the protocol
         self.request=request
         self.response=request.response
