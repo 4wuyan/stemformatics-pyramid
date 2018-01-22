@@ -15,6 +15,7 @@ import formencode.validators as fe
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
+import pyramid.httpexceptions as httpinstance
 
 
 class ExpressionsController(BaseController):
@@ -78,10 +79,10 @@ class ExpressionsController(BaseController):
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if result == "0" or result == "many":
-            return self._temp.render
-        if result != "1":#meaning that a redirect exception is thrown, just return the exception
+        if isinstance(result,httpinstance):
             return result
+        elif result != "1":
+            return self._temp.render
         """ This sets the type of graph that will be available. So you can have options
         such as miRNA,gene_set_id  and probeID with an appropriate ref_id.  """
         self._temp.ref_type = 'ensemblID'
