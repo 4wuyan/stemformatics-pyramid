@@ -15,7 +15,7 @@ import formencode.validators as fe
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
-import pyramid.httpexceptions as httpinstance
+import pyramid.httpexceptions as e
 
 
 class ExpressionsController(BaseController):
@@ -79,7 +79,7 @@ class ExpressionsController(BaseController):
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if isinstance(result,httpinstance):
+        if isinstance(result,e.HTTPFound):
             return result
         elif result != "1":
             return self._temp.render
