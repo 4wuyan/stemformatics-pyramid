@@ -78,9 +78,10 @@ class ExpressionsController(BaseController):
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if result != "1":
+        if result == "0" or result == "many":
             return self._temp.render
-
+        if result != "1":#meaning that a redirect exception is thrown, just return the exception
+            return result
         """ This sets the type of graph that will be available. So you can have options
         such as miRNA,gene_set_id  and probeID with an appropriate ref_id.  """
         self._temp.ref_type = 'ensemblID'

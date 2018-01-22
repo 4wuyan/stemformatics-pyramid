@@ -14,7 +14,6 @@ import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
-from S4M_pyramid.lib.state import *
 from S4M_pyramid.config import config
 import subprocess
 

@@ -4,7 +4,6 @@ log = logging.getLogger(__name__)
 import sqlalchemy as SA
 from sqlalchemy import or_, and_, desc
 from datetime import datetime, timedelta
-from S4M_pyramid.lib.state import *
 from S4M_pyramid.model.stemformatics import *
 import psycopg2,psycopg2.extras,_pickle as cPickle
 
