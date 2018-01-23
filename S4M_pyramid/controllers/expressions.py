@@ -348,7 +348,7 @@ class ExpressionsController(BaseController):
 
             c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
                              ['', 'MultiGene Expression Graph - Choose Gene List (Step 1 of 2)']]
-            return render_to_response('S4M_pyramid:workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         else:
             gene_set_id = int(gene_set_id)
@@ -373,7 +373,7 @@ class ExpressionsController(BaseController):
                                  h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(
                                      gene_set_id)), 'MultiGene Expression Graph - Choose Dataset (Step 2 of 2)']]
 
-            return render_to_response('S4M_Pyramid:workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return render_to_response('S4M_Pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, ds_id, c.uid)
         c.probe_name = Stemformatics_Dataset.get_probe_name(ds_id)
@@ -412,7 +412,7 @@ class ExpressionsController(BaseController):
                 c.url = h.url(
                     '/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(
                         gene_set_id) + '&datasetID=' + str(datasetID)) + '&sortBy='
-                return render_to_response('workbench/generic_choose.mako',self.deprecated_pylons_data_for_view,request=self.request)
+                return render_to_response('S4M_pyramid:templates/workbench/generic_choose.mako',self.deprecated_pylons_data_for_view,request=self.request)
             else:
                 comparison_type = c.comparison_type[0]
 
@@ -483,4 +483,4 @@ class ExpressionsController(BaseController):
                       'extra_ref_type': 'gene_set_items', 'extra_ref_id': json.dumps(gene_names)}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return render_to_response('S4M_Pyramid:expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
+        return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
