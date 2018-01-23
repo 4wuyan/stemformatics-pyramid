@@ -74,6 +74,7 @@ class WorkbenchController(BaseController):
 #
     @action(renderer = 'templates/workbench/index.mako')
     def index(self):
+        c = self.c
         c.title = c.site_name+' Analyses - Home'
         return self.deprecated_pylons_data_for_view
 #

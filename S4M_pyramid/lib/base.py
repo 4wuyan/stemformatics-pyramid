@@ -1,4 +1,3 @@
-from S4M_pyramid.lib.empty_class import EmptyClass as c
 import S4M_pyramid.lib.helpers as h
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import url
@@ -24,6 +23,8 @@ class BaseController():
 
     #this is invoked every time an action is called
     def __init__(self, request):
+        self.c = request.tmpl_context
+        c = self.c
         # set up url.environ
         url.set_environ(request)
 
@@ -108,9 +109,10 @@ class BaseController():
             session['page_history'] = []
 
         c.page_history = session.get('page_history')
-        self.deprecated_pylons_data_for_view = {'c': c, 'h': h, 'url':url, 'config':config}
+        self.deprecated_pylons_data_for_view = {'c': self.c, 'h': h, 'url':url, 'config':config}
 
     def _check_dataset_status(self):
+        c = self.c
         db = self.db_deprecated_pylons_orm
         dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
 
@@ -130,6 +132,7 @@ class BaseController():
 
 
     def _check_gene_status(self):
+        c = self.c
         ds_id = self._temp.ds_id
         db_id = self._temp.db_id
         this_url = self._temp.url
