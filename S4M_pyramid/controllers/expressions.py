@@ -1,6 +1,4 @@
 from pyramid_handlers import action
-# c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
-from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
@@ -9,10 +7,13 @@ from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gen
 from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
 from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
 from S4M_pyramid.lib.deprecated_pylons_globals import url
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
 from pyramid.renderers import render_to_response
+import S4M_pyramid.lib.helpers as h
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
+import pyramid.httpexceptions as e
 
 
 class ExpressionsController(BaseController):
@@ -21,6 +22,7 @@ class ExpressionsController(BaseController):
 
     def __init__(self,request):
         super().__init__(request)
+        c = self.request.c
         c.debug = "True"#turned on debug for result.mako
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
@@ -31,6 +33,7 @@ class ExpressionsController(BaseController):
 
     @action(renderer="templates/expressions/index.mako")
     def index(self):
+        c = self.request.c
         c.title = c.site_name + ' Graphs - Home'
         return self.deprecated_pylons_data_for_view
 
@@ -64,6 +67,7 @@ class ExpressionsController(BaseController):
     renderer, therefore, render_to_response is used inside the function to respond using different
     renderer'''
     def result(self):
+        c = self.request.c
         """ These three functions set what is needed in self._type to be
         used in the graph object orientated code  """
         self._get_inputs_for_graph()  # This is in controllers/expressions.py
@@ -76,9 +80,10 @@ class ExpressionsController(BaseController):
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if result != "1":
+        if isinstance(result,e.HTTPFound):
+            return result
+        elif result != "1":
             return self._temp.render
-
         """ This sets the type of graph that will be available. So you can have options
         such as miRNA,gene_set_id  and probeID with an appropriate ref_id.  """
         self._temp.ref_type = 'ensemblID'
@@ -105,7 +110,7 @@ class ExpressionsController(BaseController):
             c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db, c.uid, c.db_id)
             c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db, c.db_id, c.ref_id)
             c.data = Stemformatics_Gene.get_genes(db, c.species_dict, self._temp.geneSearch, c.db_id, True, None)
-  
+
         show_limited = True
         if self._temp.ref_type == 'miRNA':
             c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited,
@@ -122,9 +127,10 @@ class ExpressionsController(BaseController):
                       'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
-    
+
     @action(renderer="json")
     def graph_data(self):
+        c = self.request.c
         # check the gene/ dataset validity
         # than get the data
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
@@ -143,9 +149,7 @@ class ExpressionsController(BaseController):
 
         # now check the dataset status
         if self._temp.dataset_status != "Available":
-            pass
-            #redirect(url(controller='contents', action='index'), code=404)
-            #redirect is not yet implemented
+            redirect(url(controller='contents', action='index'), code=404)
         if ref_type == "ensemblID":
             result = self._check_gene_status()  #This is in lib/base.py
             if result == "0":
@@ -182,6 +186,7 @@ class ExpressionsController(BaseController):
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
     @action(renderer="json")
     def dataset_metadata(self):
+        c = self.request.c
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
         error_data =""
         self._check_dataset_status()
@@ -193,7 +198,7 @@ class ExpressionsController(BaseController):
 
         json_dataset_metadata = json.dumps(dataset_metadata)
         return json.dumps({"error":error_data,"data":json_dataset_metadata})
-    
+
     def _get_inputs_for_graph(self):
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
@@ -265,6 +270,7 @@ class ExpressionsController(BaseController):
         c.url = self._temp.url
 
     def probe_result(self):
+        c = self.request.c
         db=self.db_deprecated_pylons_orm
         self._get_inputs_for_graph()
         c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
@@ -288,5 +294,25 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
-    
 
+    @action(renderer="/expressions/choose_dataset.mako")
+    def choose_dataset(self):
+        c = self.request.c
+        graphType = self.request.params.get("graphType","")
+        gene = self.request.params.get("gene","")
+        db_id = self.request.params.get("db_id","")
+        gene_set_id = self.request.params.get("gene_set_id","")
+        c.db_id = int(db_id)
+        db=self.db_deprecated_pylons_orm
+
+        if gene_set_id is None:
+            c.url = h.url('/expressions/result?graphType='+str(graphType)+'&gene='+str(gene)+'&db_id='+str(db_id))
+            show_limited = True
+
+        else:
+            c.url = h.url('/workbench/histogram_wizard?gene_set_id='+str(gene_set_id)+'&gene='+str(gene)+'&db_id='+str(db_id))
+        c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+
+        c.species = Stemformatics_Dataset.returnSpecies(c.db_id)
+
+        return self.deprecated_pylons_data_for_view

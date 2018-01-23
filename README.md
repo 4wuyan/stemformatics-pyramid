@@ -84,7 +84,7 @@ response = request.response
 session = request.session
 ```
 
-A shortcut `magical_global` object can be found in `lib.deprecated_pylons_globals`.
+A shortcut `magic_globals` object can be found in `lib.deprecated_pylons_globals`.
 
 For more information, see [this page](https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/pylons/request.html).
 
@@ -121,5 +121,46 @@ redirect(some info)
 
 # Remember to add a return
 return redirect(some info)
+```
+
+tmpl\_context as c
+--------------------------------
+
+It looks like `c` in Pylons is a global container, while not exactly.
+Actually it's **local to each request** (refer to
+[this page](https://thejimmyg.github.io/pylonsbook/en/1.0/exploring-pylons.html#context-object),
+[this page](https://docs.pylonsproject.org/projects/pylons-webframework/en/latest/views.html#strict-vs-attribute-safe-tmpl-context-objects),
+and *pylons.tmpl\_context* in [this page](https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/pylons/request.html)),
+which means attributes set by different controller actions do not interfere with each other.
+
+That means we shouldn't simply use a global empty class as a container to mimic the behaviours of `c` in Pyramid. Potentially, there might be 2 risks:
+
+1. If a request invokes an action that modifies some attribute of `c`, say, `c.some_attr`, then `c.some_attr` will not be reset to default as it should in Pylons,
+which might affect the behaviour of upcoming requests.
+2. In a multithreaded environment, the attributes of `c` set by one request might be modified by another concurrent request before a response is successfully returned.
+
+I think Pyramid does the right thing: If `c` is local to each request, then why not make `c` an attribute of the `request` object?
+Seeing `self.request.c` in a class definition feels way better than a `from pylons import tmpl_context as c` on the top, as *the Zen of Python* tells us:
+> Explicit is better than implicit.
+> Simple is better than complex.
+
+### Access `c` in controllers
+
+In BaseContrller, we have set `self.request.c = self.request.tmpl_context` in the constructor.
+Hence **remember to add** `c = self.request.c` at the beginning of an action that uses `c`.
+
+### Access `c` in models
+
+Unfortunately, though very rarely, `c` is still occasionally accessed in the models.
+Information provided by `c` is based on each incoming request, thus we need to use our omnipotent `magic_globals`, which helps us catch the current request.
+```python
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
+
+### other code ###
+
+magic_globals.fetch()
+c = magic_globals.c
+
+### some code that sets attributes of c ###
 ```
 

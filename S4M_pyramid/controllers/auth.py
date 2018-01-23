@@ -14,9 +14,6 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 
-# c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
-from S4M_pyramid.lib.empty_class import EmptyClass as c
-
 from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
 
 # Import the email modules we'll need
@@ -39,8 +36,8 @@ from pyramid.renderers import render_to_response
 class AuthController(BaseController):
 
     def __init__(self, request):
-
         super(AuthController, self).__init__(request)
+        c = self.request.c
 
         db = self.db_deprecated_pylons_orm
         # clear out expired users first
@@ -52,6 +49,7 @@ class AuthController(BaseController):
 
     @action()
     def guest(self):
+        c = self.request.c
 
         db = self.db_deprecated_pylons_orm
         db_user = Stemformatics_Auth.get_user_from_username(db,c.guest_username)
@@ -79,6 +77,7 @@ class AuthController(BaseController):
 
     @action(renderer = "templates/auth/signin.mako")
     def login(self):
+        c = self.request.c
         """Show login form. Submits to /login/submit."""
         c.error_message = ""
         c.username = ""
@@ -86,6 +85,7 @@ class AuthController(BaseController):
 
     @action()
     def submit(self): #CRITICAL-4
+        c = self.request.c
         request = self.request
         response = request.response
         session = request.session
@@ -160,6 +160,7 @@ class AuthController(BaseController):
     @Stemformatics_Auth.authorise()
     @action()
     def show_private_datasets(self):
+        c = self.request.c
         """ Display private datasets a user has access to. """
         session = self.request.session
         if 'user' in session:
@@ -191,6 +192,7 @@ class AuthController(BaseController):
 
     @action(renderer = 'templates/workbench/error_message.mako')
     def logout(self):
+        c = self.request.c
         """Log out the user and display a confirmation message."""
         session = self.request.session
         if 'user' in session:
@@ -214,6 +216,7 @@ class AuthController(BaseController):
 
     @action(renderer = 'templates/auth/register.mako')
     def register(self): #CRITICAL-4
+        c = self.request.c
         session = self.request.session
         if 'user' in session:
             return redirect(url('/'))
@@ -341,6 +344,7 @@ class AuthController(BaseController):
     @Stemformatics_Auth.authorise()
     @action(renderer = 'templates/auth/history.mako')
     def history(self):
+        c = self.request.c
         id = self.request.matchdict['id']
         session = self.request.session
         if id == 'clear':
@@ -357,6 +361,7 @@ class AuthController(BaseController):
 
     @action()
     def confirm_new_user(self):
+        c = self.request.c
         id = self.request.matchdict['id']
 
         uid = str(self.request.params.get('rego'))
@@ -381,6 +386,7 @@ class AuthController(BaseController):
 
     @action()
     def forgot_password(self):
+        c = self.request.c
         request = self.request
         username = str(request.params.get('username'))
 
@@ -443,6 +449,7 @@ class AuthController(BaseController):
 
 
     def confirm_new_password(self):
+        c = self.request.c
         id = self.request.matchdict['id']
 
         db = self.db_deprecated_pylons_orm
