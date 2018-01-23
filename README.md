@@ -125,6 +125,7 @@ and *pylons.tmpl\_context* in [this page](https://docs.pylonsproject.org/project
 which means attributes set by different controller actions do not interfere with each other.
 
 Potentially, there might be 2 risks if we simply use a global empty class as a container to mimic the behaviours of `c`:
+
 1. If a request invokes an action that modifies some attribute of `c`, say, `c.some_attr`, then `c.some_attr` will not be reset to default as it should in Pylons,
 which might affect the behaviour of upcoming requests.
 2. In a multithreaded environment, the attributes of `c` set by one request might be modified by another concurrent request before a response is successfully returned.
