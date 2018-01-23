@@ -13,6 +13,7 @@ from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals,url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
+import re
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
 
@@ -630,3 +631,124 @@ class ExpressionsController(BaseController):
             # self._temp.view_graph_dict[ds_id] = self._setup_graphs(self._temp)
 
         self._temp.dataset_status = dataset_status
+
+
+    def yugene_graph(self):
+
+        result = self._summary_get_inputs()
+        if not result:
+            return self._temp.render
+
+        result = self._summary_get_gene_details()
+        if isinstance(result,e.HTTPFound):
+            return result
+        if not result:
+            return self._temp.render
+
+        self._summary_get_yugene_data()
+        self._summary_set_outputs()
+
+        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        return render_to_response('S4M_pyramid:templates/genes/summary.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+
+    def _summary_get_inputs(self):
+        request=self.request
+        geneSearch = request.params.get("gene")
+        self._temp.geneSearch = str(geneSearch)
+        try:
+            self._temp.db_id = int(request.params.get("db_id"))
+        except:
+            self._temp.db_id = None
+        self._temp.yugene_granularity_for_gene_search = request.params.get('yugene_granularity_for_gene_search',False)
+        self._temp.large = request.params.get('size') == "large"
+        self._temp.param_view_by = request.params.get("choose_to_view_by")
+        self._temp.param_show_lower = request.params.get("show_lower")
+
+        if (geneSearch is None) or (len(geneSearch) < 1):
+            #error_handling_for_invalid_search_string()
+            c.title = "Invalid Gene Search"
+            c.message = "You have not entered a proper gene. Please go back and enter in another gene."
+            self._temp.render  = render_to_response('S4M_pyramid:templates/workbench/error_message.mako')
+            return False
+
+        return True
+
+
+    def _summary_get_gene_details(self):
+        geneSearch = self._temp.geneSearch
+        db_id = self._temp.db_id
+        db = self.db_deprecated_pylons_orm
+        request = self.request
+
+
+        select_all_ambiguous = True
+        chip_type = 0
+        gene_list = []
+        gene_list.append(geneSearch)
+        get_description = True
+        result = Stemformatics_Gene.get_genes(db, c.species_dict, geneSearch, db_id, False, None)
+
+        if len(result) ==1 :
+            original = geneSearch
+            temp_gene = result.itervalues().next()
+            geneSearch = temp_gene['EnsemblID']
+
+            self._temp.db_id = db_id = temp_gene['db_id']
+        else:
+            # get a list together with some more details
+            # and then choose
+            c.db_id = db_id
+            c.analysis = None
+            c.show_probes_in_dataset = False
+            c.multiple_genes = result
+            c.url = request.environ.get('PATH_INFO')
+            c.url += '?use=true'
+
+            c.url = re.sub('gene=[\w\-\@]{2,}&','',c.url)
+            c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
+            self._temp.render =  render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako')
+            return False
+
+        # Pass the validated search string to the GeneQuery instance. Search for gene explicitly (True)
+        self._temp.returnData = returnData = Stemformatics_Gene.get_genes(db,c.species_dict,geneSearch,db_id,True,None)
+
+        if returnData == {} or returnData == None:
+            return redirect(url(controller='contents', action='index'), code=404)
+
+        for symbol in returnData:
+            self._temp.symbol = returnData[symbol]['symbol']
+            self._temp.ensemblID = returnData[symbol]['EnsemblID']
+            break
+
+        return True
+
+    def _summary_set_outputs(self):
+        db = self.db_deprecated_pylons_orm
+        c.ensemblID = self._temp.ensemblID
+        c.symbol = self._temp.symbol
+        c.db_id = db_id = self._temp.db_id
+        c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db,c.uid,db_id)
+        c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db,db_id,c.ensemblID)
+        # check if human or mouse
+        if db_id == int(self.mouse_db):
+            default_ds_id = self.default_mouse_dataset
+        else:
+            default_ds_id = self.default_human_dataset
+
+        c.data = self._temp.returnData
+        c.large = self._temp.large
+        c.title = "Yugene Graph Data - Gene Summary for " + c.symbol
+        c.yugene_graph_data = self._temp.yugene_graph_data
+
+    """
+    This is called by expressions.py/yugene_graph to get the data cached in redis (return_yugene_graph_data)
+    """
+    def _summary_get_yugene_data(self):
+        db_id = self._temp.db_id
+        ensemblID = self._temp.ensemblID
+        param_view_by = self._temp.param_view_by
+        param_show_lower = self._temp.param_show_lower
+        yugene_granularity_for_gene_search ='auto'
+        self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
