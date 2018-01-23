@@ -29,9 +29,8 @@ from pyramid.renderers import render_to_response
 class AuthController(BaseController):
 
     def __init__(self, request):
-        c = self.request.c
-
         super(AuthController, self).__init__(request)
+        c = self.request.c
 
         db = self.db_deprecated_pylons_orm
         # clear out expired users first

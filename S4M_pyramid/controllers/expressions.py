@@ -21,8 +21,8 @@ class ExpressionsController(BaseController):
     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'line', 'lin': 'line'}
 
     def __init__(self,request):
-        c = self.request.c
         super().__init__(request)
+        c = self.request.c
         c.debug = "True"#turned on debug for result.mako
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
