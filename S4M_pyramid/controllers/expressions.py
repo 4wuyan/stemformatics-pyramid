@@ -321,7 +321,7 @@ class ExpressionsController(BaseController):
         return self.deprecated_pylons_data_for_view
 
     def histogram_wizard(self):  # CRITICAL-4
-
+        c = self.request.c
         c.analysis = 3
         c.title = c.site_name + ' Analyses  - MultiGene Expression Graph Wizard'
         db = self.db_deprecated_pylons_orm
@@ -492,6 +492,7 @@ class ExpressionsController(BaseController):
         return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def multi_dataset_result(self):
+        c = self.request.c
         db = self.db_deprecated_pylons_orm
         if c.uid == 0 or c.uid == "":
             c.message = "You do not have access to this page. Please check you are logged in."
@@ -556,6 +557,7 @@ class ExpressionsController(BaseController):
         return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def _check_multiple_datasets_status(self):
+        c = self.request.c
         db=self.db_deprecated_pylons_orm
         graphType = self._temp.graphType
         db_id = self._temp.db_id
@@ -603,6 +605,7 @@ class ExpressionsController(BaseController):
         return True
 
     def _get_multiple_dataset_results(self):
+        c = self.request.c
         ensemblID = self._temp.ensemblID
         datasets = self._temp.datasets
         result = {}
@@ -640,7 +643,7 @@ class ExpressionsController(BaseController):
 
 
     def yugene_graph(self):
-
+        c = self.request.c
         result = self._summary_get_inputs()
         if not result:
             return self._temp.render
@@ -660,6 +663,7 @@ class ExpressionsController(BaseController):
 
 
     def _summary_get_inputs(self):
+        c = self.request.c
         request=self.request
         geneSearch = request.params.get("gene")
         self._temp.geneSearch = str(geneSearch)
@@ -683,6 +687,7 @@ class ExpressionsController(BaseController):
 
 
     def _summary_get_gene_details(self):
+        c = self.request.c
         geneSearch = self._temp.geneSearch
         db_id = self._temp.db_id
         db = self.db_deprecated_pylons_orm
@@ -731,6 +736,7 @@ class ExpressionsController(BaseController):
         return True
 
     def _summary_set_outputs(self):
+        c = self.request.c
         db = self.db_deprecated_pylons_orm
         c.ensemblID = self._temp.ensemblID
         c.symbol = self._temp.symbol
@@ -752,6 +758,7 @@ class ExpressionsController(BaseController):
     This is called by expressions.py/yugene_graph to get the data cached in redis (return_yugene_graph_data)
     """
     def _summary_get_yugene_data(self):
+        c = self.request.c
         db_id = self._temp.db_id
         ensemblID = self._temp.ensemblID
         param_view_by = self._temp.param_view_by
@@ -771,7 +778,7 @@ class ExpressionsController(BaseController):
     """
     @action(renderer="json")
     def return_yugene_filtered_graph_data(self):
-
+        c = self.request.c
         uid = c.uid
         request = self.request
         g = config["deprecated_pylons_app_globals"]
