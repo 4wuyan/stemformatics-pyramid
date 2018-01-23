@@ -548,7 +548,7 @@ class ExpressionsController(BaseController):
             audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
             result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.db_deprecated_pylons_orm,request=self.request)
+        return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def _check_multiple_datasets_status(self):
         db=self.db_deprecated_pylons_orm
@@ -587,7 +587,7 @@ class ExpressionsController(BaseController):
                              [h.url('/genes/summary?gene=' + str(ensemblID) + '&db_id=' + str(db_id)),
                               symbol + ' Summary'], ['', 'Choose multiple datasets']]
             c.title = c.site_name + " - Choose Datasets for Multiview - Choose multiple datasets to view concurrently for gene " + symbol
-            self._temp.render = render_to_response('S4M_pyramid:expressions/choose_multi_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            self._temp.render = render_to_response('S4M_pyramid:templates/expressions/choose_multi_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
             return False
 
         # this is always false for multiview graphs
@@ -603,6 +603,7 @@ class ExpressionsController(BaseController):
         result = {}
         dataset_status = {}
         self._temp.view_data = {}
+        db = self.db_deprecated_pylons_orm
         for ds_id in datasets:
 
             # check user has access first
@@ -670,7 +671,7 @@ class ExpressionsController(BaseController):
             #error_handling_for_invalid_search_string()
             c.title = "Invalid Gene Search"
             c.message = "You have not entered a proper gene. Please go back and enter in another gene."
-            self._temp.render  = render_to_response('S4M_pyramid:templates/workbench/error_message.mako')
+            self._temp.render  = render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
             return False
 
         return True
@@ -708,7 +709,7 @@ class ExpressionsController(BaseController):
 
             c.url = re.sub('gene=[\w\-\@]{2,}&','',c.url)
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
-            self._temp.render =  render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako')
+            self._temp.render =  render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako',self.deprecated_pylons_data_for_view,request=self.request)
             return False
 
         # Pass the validated search string to the GeneQuery instance. Search for gene explicitly (True)
