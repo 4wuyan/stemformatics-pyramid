@@ -1,6 +1,6 @@
 from pyramid_handlers import action
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
-#from S4M_pyramid.lib.empty_class import EmptyClass as c
+from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
@@ -20,7 +20,6 @@ import S4M_pyramid.lib.helpers as h
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
 import pyramid.httpexceptions as e
 
-c=None
 class ExpressionsController(BaseController):
     # 'sca' is short for scatter.  Makes validity checking easier.
     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'line', 'lin': 'line'}
@@ -349,7 +348,7 @@ class ExpressionsController(BaseController):
 
             c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
                              ['', 'MultiGene Expression Graph - Choose Gene List (Step 1 of 2)']]
-            return render_to_response('S4M_Pyramid:workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         else:
             gene_set_id = int(gene_set_id)
