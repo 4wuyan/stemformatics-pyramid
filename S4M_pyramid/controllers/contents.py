@@ -11,7 +11,7 @@ class ContentsController(BaseController):
     def index(self):
         c = self.request.c
         c.header_selected = ''
-        c.speed_up_page = 'false'#setting it to true will cause the "choose_dataset" page not poping up
+        c.speed_up_page = 'true'
         c.title = c.site_name + " - Find expression data from leading stem cell laboratories in a format that is easy to search, easy to visualise and easy to export"
 
         c.tweets = []
