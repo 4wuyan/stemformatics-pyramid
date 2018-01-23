@@ -13,8 +13,6 @@ import json
 
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
-# c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
-from S4M_pyramid.lib.empty_class import EmptyClass as c
 
 from S4M_pyramid.config import config
 from decorator import decorator
@@ -150,6 +148,7 @@ class Stemformatics_Auth(object):
             log.debug('start of authorise')
 
             magic_globals.fetch()
+            c = magic_globals.c
             session = magic_globals.session
             request = magic_globals.request
             if 'path_before_login' in session:
@@ -1280,6 +1279,8 @@ class Stemformatics_Auth(object):
 
     @staticmethod
     def send_email_for_pending_user(db,uid): #CRITICAL-2 #CRITICAL-6
+        magic_globals.fetch()
+        c = magic_globals.c
 
         db.schema = 'stemformatics'
         users = db.users

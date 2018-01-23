@@ -1,7 +1,7 @@
 # inspired by https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/pylons/index.html
 # author: WU Yan
 # original date: 5 Jan 2018
-# last modified: 11 Jan 2018
+# last modified: 23 Jan 2018
 
 import pyramid
 
@@ -56,10 +56,33 @@ class url_generator:
 
 
 class deprecated_pylons_globals:
+    '''
+    In Pylons, we have
+        from pylons import request, response, session
+    In Pyramid, we don't have these magic globals any more, and we shouldn't have them.
+
+    Now the presence of the global response and session exists in the request object,
+    and in Pyramid you must explicitly tell where the request is.
+
+    In controllers, the incoming request is passed as an argument into the constructor of BaseController,
+    and can be later accessed via self.request.
+
+    In models, we shouldn't directly access request in theory. But that occasionally happens.
+    In that case, pyramid provides us with "threadlocal.get_current_request()" to get the current request.
+
+    Once you get the request, you can access response and session via
+        response = request.response
+        session = request.session
+
+    This class is used as a shortcut ONLY FOR MODELS that want to access stuff they're not supposed to see.
+        (It should be fine if you really use it to get request/response/session in controllers, but there's
+        a neat way as is mentioned above.)
+    '''
     def fetch(self):
         self.request = pyramid.threadlocal.get_current_request()
         self.response = self.request.response
         self.session = self.request.session
+        self.c = self.request.c
 
 magic_globals = deprecated_pylons_globals()
 url = url_generator()
