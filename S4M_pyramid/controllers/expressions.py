@@ -1,6 +1,6 @@
 from pyramid_handlers import action
 # c is used to emulate the "from pylons import tmpl_context as c" functionality from Pylons
-from S4M_pyramid.lib.empty_class import EmptyClass as c
+#from S4M_pyramid.lib.empty_class import EmptyClass as c
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
@@ -8,16 +8,19 @@ from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Aut
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
 from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
 from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
-from S4M_pyramid.lib.deprecated_pylons_globals import url
+from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals,url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
+
+
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
 import pyramid.httpexceptions as e
 
-
+c=None
 class ExpressionsController(BaseController):
     # 'sca' is short for scatter.  Makes validity checking easier.
     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'line', 'lin': 'line'}
@@ -311,3 +314,174 @@ class ExpressionsController(BaseController):
         c.species = Stemformatics_Dataset.returnSpecies(c.db_id)
 
         return self.deprecated_pylons_data_for_view
+
+    def histogram_wizard(self):  # CRITICAL-4
+
+        c.analysis = 3
+        c.title = c.site_name + ' Analyses  - MultiGene Expression Graph Wizard'
+        db = self.db_deprecated_pylons_orm
+        #try: #this block is not in use
+        #    db_id = int(db_id)
+        #except:
+        #    db_id = None
+        try:
+            ds_id = datasetID = int(self.request.params.get('datasetID'),'')
+        except:
+            ds_id = datasetID = None
+
+        try:
+            gene_set_id = int(self.request.params.get('gene_set_id'))
+        except:
+            gene_set_id = None
+
+        if gene_set_id is None:
+            # call a gene list chooser for
+            try:
+                result = Stemformatics_Gene_Set.getGeneSets(db, c.uid)
+            except:
+                result = None
+            c.result = result
+            c.public_result = Stemformatics_Gene_Set.getGeneSets(db, 0)
+            c.url = h.url('/workbench/histogram_wizard')
+            if ds_id is not None:
+                c.filter_by_db_id = Stemformatics_Dataset.get_db_id(db, ds_id)
+                c.url += '?datasetID=' + str(ds_id) + '&graphType=default'
+
+            c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
+                             ['', 'MultiGene Expression Graph - Choose Gene List (Step 1 of 2)']]
+            return render_to_response('S4M_Pyramid:workbench/choose_gene_set.mako')
+
+        else:
+            gene_set_id = int(gene_set_id)
+            # check if user has access to gene list
+            status = Stemformatics_Gene_Set.check_gene_set_availability(gene_set_id, c.uid)
+            if status == False:
+                redirect(url(controller='contents', action='index'), code=404)
+            species = Stemformatics_Gene_Set.get_species(db, c.uid, gene_set_id)
+            c.gene_set_name = gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db, c.uid, gene_set_id)
+            db_id = Stemformatics_Gene_Set.get_db_id(db, c.uid, gene_set_id)
+
+        if datasetID is None:
+            # now get the dataset ID
+            c.species = species
+            show_limited = False
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, db_id)
+            c.breadcrumb_title = 'Choose Dataset for MultiGene Expression Graph'
+            c.url = h.url('/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(
+                gene_set_id))
+            c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
+                             [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [
+                                 h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(
+                                     gene_set_id)), 'MultiGene Expression Graph - Choose Dataset (Step 2 of 2)']]
+
+            return render_to_response('S4M_Pyramid:workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+        c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, ds_id, c.uid)
+        c.probe_name = Stemformatics_Dataset.get_probe_name(ds_id)
+        if c.dataset_status != "Available":
+            return redirect(url(controller='contents', action='index'), code=404)
+
+        # want to check if dataset_id has more than a sample type "limit_sort_by" option
+        comparison_type = self.request.params.get('sortBy')
+
+        datasetMetadataResult = Stemformatics_Dataset.getExpressionDatasetMetadata(db, datasetID, c.uid)
+        c.comparison_type = datasetMetadataResult['limit_sort_by'].split(',')
+
+        if comparison_type is None or comparison_type not in c.comparison_type:
+
+            if datasetMetadataResult is None:
+                return redirect(url(controller='contents', action='index'), code=404)
+
+            num_options = len(c.comparison_type)
+
+            if num_options > 1:
+                # have to now display an option for which type to choose
+
+                c.purple_title = 'Choose Sort By Attribute'
+                c.help_text = 'There are multiple viewing options to sort by for this dataset. Select the attribute you would like to use for this graph.'
+
+                c.options = {}
+                for comparison_type in c.comparison_type:
+                    c.options[comparison_type] = comparison_type
+
+                c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'),
+                                                                           'MultiGene Expression Graph - Choose Gene List'],
+                                 [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(
+                                     gene_set_id)), 'MultiGene Expression Graph - Choose Dataset'],
+                                 ['#', 'MultiGene Expression Graph - Choose Comparion Type (Step 3 of 3)']]
+
+                c.url = h.url(
+                    '/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(
+                        gene_set_id) + '&datasetID=' + str(datasetID)) + '&sortBy='
+                return render_to_response('workbench/generic_choose.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            else:
+                comparison_type = c.comparison_type[0]
+
+        c.comparison_type_chosen = comparison_type
+
+        # Create a GeneQuery instance.
+        if gene_set_id is None:
+            # error_handling_for_invalid_search_string()
+            return redirect(url(controller='contents', action='index'), code=404)
+
+        gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db, c.uid, gene_set_id)
+
+        if gene_set_name is None:
+            return redirect(url(controller='contents', action='index'), code=404)
+
+        c.ref_type = self._temp.ref_type = "gene_set_id"
+        c.symbol = c.ref_id = self._temp.ref_id = gene_set_id
+        self._temp.probeSearch = ""
+        self._temp.geneSearch = ""
+        c.select_probes = self._temp.select_probes = self.request.params.get('select_probes')
+        c.db_id = self._temp.db_id = db_id
+        c.list_of_valid_graphs = Stemformatics_Dataset.list_of_valid_graphs_for_dataset(ds_id)
+        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, self.request.params.get('graphType'),
+                                                                      c.list_of_valid_graphs)
+        c.graphType = self._temp.graphType = graphType
+        c.sortBy = self._temp.sortBy = comparison_type
+        c.ds_id = self._temp.ds_id = ds_id
+        c.choose_dataset_immediately = self._temp.choose_dataset_immediately = False
+        c.chip_type = Stemformatics_Dataset.getChipType(db, c.ds_id)
+        gene_set_items = Stemformatics_Gene_Set.getGeneSetData_without_genome_annotations(db, c.uid, gene_set_id)
+        self._temp.url = self.request.environ.get('PATH_INFO')
+
+        self._temp.original_temp_datasets = None
+        self._temp.force_choose = None
+
+        if self.request.environ.get('QUERY_STRING'):
+            self._temp.url += '?' + self.request.environ['QUERY_STRING']
+        self._temp.large = self.request.params.get('size') == "large"
+
+        c.url = self._temp.url
+        self._check_dataset_status()
+        c.dataset_status = self._temp.dataset_status
+
+        show_limited = True
+        if self._temp.ref_type == 'miRNA':
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited,
+                                                                                 self._temp.ref_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, c.db_id)
+        # self._check_gene_status()
+
+        # self._temp.this_view = self._setup_graphs(self._temp)
+        # self._set_outputs_for_graph()
+        c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
+                         [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'],
+                         [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)),
+                          'MultiGene Expression Graph - Choose Dataset'], ['#', 'Show MultiGene Expression Graph']]
+        audit_dict = {'ref_type': 'gene_set_id', 'ref_id': gene_set_id, 'uid': c.uid, 'url': url, 'request': self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
+                      'extra_ref_type': 'gene_set_id', 'extra_ref_id': str(gene_set_id)}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        # now add entry for gene set items for gene_set_id so that this can be used in building redis keys
+        gene_names = []
+        for gene in gene_set_items[1]:
+            gene_names.append(gene.gene_id)
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
+                      'extra_ref_type': 'gene_set_items', 'extra_ref_id': json.dumps(gene_names)}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return render_to_response('S4M_Pyramid:expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
