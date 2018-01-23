@@ -124,7 +124,7 @@ Actually it's **local to each request** (refer to
 and *pylons.tmpl\_context* in [this page](https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/pylons/request.html)),
 which means attributes set by different controller actions do not interfere with each other.
 
-Potentially, there might be 2 risks if we simply use a global empty class as a container to mimic the behaviours of `c`:
+That means we shouldn't simply use a global empty class as a container to mimic the behaviours of `c` in Pyramid. Potentially, there might be 2 risks:
 
 1. If a request invokes an action that modifies some attribute of `c`, say, `c.some_attr`, then `c.some_attr` will not be reset to default as it should in Pylons,
 which might affect the behaviour of upcoming requests.
