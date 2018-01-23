@@ -23,8 +23,9 @@ class BaseController():
 
     #this is invoked every time an action is called
     def __init__(self, request):
-        self.c = request.tmpl_context
-        c = self.c
+        self.request = request
+        self.request.c = self.request.tmpl_context
+        c = self.request.c
         # set up url.environ
         url.set_environ(request)
 
@@ -32,7 +33,6 @@ class BaseController():
         #set up DB var for ORM
         self.db_deprecated_pylons_orm = config["deprecated_pylons_orm"]
         #set up the protocol
-        self.request=request
         self.response=request.response
 
         #set up c; those are directly retrieved fro the DB
@@ -109,10 +109,10 @@ class BaseController():
             session['page_history'] = []
 
         c.page_history = session.get('page_history')
-        self.deprecated_pylons_data_for_view = {'c': self.c, 'h': h, 'url':url, 'config':config}
+        self.deprecated_pylons_data_for_view = {'c': self.request.c, 'h': h, 'url':url, 'config':config}
 
     def _check_dataset_status(self):
-        c = self.c
+        c = self.request.c
         db = self.db_deprecated_pylons_orm
         dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
 
@@ -132,7 +132,7 @@ class BaseController():
 
 
     def _check_gene_status(self):
-        c = self.c
+        c = self.request.c
         ds_id = self._temp.ds_id
         db_id = self._temp.db_id
         this_url = self._temp.url

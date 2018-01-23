@@ -9,7 +9,7 @@ import psycopg2.extras
 class ContentsController(BaseController):
     @action(renderer="templates/contents/index.mako")
     def index(self):
-        c = self.c
+        c = self.request.c
         c.header_selected = ''
         c.speed_up_page = 'false'#setting it to true will cause the "choose_dataset" page not poping up
         c.title = c.site_name + " - Find expression data from leading stem cell laboratories in a format that is easy to search, easy to visualise and easy to export"
@@ -22,14 +22,14 @@ class ContentsController(BaseController):
 
     @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title=c.site_name+" - Contact_us"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/about_us.mako")
     def about_us(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title = c.site_name + " - About_us"
         return self.deprecated_pylons_data_for_view
@@ -37,49 +37,49 @@ class ContentsController(BaseController):
     #faq page wouldn't work without the tutorial list
     @action(renderer="templates/contents/faq.mako")
     def faq(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title = c.site_name + " - Faq"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/our_data.mako")
     def our_data(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title = c.site_name + " - Our Data"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/our_code.mako")
     def our_code(self):
-        c = self.c
+        c = self.request.c
         c.title = c.site_name+" - Our Code"
         return self.deprecated_pylons_data_for_view
 
     #faq page wouldn't work without the data_publication
     @action(renderer="templates/contents/our_publications.mako")
     def our_publications(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title = c.site_name + " - Our Publications"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/disclaimer.mako")
     def disclaimer(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title = c.site_name + " - Disclaimer"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/privacy_policy.mako")
     def privacy_policy(self):
-        c = self.c
+        c = self.request.c
         # set up C
         c.title = c.site_name + " - Privacy Policy"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer='templates/workbench/error_message.mako')
     def registration_submitted(self):
-        c = self.c
+        c = self.request.c
         c.message = "Thank you for registering! Please confirm your registration by following instructions in your confirmation email."
         c.title = "Registration submitted"
         return self.deprecated_pylons_data_for_view

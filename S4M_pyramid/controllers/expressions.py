@@ -21,7 +21,7 @@ class ExpressionsController(BaseController):
     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'line', 'lin': 'line'}
 
     def __init__(self,request):
-        c = self.c
+        c = self.request.c
         super().__init__(request)
         c.debug = "True"#turned on debug for result.mako
         self.human_db = config['human_db']
@@ -33,7 +33,7 @@ class ExpressionsController(BaseController):
 
     @action(renderer="templates/expressions/index.mako")
     def index(self):
-        c = self.c
+        c = self.request.c
         c.title = c.site_name + ' Graphs - Home'
         return self.deprecated_pylons_data_for_view
 
@@ -67,7 +67,7 @@ class ExpressionsController(BaseController):
     renderer, therefore, render_to_response is used inside the function to respond using different
     renderer'''
     def result(self):
-        c = self.c
+        c = self.request.c
         """ These three functions set what is needed in self._type to be
         used in the graph object orientated code  """
         self._get_inputs_for_graph()  # This is in controllers/expressions.py
@@ -130,7 +130,7 @@ class ExpressionsController(BaseController):
 
     @action(renderer="json")
     def graph_data(self):
-        c = self.c
+        c = self.request.c
         # check the gene/ dataset validity
         # than get the data
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
@@ -186,7 +186,7 @@ class ExpressionsController(BaseController):
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
     @action(renderer="json")
     def dataset_metadata(self):
-        c = self.c
+        c = self.request.c
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
         error_data =""
         self._check_dataset_status()
@@ -270,7 +270,7 @@ class ExpressionsController(BaseController):
         c.url = self._temp.url
 
     def probe_result(self):
-        c = self.c
+        c = self.request.c
         db=self.db_deprecated_pylons_orm
         self._get_inputs_for_graph()
         c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
@@ -297,7 +297,7 @@ class ExpressionsController(BaseController):
 
     @action(renderer="/expressions/choose_dataset.mako")
     def choose_dataset(self):
-        c = self.c
+        c = self.request.c
         graphType = self.request.params.get("graphType","")
         gene = self.request.params.get("gene","")
         db_id = self.request.params.get("db_id","")
