@@ -491,6 +491,7 @@ class AuthController(BaseController):
     @Stemformatics_Auth.authorise()
     @action()
     def update_details(self):
+        c = self.request.c
         db = self.db_deprecated_pylons_orm
         this_user = Stemformatics_Auth.get_user_from_username(db,c.user)
 
@@ -561,6 +562,7 @@ class AuthController(BaseController):
 
     @action(renderer = 'S4M_pyramid:templates/workbench/error_message.mako')
     def unsubscribe_job_notification(self):
+        c = self.request.c
         id_and_sha1 = self.request.matchdict['id'].split('_')
         id = id_and_sha1[0]
         sha1 = id_and_sha1[1]
@@ -593,6 +595,7 @@ class AuthController(BaseController):
 
 
     def share_gene_set(self):
+        c = self.request.c
         id = self.request.matchdict['id']
         request = self.request
         db = self.db_deprecated_pylons_orm
@@ -694,6 +697,7 @@ class AuthController(BaseController):
 
 
     def share_job(self):
+        c = self.request.c
         request = self.request
         id = request.matchdict['id']
         db = self.db_deprecated_pylons_orm
@@ -787,6 +791,7 @@ class AuthController(BaseController):
 
 
     def share_gene_expression(self):
+        c = self.request.c
         request = self.request
         db = self.db_deprecated_pylons_orm
 
