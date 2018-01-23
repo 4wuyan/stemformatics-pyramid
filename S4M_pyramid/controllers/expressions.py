@@ -754,3 +754,58 @@ class ExpressionsController(BaseController):
         yugene_granularity_for_gene_search ='auto'
         g = config['deprecated_pylons_app_globals']
         self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
+
+
+    """
+    Expects a json string for filters and gene and db_id.
+
+    filters documentation is in Stemformatics_Expression.filter_yugene_graph
+    used in large YuGene graph
+
+    returns JSON/TSV/CSV
+    """
+    @action(renderer="json")
+    def return_yugene_filtered_graph_data(self):
+
+        uid = c.uid
+        request = self.request
+        g = config["deprecated_pylons_app_globals"]
+        filters = str( request.params.get("filters",None))
+        ensembl_id = str( request.params.get("gene",""))
+        db_id = int(request.params.get("db_id",""))
+
+        # Choose between json and tsv (tab separated values)
+        format_type = request.params.get("format_type","json")
+
+        if filters is None:
+            return "{}"
+
+        try:
+            filters = json.loads(filters)
+        except:
+            filters = None
+
+        all_sample_metadata = g.all_sample_metadata
+
+        #configuration items?
+        max_length = None
+        max_length_action = 'truncate'
+
+        # retrieve data - if it's already in redis, it will return True, but very quickly
+        # if not in redis, it will do the calculation, store it in redis and then return True
+        result = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensembl_id,g.all_sample_metadata,c.role)
+        if not result:
+            return "Error in returning data"
+
+        # get the sampled data
+        sample_values = Stemformatics_Expression.get_yugene_sample_data_graph_values(uid,ensembl_id,db_id)
+        # need to be able to merge them together and remove any duplicates
+        merge = True
+        filtered_result= []
+        final_data = Stemformatics_Expression.calculate_yugene_data_for_display(sample_values,filtered_result,merge)
+        if format_type == 'tsv' or format_type == 'csv':
+            data = Stemformatics_Expression.convert_yugene_data_to_tsv_csv(final_data,format_type)
+        else: # everything else should be json as a default
+            data = json.dumps(final_data)
+
+        return data
