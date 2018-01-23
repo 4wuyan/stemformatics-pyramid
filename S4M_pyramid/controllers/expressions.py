@@ -484,3 +484,149 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+    def multi_dataset_result(self):
+        db = self.db_deprecated_pylons_orm
+        if c.uid == 0 or c.uid == "":
+            c.message = "You do not have access to this page. Please check you are logged in."
+            c.title = c.site_name+" Multiview - No access"
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+        self._temp._multiple = True
+        self._get_inputs_for_graph()
+        result = self._check_gene_status()
+        if result != "1":
+            return self._temp.render
+
+        result = self._check_multiple_datasets_status()
+        if not result:
+            return self._temp.render
+        c.ref_type= self._temp.ref_type = 'ensemblID'
+        c.ref_id = self._temp.ref_id = self._temp.ensemblID
+        c.ds_id = self._temp.ds_id
+        c.db_id = self._temp.db_id
+        c.multi_view_datasets = self._temp.datasets
+        self._get_multiple_dataset_results()
+
+        if self._temp.ref_type == 'ensemblID':
+            c.ensemblID = self._temp.ensemblID
+            c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db,c.uid,c.db_id)
+            c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db,c.db_id,c.ensemblID)
+            c.data = Stemformatics_Gene.get_genes(db,c.species_dict,self._temp.geneSearch,c.db_id,True,None)
+            c.symbol = self._temp.symbol
+
+        try:
+            if self._temp._multiple:
+                c.view_data = {}
+                c.chip_type = {}
+                for ds_id in self._temp.datasets:
+                    c.view_data[ds_id] = self._temp.view_data[ds_id]
+                    # get chip_type for all selected datasets
+                    c.chip_type[ds_id] = Stemformatics_Dataset.getChipType(ds_id)
+            else:
+                c.view_data = self._temp.view_data[ds_id]
+        except:
+            c.view_data = self._temp.view_data[ds_id]
+
+
+        # self._set_outputs_for_graph()
+        c.url = self._temp.url
+        c.dataset_status = self._temp.dataset_status
+        show_limited = True
+
+        if self._temp.ref_type == 'miRNA':
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+
+        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+
+        for ds_id in self._temp.datasets:
+            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
+            result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.db_deprecated_pylons_orm,request=self.request)
+
+    def _check_multiple_datasets_status(self):
+        db=self.db_deprecated_pylons_orm
+        graphType = self._temp.graphType
+        db_id = self._temp.db_id
+        original_temp_datasets = self._temp.original_temp_datasets
+        ensemblID = self._temp.ensemblID
+        force_choose = self._temp.force_choose
+        sortBy = self._temp.sortBy
+        symbol = self._temp.symbol
+
+        if original_temp_datasets is not None:
+            temp_datasets = original_temp_datasets.split(',')
+            datasets = [int(i) for i in temp_datasets]
+
+            # Will have to save this now
+            Stemformatics_Auth.save_multi_datasets(db, c.uid, db_id, datasets)
+        else:
+            datasets = Stemformatics_Auth.get_multi_datasets(db, c.uid, db_id)
+            # datasets = []
+
+        c.base_url = h.url(
+            '/expressions/multi_dataset_result?gene=' + str(ensemblID) + '&db_id=' + str(db_id) + '&graphType=' + str(
+                graphType))
+
+        if len(datasets) < 2 or force_choose == 'yes':
+            c.species = Stemformatics_Gene.get_species_from_db_id(db, db_id)
+            show_limited = True
+            c.all_datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, db_id)
+            c.loaded_datasets = json.dumps(datasets)
+            c.analysis = 1
+            c.purple_title = "Multi Dataset Graph Selection"
+            c.help_text = "Please choose the four datasets you would like to see in your multi-dataset graph."
+            c.breadcrumbs = [[h.url('/genes/search'), 'Gene Search'],
+                             [h.url('/genes/search?gene=' + str(symbol)), symbol],
+                             [h.url('/genes/summary?gene=' + str(ensemblID) + '&db_id=' + str(db_id)),
+                              symbol + ' Summary'], ['', 'Choose multiple datasets']]
+            c.title = c.site_name + " - Choose Datasets for Multiview - Choose multiple datasets to view concurrently for gene " + symbol
+            self._temp.render = render_to_response('S4M_pyramid:expressions/choose_multi_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return False
+
+        # this is always false for multiview graphs
+        self._temp.choose_dataset_immediately = False
+
+        self._temp.datasets = datasets
+
+        return True
+
+    def _get_multiple_dataset_results(self):
+        ensemblID = self._temp.ensemblID
+        datasets = self._temp.datasets
+        result = {}
+        dataset_status = {}
+        self._temp.view_data = {}
+        for ds_id in datasets:
+
+            # check user has access first
+            dataset_status[ds_id] = Stemformatics_Dataset.check_dataset_with_limitations(db, ds_id, c.uid)
+
+            if dataset_status[ds_id] == "Unavailable":
+                if c.uid == '' or c.uid == 0:
+                    # got this code from decorator in model/stemformatics/stemformatics_auth.py
+                    c.user = None
+                    session = self.request.session
+                    session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
+                    session.save()
+                    return redirect(h.url('/auth/login'))
+                else:
+                    return redirect(self.request.url + '&force_choose=yes')
+
+            # should be the same for all datasets
+            self._temp.ref_type = 'ensemblID'
+            self._temp.ref_id = ensemblID
+            self._temp.ds_id = ds_id
+            self._temp.view_data[ds_id] = {}
+            self._temp.view_data[ds_id]['ensemblID'] = ensemblID
+            self._temp.view_data[ds_id]['ref_type'] = 'ensemblID'
+            self._temp.view_data[ds_id]['ds_id'] = ds_id
+            self._temp.view_data[ds_id]['probeName'] = Stemformatics_Dataset.get_probe_name(ds_id)
+            # self._temp.view_graph_dict[ds_id] = self._setup_graphs(self._temp)
+
+        self._temp.dataset_status = dataset_status
