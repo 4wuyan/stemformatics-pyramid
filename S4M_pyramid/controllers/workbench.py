@@ -1,7 +1,6 @@
 # #TODO-1
 from pyramid_handlers import action
 # from pylons import request, response, session, url
-from S4M_pyramid.lib.empty_class import EmptyClass as c
 # from pylons.controllers.util import abort, redirect
 # from pylons import app_globals as g
 #

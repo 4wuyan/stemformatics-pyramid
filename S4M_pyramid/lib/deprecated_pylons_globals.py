@@ -60,6 +60,7 @@ class deprecated_pylons_globals:
         self.request = pyramid.threadlocal.get_current_request()
         self.response = self.request.response
         self.session = self.request.session
+        self.c = self.request.tmpl_context
 
 magic_globals = deprecated_pylons_globals()
 url = url_generator()

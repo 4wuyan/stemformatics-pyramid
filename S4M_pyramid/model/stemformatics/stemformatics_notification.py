@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 import sqlalchemy as SA
 from sqlalchemy import or_, and_, desc
 
-from S4M_pyramid.lib.empty_class import EmptyClass as c
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
 from S4M_pyramid.config import config
 
 from decorator import decorator
@@ -130,6 +130,8 @@ class Stemformatics_Notification(object):
 
     @staticmethod
     def send_basic_email(recipient, subject, message):
+        magic_globals.fetch()
+        c = magic_globals.c
         sender = config['from_email']
         body = "Hi there,\n\n"+message+"\n\n\nRegards,\n"+c.site_name+" Team"
         return Stemformatics_Notification.send_email(sender, recipient, subject, body)
@@ -187,6 +189,8 @@ class Stemformatics_Notification(object):
 
     @staticmethod
     def send_error_email(error_subject,error_body):
+        magic_globals.fetch()
+        c = magic_globals.c
         import socket
         hostname = socket.gethostname()
         sender = config['feedback_email']
