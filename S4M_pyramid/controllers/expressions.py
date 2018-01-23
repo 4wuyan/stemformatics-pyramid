@@ -693,7 +693,7 @@ class ExpressionsController(BaseController):
 
         if len(result) ==1 :
             original = geneSearch
-            temp_gene = result.itervalues().next()
+            temp_gene = next(iter(result.values()))
             geneSearch = temp_gene['EnsemblID']
 
             self._temp.db_id = db_id = temp_gene['db_id']
@@ -752,4 +752,5 @@ class ExpressionsController(BaseController):
         param_view_by = self._temp.param_view_by
         param_show_lower = self._temp.param_show_lower
         yugene_granularity_for_gene_search ='auto'
+        g = config['deprecated_pylons_app_globals']
         self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
