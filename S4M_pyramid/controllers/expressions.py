@@ -131,7 +131,7 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
-    @action(renderer="json")
+    @action(renderer="string")
     def graph_data(self):
         c = self.request.c
         # check the gene/ dataset validity
@@ -187,7 +187,7 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
-    @action(renderer="json")
+    @action(renderer="string")
     def dataset_metadata(self):
         c = self.request.c
         self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
@@ -203,6 +203,7 @@ class ExpressionsController(BaseController):
         return json.dumps({"error":error_data,"data":json_dataset_metadata})
 
     def _get_inputs_for_graph(self):
+        c = self.request.c
         choose_dataset_immediately = False
         probeSearch = self.request.params.get('probe')
         #sets the variable to "" instead of None,if parameter is not provided.
@@ -776,7 +777,7 @@ class ExpressionsController(BaseController):
 
     returns JSON/TSV/CSV
     """
-    @action(renderer="tsv")
+    @action(renderer="string")
     def return_yugene_filtered_graph_data(self):
         c = self.request.c
         uid = c.uid
@@ -819,5 +820,4 @@ class ExpressionsController(BaseController):
             data = Stemformatics_Expression.convert_yugene_data_to_tsv_csv(final_data,format_type)
         else: # everything else should be json as a default
             data = json.dumps(final_data)
-
         return data

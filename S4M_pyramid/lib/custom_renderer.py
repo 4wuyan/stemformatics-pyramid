@@ -33,7 +33,7 @@ class TSVRenderer(object):
         pass
 
     def __call__(self, value, system):
-        """ Returns a plain CSV-encoded string with content-type
+        """ Returns a plain tsv-encoded string with content-type
         ``text/csv``. The content-type may be overridden by
         setting ``request.response.content_type``."""
 
@@ -42,12 +42,11 @@ class TSVRenderer(object):
             response = request.response
             ct = response.content_type
             if ct == response.default_content_type:
-                response.content_type = 'text/csv'
+                response.content_type = 'text/tsv'
 
         fout = StringIO()
         writer = csv.writer(fout, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        writer.writerow(value.get('header', []))
-        writer.writerows(value.get('rows', []))
+        writer.writerows(value)
 
         return fout.getvalue()
