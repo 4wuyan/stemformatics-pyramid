@@ -821,3 +821,55 @@ class ExpressionsController(BaseController):
         else: # everything else should be json as a default
             data = json.dumps(final_data)
         return data
+
+    """
+
+
+
+    metadata_list is a comma separated list of values from the biosamples metadata md_name. default to tissue
+    eg. 'Cell Type,Tissue'
+    'Cell Type,Tissue,Sample Type,Organism Part,Disease State'
+
+
+    Expects a json string for filter and gene and db_id.
+    filters documentation is in Stemformatics_Expression.filter_yugene_graph
+    format_type tsv, csv and json
+    returns TSV  by default
+    """
+    action(renderder="string")
+    def return_breakdown_of_yugene_filtered_data(self):
+        c = self.request.c
+        uid = c.uid
+        request = self.request
+        c.filters = filters = str( request.params.get("filters",None))
+        ensembl_id = str( request.params.get("gene"))
+        db_id = int(request.params.get("db_id"))
+        format_type = request.params.get("format_type","tsv")
+
+
+
+        metadata_list = request.params.get("metadata_list",'Tissue')
+
+        if filters is None:
+            return "{}"
+
+        filters = json.loads(filters)
+
+        all_sample_metadata = g.all_sample_metadata
+        #configuration items?
+        max_length = None
+        max_length_action = 'truncate'
+
+        metadata_list = metadata_list.split(",")
+
+        # get the full data from redis
+        full_data = Stemformatics_Expression.get_yugene_full_data_graph_values(uid,ensembl_id,db_id)
+        # iterate over full data and create breakdown dict and full_data dict, store breakdown dict in redis
+        final_data = Stemformatics_Expression.filter_yugene_graph(filters, db_id, full_data, metadata_list, all_sample_metadata, max_length,uid,ensembl_id,max_length_action)
+
+        if format_type == 'tsv' or format_type == 'csv':
+            data = Stemformatics_Expression.convert_yugene_breakdown_data_to_tsv_csv(final_data,format_type)
+        else: # everything else should be json as a default
+            data = json.dumps(final_data)
+
+        return data
