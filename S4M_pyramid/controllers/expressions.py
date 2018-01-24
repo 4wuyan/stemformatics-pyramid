@@ -776,7 +776,7 @@ class ExpressionsController(BaseController):
 
     returns JSON/TSV/CSV
     """
-    @action(renderer="json")
+    @action(renderer="tsv")
     def return_yugene_filtered_graph_data(self):
         c = self.request.c
         uid = c.uid

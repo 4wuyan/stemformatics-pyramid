@@ -15,7 +15,8 @@ def main(global_config, **settings):
     config.include('pyramid_beaker')
     # set the path for static views
     config_static_views(config)
-
+    config.add_renderer("csv","S4M_pyramid.lib.custom_renderer.CSVRenderer")
+    config.add_renderer("tsv","S4M_pyramid.lib.custom_renderer.TSVRenderer")
     # this dynamically routes the url to the actions
     # the routing order is consistent with the order in pylons project
 
