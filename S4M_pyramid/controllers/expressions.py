@@ -836,11 +836,12 @@ class ExpressionsController(BaseController):
     format_type tsv, csv and json
     returns TSV  by default
     """
-    action(renderder="string")
+    @action(renderer="string")
     def return_breakdown_of_yugene_filtered_data(self):
         c = self.request.c
         uid = c.uid
         request = self.request
+        g = config["deprecated_pylons_app_globals"]
         c.filters = filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene"))
         db_id = int(request.params.get("db_id"))
