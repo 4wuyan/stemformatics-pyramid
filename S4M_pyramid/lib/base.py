@@ -60,7 +60,7 @@ class BaseController():
         c.tutorials_for_page = Stemformatics_Help.get_help_for_page(this_url,request.params)
         c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
 
-        self._user_related_setup()
+        self._user_related_setup_for_c_deprecated_pylons_global()
 
         if not 'page_history' in session:
             session['page_history'] = []
@@ -89,7 +89,7 @@ class BaseController():
         if controller in change_name:
             controller = change_name[controller]
         c.title = config['site_name'] + ' ' + controller.capitalize() + ' - ' + action.replace('_',' ').title()
-    def _user_related_setup(self):
+    def _user_related_setup_for_c_deprecated_pylons_global(self):
         c = self.request.c
         request = self.request
         session = self.request.session
