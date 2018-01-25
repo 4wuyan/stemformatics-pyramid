@@ -1594,3 +1594,11 @@ class Stemformatics_Auth(object):
 
         return result_array
 
+    @staticmethod
+    def get_secret_unsubscribe_sha1(id_string):
+        secret_hash_parameter = config['secret_hash_parameter_for_unsubscribe']
+        m = hashlib.sha1()
+        m.update((secret_hash_parameter + id_string).encode('utf-8'))
+        return m.hexdigest()
+
+

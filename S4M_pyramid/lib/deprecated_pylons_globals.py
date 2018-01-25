@@ -20,15 +20,16 @@ class url_generator:
         url = ''
 
         if len(args) > 0:
-            if args[0].startswith('http'):
-                url = args[0]
-            else:
-                host = self.request.application_url
-                if host[-1] != '/':
-                    host += '/'
-                url = host + args[0].lstrip('/')
+            url = args[0]
+            if url.startswith('http'):
+                return url
         else:
-            url = self.request.route_url(controller_string, action = action_string)
+            url = '/{}/{}'.format(controller_string, action_string)
+        if is_qualified:
+            host = self.request.application_url
+            if host[-1] != '/':
+                host += '/'
+            url = host + url.lstrip('/')
         return url
     def set_environ(self, request = None):
         if not request:

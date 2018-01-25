@@ -4,11 +4,6 @@ import psycopg2.extras
 config = {
     'psycopg2_conn_string': "host='localhost' dbname='portal_beta' user='portaladmin'",
     'orm_conn_string': 'postgresql://portaladmin@localhost/portal_beta',
-
-    # The configuration below should be imported from the stemformatics.configs table in the database.
-    # But for now, we just do some hack here, since we don't have access to that database table.
-    'validation_regex': '(?=^.{12,}$)(?=.*\s+).*$',
-    'from_email': 'noreply@stemformatics.org',
 }
 
 conn_string = config['psycopg2_conn_string']
