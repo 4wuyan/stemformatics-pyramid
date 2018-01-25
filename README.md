@@ -11,6 +11,34 @@ This repo is the place where migration takes place. It is a Stemformatics websit
 Getting Started
 ===============
 
+Setup your database
+-------------------------------
+
+Please make sure the databases in your environment are correctly setup, and contain all the necessary infomation.
+
+### Get connected to your database
+
+An example of database connection configurations can be found in `config.py`:
+```python
+config = {
+    'psycopg2_conn_string': "host='localhost' dbname='portal_beta' user='portaladmin'",
+    'orm_conn_string': 'postgresql://portaladmin@localhost/portal_beta',
+}
+```
+
+### Update your database info (optional)
+
+Use SQL queries to insert or update information necessary for the application.
+An example that adds some configuration settings into the configuration table in the database can be found in `db_scripts` folder:
+```bash
+psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('validation_regex', '(?=^.{12,}$)(?=.*\s+).*$');"
+psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('from_email', 'noreply@stemformatics.org');"
+psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('secret_hash_parameter_for_unsubscribe', 'I LOVE WY');"
+```
+
+Setup your virtual environment (optional, but recommended)
+-------------------------
+
 It is recommended to use a virtual environment of Python 3. According to [Quick Tour of Pyramid](https://docs.pylonsproject.org/projects/pyramid/en/latest/quick_tour.html), this is an example to set up a virtual environment.
 
 ```bash
@@ -20,7 +48,11 @@ $ export VENV=~/env
 $ python3 -m venv $VENV
 ```
 
-Then you can run the application by
+
+Start the application!
+----------------------
+
+You can run the application by
 
 ```bash
 $ cd directory/containing/this/file
@@ -34,21 +66,6 @@ Migrating Memo
 ===================
 
 Our migration tries to reach a balance point between "do it in pyramid's way" and "just make it Pylons compatible for the sake of workload." General migration strategies can be found [here](https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/pylons/index.html). Some specific tips or tracks related to Stemformatics project are listed below.
-
-DB info
------------------
-Database info is used in `config` to connect to the database.
-
-```python
-host = 'localhost'
-dbname = 'portal_beta'
-user = 'portaladmin'
-```
-
-Namely,
-```python
-config['psycopg2_conn_string'] = "host='localhost' dbname='portal_beta' user='portaladmin'"
-```
 
 Request, response, and session
 --------------------------------
@@ -163,11 +180,12 @@ c = magic_globals.c
 
 ### some code that sets attributes of c ###
 ```
-choose an action renderer type
+
+Choose an action renderer type
 --------------------------------
-In pyramid, every action needs to return a response, and the response needs to be associated with a renderer.
-The renderer type needs to be explicitly specified, and this is different pylons.
-In pylons, an action and just return a piece of String in JSON format without specify anything. 
-In pyramid, returning anything with out specify a renderer type will result in an error.
-Therefore, if the action returns a .mako page, the renderer will need to be pointing to the mako file. If the action returns some data,it's best to specify
-the renderer type as "renderer='string'". (This is because our code does the formatting already, return them as string will keep the format as we processed)
+In Pyramid, every action needs to return a response, and the response needs to be associated with a renderer.
+The renderer type needs to be explicitly specified, and this is different in Pylons.
+In Pylons, an action can just return a piece of String in JSON format without specifying anything.
+In Pyramid, returning anything without specifying a renderer type will result in an error.
+Therefore, if an action returns a `mako` page, the renderer should point to a `mako` file. If an action returns some data, it's best to specify
+the renderer type as `renderer='string'`. (This is because our code does the formatting already; returning them as a string will keep the format as we process.)
