@@ -31,7 +31,7 @@ class BaseController():
         #set up DB var for ORM
         self.db_deprecated_pylons_orm = config["deprecated_pylons_orm"]
 
-        self._setup_c()
+        self._setup_c_deprecated_pylons_global()
         #set up the protocol
         self.response=request.response
 
@@ -39,7 +39,7 @@ class BaseController():
 
         self.request.add_finished_callback(self._update_page_history)
 
-    def _setup_c(self):
+    def _setup_c_deprecated_pylons_global(self):
         c = self.request.c
         request = self.request
         session = self.request.session
@@ -60,7 +60,45 @@ class BaseController():
         c.tutorials_for_page = Stemformatics_Help.get_help_for_page(this_url,request.params)
         c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
 
-        self._user_related_setup()
+        def _user_related_setup():
+            if 'user' in session:
+                c.user = session.get('user')
+                c.uid = session.get('uid')
+                c.full_name = session.get('full_name')
+                c.role = session.get('role')
+                c.notifications = 1
+            else:
+
+                #check cookie
+                username = request.cookies.get('stay_signed_in')
+                user_and_pwd_md5 = request.cookies.get('stay_signed_in_md5')
+                db = self.db_deprecated_pylons_orm
+                cookie_user = Stemformatics_Auth.check_stay_signed_in_md5(db,username,user_and_pwd_md5)
+
+
+                if cookie_user is not None:
+
+                    #Mark user as logged in
+                    session['user'] = cookie_user.username
+                    session['uid'] = cookie_user.uid
+                    session['full_name'] = cookie_user.full_name
+                    session['role'] = Stemformatics_Auth.get_user_role(db,cookie_user.uid)
+                    session.save()
+
+
+                    c.user = session.get('user')
+                    c.uid = session.get('uid')
+                    c.full_name = session.get('full_name')
+                    c.role = session.get('role')
+                    c.notifications = 1
+
+                else:
+                    c.user = ""
+                    c.uid = 0
+                    c.full_name = ""
+                    c.notifications = 0
+                    c.role = None
+        _user_related_setup()
 
         if not 'page_history' in session:
             session['page_history'] = []
@@ -89,49 +127,6 @@ class BaseController():
         if controller in change_name:
             controller = change_name[controller]
         c.title = config['site_name'] + ' ' + controller.capitalize() + ' - ' + action.replace('_',' ').title()
-
-    def _user_related_setup(self):
-        c = self.request.c
-        request = self.request
-        session = self.request.session
-
-        if 'user' in session:
-            c.user = session.get('user')
-            c.uid = session.get('uid')
-            c.full_name = session.get('full_name')
-            c.role = session.get('role')
-            c.notifications = 1
-        else:
-
-            #check cookie
-            username = request.cookies.get('stay_signed_in')
-            user_and_pwd_md5 = request.cookies.get('stay_signed_in_md5')
-            db = self.db_deprecated_pylons_orm
-            cookie_user = Stemformatics_Auth.check_stay_signed_in_md5(db,username,user_and_pwd_md5)
-
-
-            if cookie_user is not None:
-
-                #Mark user as logged in
-                session['user'] = cookie_user.username
-                session['uid'] = cookie_user.uid
-                session['full_name'] = cookie_user.full_name
-                session['role'] = Stemformatics_Auth.get_user_role(db,cookie_user.uid)
-                session.save()
-
-
-                c.user = session.get('user')
-                c.uid = session.get('uid')
-                c.full_name = session.get('full_name')
-                c.role = session.get('role')
-                c.notifications = 1
-
-            else:
-                c.user = ""
-                c.uid = 0
-                c.full_name = ""
-                c.notifications = 0
-                c.role = None
 
     def _update_page_history(self, _request):
         c = self.request.c
