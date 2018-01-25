@@ -6,7 +6,8 @@ from S4M_pyramid.model.stemformatics.stemformatics_help import Stemformatics_Hel
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
 from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
-from S4M_pyramid.templates.external_db import *
+from S4M_pyramid.model.stemformatics.stemformatics_notification import Stemformatics_Notification
+from S4M_pyramid.templates.external_db import externalDB, innateDB, stringDB
 from S4M_pyramid.model import init_model
 import json
 import socket
@@ -18,7 +19,6 @@ from pyramid.renderers import render_to_response
 class tempData(object):
     pass
 
-
 class BaseController():
 
     #this is invoked every time an action is called
@@ -28,36 +28,51 @@ class BaseController():
         c = self.request.c
         # set up url.environ
         url.set_environ(request)
-
-        self._temp = tempData()
         #set up DB var for ORM
         self.db_deprecated_pylons_orm = config["deprecated_pylons_orm"]
+
+        self._setup_c()
         #set up the protocol
         self.response=request.response
 
-        #set up c; those are directly retrieved fro the DB
+        self.deprecated_pylons_data_for_view = {'c': self.request.c, 'h': h, 'url':url, 'config':config}
+
+        self.request.add_finished_callback(self._update_page_history)
+
+    def _setup_c(self):
+        c = self.request.c
+        request = self.request
+        session = self.request.session
+
+        self._temp = tempData()
+
         c.site_name = config['site_name']
-        c.feedback_email = config['feedback_email']
         c.production = config['production']
-        c.stemformatics_version = config['stemformatics_version']
-        c.title = config['site_name']
-        # c attributes those are not from the DB
-        c.user = ""
-        c.uid = 0
-        c.full_name = ""
-        c.notification = ""
         c.header_selected = url.environ['pylons.routes_dict']['controller']
-        c.hostname = socket.gethostname()
-        c.role="user"
-        c.debug = None
-        c.header = ""
-        c.breadcrumbs = []
-        c.notifications = 0
-        c.species_dict = Stemformatics_Gene.get_species(self.db_deprecated_pylons_orm)
+        c.external_base_url = url('/',qualified=True)
+
+        c.feedback_email = config['feedback_email']
+        c.debug = request.params.get('debug')
+
         #set tutorial page
-        c.tutorials_for_page = Stemformatics_Help.get_help_for_page("contents/contact_us",request.params)
-        c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
         c.tutorials = Stemformatics_Help.get_tutorial_list()
+        this_url = url.environ['pylons.routes_dict']['controller'] + '/' + url.environ['pylons.routes_dict']['action']
+        c.tutorials_for_page = Stemformatics_Help.get_help_for_page(this_url,request.params)
+        c.json_tutorials_for_page =  json.dumps(c.tutorials_for_page)
+
+        self._user_related_setup()
+
+        if not 'page_history' in session:
+            session['page_history'] = []
+        c.page_history = session.get('page_history')
+
+        c.stemformatics_version = config['stemformatics_version']
+        c.header = ""#Stemformatics_Notification.get_header(db, request, c.uid) ##########################################################
+
+        #----------------------------------------------------------------------------------
+
+        c.species_dict = Stemformatics_Gene.get_species(self.db_deprecated_pylons_orm)
+
         #set up external db
         single_gene_url = "http://www.innatedb.com/getGeneCard.do?id="
         multiple_gene_url = "http://www.innatedb.com/batchSearch.do"
@@ -66,7 +81,20 @@ class BaseController():
         single_gene_url = "http://string-db.com/newstring_cgi/show_network_section.pl?identifier="
         c.string_db_object = stringDB(single_gene_url)
 
-        session = request.session
+        c.hostname = socket.gethostname()
+
+        action = url.environ['pylons.routes_dict']['action']
+        controller = url.environ['pylons.routes_dict']['controller']
+        change_name = {'expressions':'graphs','workbench':'analyses'}
+        if controller in change_name:
+            controller = change_name[controller]
+        c.title = config['site_name'] + ' ' + controller.capitalize() + ' - ' + action.replace('_',' ').title()
+
+    def _user_related_setup(self):
+        c = self.request.c
+        request = self.request
+        session = self.request.session
+
         if 'user' in session:
             c.user = session.get('user')
             c.uid = session.get('uid')
@@ -105,11 +133,32 @@ class BaseController():
                 c.notifications = 0
                 c.role = None
 
-        if not 'page_history' in session:
-            session['page_history'] = []
+    def _update_page_history(self, _request):
+        c = self.request.c
+        request = self.request
+        session = self.request.session
 
-        c.page_history = session.get('page_history')
-        self.deprecated_pylons_data_for_view = {'c': self.request.c, 'h': h, 'url':url, 'config':config}
+        title = c.title
+        skip_history = True if ('error' in request.path_info
+                                or 'auth' in request.path_info
+                                or 'main' in request.path_info
+                                or ('hamlet' in request.path_info and 'index' not in request.path_info)
+                                or 'ajax' in request.path_info
+                                or 'return_gene_search_graph' in request.path_info
+                                or 'genes/get_autocomplete' in request.path_info
+                                or 'expressions/return_yugene_filtered_graph_data' in request.path_info
+                                or 'expressions/return_breakdown_of_yugene_filtered_data' in request.path_info
+                                or 'help/json' in request.path_info
+                            ) else False
+
+        if not skip_history:
+            if request.query_string == '':
+                session['page_history'].append({'title': title, 'path': request.path_info})
+            else:
+                if 'page_history' not in session:
+                    session['page_history'] = []
+                session['page_history'].append({'title': title, 'path': request.path_info + '?' + request.query_string})
+            session.save()
 
     def _check_dataset_status(self):
         c = self.request.c
@@ -195,4 +244,3 @@ class BaseController():
         self._temp.ensemblID = ensemblID
         self._temp.symbol = result[ensemblID]['symbol']
         return "1"
-

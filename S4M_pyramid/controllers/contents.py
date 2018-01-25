@@ -24,14 +24,14 @@ class ContentsController(BaseController):
     def contact_us(self):
         c = self.request.c
         # set up C
-        c.title=c.site_name+" - Contact_us"
+        c.title=c.site_name+" - Contact Us"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/about_us.mako")
     def about_us(self):
         c = self.request.c
         # set up C
-        c.title = c.site_name + " - About_us"
+        c.title = c.site_name + " - About Us"
         return self.deprecated_pylons_data_for_view
 
     #faq page wouldn't work without the tutorial list
@@ -39,7 +39,7 @@ class ContentsController(BaseController):
     def faq(self):
         c = self.request.c
         # set up C
-        c.title = c.site_name + " - Faq"
+        c.title = c.site_name + " - FAQ"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/our_data.mako")
