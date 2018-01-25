@@ -1,6 +1,4 @@
 '''
-page_history only shows the empty template, doesn't show history.
-
 share_* and _email_template_* methods not tested.
 '''
 

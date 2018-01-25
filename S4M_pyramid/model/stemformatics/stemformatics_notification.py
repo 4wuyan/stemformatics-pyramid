@@ -19,12 +19,11 @@ import psycopg2
 import psycopg2.extras
 
 # Import smtplib for the actual sending function
-from email.MIMEText import MIMEText
-from email.Header import Header
-from email.Utils import parseaddr, formataddr
-from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job # wouldn't work otherwise??
+from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import parseaddr, formataddr
+#from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job # wouldn't work otherwise??
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
-from S4M_pyramid.model.stemformatics.stemformatics_notification import Stemformatics_Notification
 
 
 import redis
