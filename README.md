@@ -154,4 +154,11 @@ c = magic_globals.c
 
 ### some code that sets attributes of c ###
 ```
-
+choose an action renderer type
+--------------------------------
+In pyramid, every action needs to return a response, and the response needs to be associated with a renderer.
+The renderer type needs to be explicitly specified, and this is different pylons.
+In pylons, an action and just return a piece of String in JSON format without specify anything. 
+In pyramid, returning anything with out specify a renderer type will result in an error.
+Therefore, if the action returns a .mako page, the renderer will need to be pointing to the mako file. If the action returns some data,it's best to specify
+the renderer type as "renderer='string'". (This is because our code does the formatting already, return them as string will keep the format as we processed)
