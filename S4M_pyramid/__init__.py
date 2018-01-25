@@ -53,7 +53,10 @@ def main(global_config, **settings):
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
     def redirect_view(request):
-        return HTTPFound(location = new_path_pattern.format(**request.matchdict))
+        path = new_path_pattern.format(**request.matchdict)
+        if request.query_string:
+            path += '?' + request.query_string
+        return HTTPFound(location = path)
     route_name = 'route_name for ' + old_path_pattern.format(controller='controller', action='action', id='id')
     config.add_route(route_name, old_path_pattern)
     config.add_view(redirect_view, route_name=route_name)
