@@ -46,6 +46,9 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
+
+    from S4M_pyramid.lib.deprecated_pylons_globals import app_globals
+    app_globals.lazy_init()
     return config.make_wsgi_app()
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
