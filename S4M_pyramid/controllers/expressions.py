@@ -2,7 +2,7 @@ from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set, db_deprecated_pylons_orm as db
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals,url
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
@@ -749,7 +749,6 @@ class ExpressionsController(BaseController):
         param_view_by = self._temp.param_view_by
         param_show_lower = self._temp.param_show_lower
         yugene_granularity_for_gene_search ='auto'
-        g = config['deprecated_pylons_app_globals']
         self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
 
 
@@ -766,7 +765,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         uid = c.uid
         request = self.request
-        g = config["deprecated_pylons_app_globals"]
         filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene",""))
         db_id = int(request.params.get("db_id",""))
@@ -825,7 +823,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         uid = c.uid
         request = self.request
-        g = config["deprecated_pylons_app_globals"]
         c.filters = filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene"))
         db_id = int(request.params.get("db_id"))
