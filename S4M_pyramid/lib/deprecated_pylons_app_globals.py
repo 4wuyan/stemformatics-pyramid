@@ -44,6 +44,3 @@ class Globals(object):
         """
         #Stemformatics_Admin.trigger_update_configs()
 
-#setup the orm variable
-engine = create_engine(config['orm_conn_string'])
-db_deprecated_pylons_orm = sqlsoup.SQLSoup(engine)

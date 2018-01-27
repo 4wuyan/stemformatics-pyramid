@@ -12,7 +12,7 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 
-from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, db_deprecated_pylons_orm as db
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -37,7 +37,6 @@ class AuthController(BaseController):
         super(AuthController, self).__init__(request)
         c = self.request.c
 
-        db = self.db_deprecated_pylons_orm
         # clear out expired users first
         Stemformatics_Auth.clear_expired_unconfirmed_users(db)
 
@@ -49,7 +48,6 @@ class AuthController(BaseController):
     def guest(self):
         c = self.request.c
 
-        db = self.db_deprecated_pylons_orm
         db_user = Stemformatics_Auth.get_user_from_username(db,c.guest_username)
 
         if db_user is None:
@@ -87,7 +85,6 @@ class AuthController(BaseController):
         request = self.request
         response = request.response
         session = request.session
-        db = self.db_deprecated_pylons_orm
 
         """Verify username and password."""
 
@@ -272,7 +269,6 @@ class AuthController(BaseController):
         }
 
         # return the new user record
-        db = self.db_deprecated_pylons_orm
         new_user = Stemformatics_Auth.register_new_user(db,registration_data)
 
         if isinstance(new_user, str) or isinstance(new_user, bytes):
@@ -364,7 +360,6 @@ class AuthController(BaseController):
 
         uid = str(self.request.params.get('rego'))
 
-        db = self.db_deprecated_pylons_orm
         confirmed_user = Stemformatics_Auth.confirm_new_user(db,id,uid)
 
 
@@ -394,7 +389,6 @@ class AuthController(BaseController):
             return render_to_response('S4M_pyramid:templates/auth/forgot_password.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         # firstly, check that the record exists and then return a confirm code if it does and then send it off
-        db = self.db_deprecated_pylons_orm
         found_user = Stemformatics_Auth.set_confirm_forgot_password(db,username)
 
         if found_user is not None:
@@ -450,7 +444,6 @@ class AuthController(BaseController):
         c = self.request.c
         id = self.request.matchdict['id']
 
-        db = self.db_deprecated_pylons_orm
         confirmed_user = Stemformatics_Auth.get_user_from_confirm_code(db,id)
 
         if confirmed_user is None:
@@ -490,7 +483,6 @@ class AuthController(BaseController):
     @action()
     def update_details(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         this_user = Stemformatics_Auth.get_user_from_username(db,c.user)
 
         c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/auth/update_details'),'My Account']]
@@ -574,7 +566,6 @@ class AuthController(BaseController):
 
         uid = int(id)
 
-        db = self.db_deprecated_pylons_orm
         this_user = Stemformatics_Auth.get_user_from_uid(db,uid)
 
         updated_data = { 'organisation': this_user.organisation, 'full_name': this_user.full_name, 'send_email_marketing': this_user.send_email_marketing, 'send_email_job_notifications': False}
@@ -596,7 +587,6 @@ class AuthController(BaseController):
         c = self.request.c
         id = self.request.matchdict['id']
         request = self.request
-        db = self.db_deprecated_pylons_orm
 
         return_message = ""
         gene_set_id = int(id)
@@ -698,7 +688,6 @@ class AuthController(BaseController):
         c = self.request.c
         request = self.request
         id = request.matchdict['id']
-        db = self.db_deprecated_pylons_orm
 
         return_message = ""
         job_id = int(id)
@@ -791,7 +780,6 @@ class AuthController(BaseController):
     def share_gene_expression(self):
         c = self.request.c
         request = self.request
-        db = self.db_deprecated_pylons_orm
 
         return_message = ""
         to_email = request.params.get('to_email')

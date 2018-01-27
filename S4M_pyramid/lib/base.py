@@ -2,11 +2,7 @@ import S4M_pyramid.lib.helpers as h
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import url
 from S4M_pyramid.config import config
-from S4M_pyramid.model.stemformatics.stemformatics_help import Stemformatics_Help
-from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
-from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
-from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
-from S4M_pyramid.model.stemformatics.stemformatics_notification import Stemformatics_Notification
+from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Notification, Stemformatics_Help, Stemformatics_Gene, Stemformatics_Auth, Stemformatics_Dataset
 from S4M_pyramid.templates.external_db import externalDB, innateDB, stringDB
 from S4M_pyramid.model import init_model
 import json
@@ -29,7 +25,6 @@ class BaseController():
         # set up url.environ
         url.set_environ(request)
         #set up DB var for ORM
-        self.db_deprecated_pylons_orm = config["deprecated_pylons_orm"]
 
         self._setup_c_deprecated_pylons_global()
         #set up the protocol
@@ -71,7 +66,7 @@ class BaseController():
 
         #----------------------------------------------------------------------------------
 
-        c.species_dict = Stemformatics_Gene.get_species(self.db_deprecated_pylons_orm)
+        c.species_dict = Stemformatics_Gene.get_species(db)
 
         #set up external db
         single_gene_url = "http://www.innatedb.com/getGeneCard.do?id="
@@ -104,7 +99,6 @@ class BaseController():
             #check cookie
             username = request.cookies.get('stay_signed_in')
             user_and_pwd_md5 = request.cookies.get('stay_signed_in_md5')
-            db = self.db_deprecated_pylons_orm
             cookie_user = Stemformatics_Auth.check_stay_signed_in_md5(db,username,user_and_pwd_md5)
 
 
@@ -160,7 +154,6 @@ class BaseController():
 
     def _check_dataset_status(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
 
         # if no access and already logged in then error out
@@ -184,7 +177,6 @@ class BaseController():
         db_id = self._temp.db_id
         this_url = self._temp.url
         geneSearch = self._temp.geneSearch
-        db = self.db_deprecated_pylons_orm
 
         if (geneSearch is None) or (len(geneSearch) < 1):
             #error_handling_for_invalid_search_string()
