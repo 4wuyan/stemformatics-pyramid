@@ -29,14 +29,14 @@ import zlib
 import json
 
 import sqlsoup
-class _sqlsoup_wrapper(sqlsoup.SQLSoup):
+class _SQLSoupWrapper(sqlsoup.SQLSoup):
     def __init__(self):
         pass
 
     def lazy_init(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-db_deprecated_pylons_orm = _sqlsoup_wrapper()
+db_deprecated_pylons_orm = _SQLSoupWrapper()
 
 
 
