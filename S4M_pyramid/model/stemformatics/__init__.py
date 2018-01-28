@@ -28,11 +28,18 @@ from .stemformatics_help import Stemformatics_Help
 import zlib
 import json
 
-from sqlalchemy import create_engine
+#from sqlalchemy import engine_from_config
 import sqlsoup
-from S4M_pyramid.lib.deprecated_pylons_globals import config
-engine = 'postgresql://portaladmin@localhost/portal_beta' ############ create_engine(config['orm_conn_string'])
-#engine = create_engine(config['orm_conn_string'])
-db_deprecated_pylons_orm = sqlsoup.SQLSoup(engine)
+class _sqlsoup_wrapper(sqlsoup.SQLSoup):
+    def __init__(self):
+        pass
+
+    def lazy_init(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+#engine = 'postgresql://portaladmin@localhost/portal_beta' ############ create_engine(config['orm_conn_string'])
+#engine = engine_from_config(get_current_registry().settings, prefix='model.stemformatics.db.')
+db_deprecated_pylons_orm = _sqlsoup_wrapper()
+
 
 

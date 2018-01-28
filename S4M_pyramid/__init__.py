@@ -6,6 +6,8 @@ from S4M_pyramid.controllers.expressions import ExpressionsController
 from S4M_pyramid.controllers.auth import AuthController
 
 def main(global_config, **settings):
+    setup_deprecated_pylons_globals(settings)
+    setup_database_connection(settings)
     """ This function returns a Pyramid WSGI application.
     """
     config = Configurator(settings=settings)
@@ -46,10 +48,9 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
-    setup_deprecated_pylons_globals(**settings)
     return config.make_wsgi_app()
 
-def setup_deprecated_pylons_globals(**settings):
+def setup_deprecated_pylons_globals(settings):
     from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g, config
     from S4M_pyramid.model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
 
@@ -59,6 +60,13 @@ def setup_deprecated_pylons_globals(**settings):
 
     # set up g
     g.all_sample_metadata = Stemformatics_Expression.setup_all_sample_metadata()
+
+def setup_database_connection(settings):
+    from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm
+    from sqlalchemy import engine_from_config
+    engine = engine_from_config(settings, prefix='model.stemformatics.db.')
+    db_deprecated_pylons_orm.lazy_init(engine)
+
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
     def redirect_view(request):
