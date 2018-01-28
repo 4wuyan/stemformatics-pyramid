@@ -30,7 +30,9 @@ import json
 
 from sqlalchemy import create_engine
 import sqlsoup
-from S4M_pyramid.config import config
-engine = create_engine(config['orm_conn_string'])
+from S4M_pyramid.lib.deprecated_pylons_globals import config
+engine = 'postgresql://portaladmin@localhost/portal_beta' ############ create_engine(config['orm_conn_string'])
+#engine = create_engine(config['orm_conn_string'])
 db_deprecated_pylons_orm = sqlsoup.SQLSoup(engine)
+
 

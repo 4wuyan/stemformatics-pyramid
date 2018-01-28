@@ -11,7 +11,7 @@ from datetime import timedelta
 
 from sqlalchemy import or_, and_, desc
 
-from S4M_pyramid.config import config
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 
 __all__ = ['Stemformatics_Gene_Set']
 

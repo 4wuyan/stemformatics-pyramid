@@ -46,10 +46,19 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
-
-    from S4M_pyramid.lib.deprecated_pylons_globals import app_globals
-    app_globals.lazy_init()
+    setup_deprecated_pylons_globals(**settings)
     return config.make_wsgi_app()
+
+def setup_deprecated_pylons_globals(**settings):
+    from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g, config
+    from S4M_pyramid.model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
+
+    # update deprecated pylons "config" global
+    config.update(settings)
+    Stemformatics_Admin.trigger_update_configs()
+
+    # set up g
+    g.all_sample_metadata = Stemformatics_Expression.setup_all_sample_metadata()
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
     def redirect_view(request):

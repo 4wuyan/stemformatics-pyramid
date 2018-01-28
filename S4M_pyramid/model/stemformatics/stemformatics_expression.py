@@ -14,8 +14,7 @@ from S4M_pyramid.model.stemformatics.stemformatics_probe import *
 #CRITICAL-6
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene # wouldn't work otherwise??
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
-from S4M_pyramid.config import config
-from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g
+from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g, config
 
 
 

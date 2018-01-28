@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 from S4M_pyramid.lib.base import BaseController
 
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, db_deprecated_pylons_orm as db
@@ -18,7 +18,6 @@ from S4M_pyramid.model.stemformatics import Stemformatics_Auth, db_deprecated_py
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from S4M_pyramid.config import config
 
 from paste.deploy.converters import asbool
 
