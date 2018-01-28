@@ -28,7 +28,6 @@ from .stemformatics_help import Stemformatics_Help
 import zlib
 import json
 
-#from sqlalchemy import engine_from_config
 import sqlsoup
 class _sqlsoup_wrapper(sqlsoup.SQLSoup):
     def __init__(self):
@@ -37,8 +36,6 @@ class _sqlsoup_wrapper(sqlsoup.SQLSoup):
     def lazy_init(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-#engine = 'postgresql://portaladmin@localhost/portal_beta' ############ create_engine(config['orm_conn_string'])
-#engine = engine_from_config(get_current_registry().settings, prefix='model.stemformatics.db.')
 db_deprecated_pylons_orm = _sqlsoup_wrapper()
 
 
