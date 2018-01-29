@@ -15,7 +15,7 @@ import re
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
 
-class ExpressionsController(BaseController):
+class GenesController(BaseController):
     def get_autocomplete(self):
         c = self.request.c
         db = self.db_deprecated_pylons_orm
