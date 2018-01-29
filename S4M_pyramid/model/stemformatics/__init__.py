@@ -30,6 +30,18 @@ import json
 
 import sqlsoup
 class _SQLSoupWrapper(sqlsoup.SQLSoup):
+    '''
+    This wrapper is designed to defer the initialisation of the SQLSoup instance.
+    I couldn't find another way to setup an "empty" SQLSoup instance,
+    and bind the db connection later after we get the db configuration info (i.e. in main function).
+
+    I need to defer the initialisation, because this file will be executed during the initial
+    importing phase, before the main function of the application is run.
+    That means you don't have the db url when db is initialised, and an exception is raised.
+
+    In Pyramid's tutorial, they don't use sqlsoup; that's why they can have an idle
+    DBSession initialised here, then bind it to the url fetched from ini later in main.
+    '''
     def __init__(self):
         pass
 

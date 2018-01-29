@@ -65,7 +65,11 @@ def setup_database_connection(settings):
     from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm
     from sqlalchemy import engine_from_config
     engine = engine_from_config(settings, prefix='model.stemformatics.db.')
+
+    # Defer the actual initialisation of the SQLSoup instance,
+    # Because we don't have the engine info until this moment.
     db_deprecated_pylons_orm.lazy_init(engine)
+    # For more info, see the source code at model/stemformatics/__init__.py
 
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
