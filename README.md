@@ -181,12 +181,12 @@ Defending the design of _magic_ globals and _real_ globals
 
 ### *Fake* globals
 
-However, `request`, `resposne` and `session` are on the contrary. I want everyone to tell what `c` is in _every_ function in advance (if `c` exists of course), namely `c = self.request.c` in controllers or `magic_globals.fetch(); c = magic_globals.c` in models. The same applies to `request`, `resposne` and `session`.  The rationale behind it is that they are **request-local**; they are "fake globals." That's why all 4 of them sit in the `MagicGlobalsFromRequest` object, and where _magic_ comes from.
+However, `request`, `resposne`, `session` and `c` are on the contrary. I want everyone to tell what `c` is in _every_ function in advance (if `c` exists of course), namely `c = self.request.c` in controllers or `magic_globals.fetch(); c = magic_globals.c` in models. The same applies to `request`, `resposne` and `session`.  The rationale behind it is that they are **request-local**; they are "fake globals." That's why all 4 of them sit in the `MagicGlobalsFromRequest` object, and where _magic_ comes from.
 
 Redirect
 ======================================
 
-Pyramid officially recommends returning a redirect, i.e. a `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of Traceback in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
+Pyramid officially recommends returning a redirect, i.e. an `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of Traceback in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
 
 As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should **remember to add a `return`** when there isn't one.
 ```python
@@ -244,6 +244,6 @@ def init_model(db_engine):
 The main disadvantages of this design are:
 
 * You __must__ make sure that you have called `init_model` absolutely before any other parts of the application that import `db`. This is very error-prone, especially when there are so many complicated dependencies of import on the top of your file. "Pain in the ass."
-* It reduces the readability. People who want to import a `NoneType` `db` will easily get confused by that the `db` imported is not `None` as is written in the source code, if they are unaware of the `init_model` executed before.
+* It reduces the readability. People who want to import a `NoneType` `db` will easily get confused by that the `db` imported is not `None` as stated in the source code, if they are unaware of the `init_model` executed before.
 
 The first thing you need to do in Pyramid if you adopt that design, is to put those `import SomeController` lines from the top of the file into the `main` function. Otherwise you will receive a `NoneType` error arising from `db`, because `BaseController` has imported a `db` of `NoneType` way ahead of `init_model`.
