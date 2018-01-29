@@ -18,12 +18,10 @@ Please make sure the databases in your environment are correctly setup, and cont
 
 ### Get connected to your database
 
-An example of database connection configurations can be found in `config.py`:
-```python
-config = {
-    'psycopg2_conn_string': "host='localhost' dbname='portal_beta' user='portaladmin'",
-    'orm_conn_string': 'postgresql://portaladmin@localhost/portal_beta',
-}
+An example of database connection configurations can be found in `development.ini`:
+```ini
+psycopg2_conn_string =  host='localhost' dbname='portal_beta' user='portaladmin'
+model.stemformatics.db.url  = postgresql://portaladmin@localhost/portal_beta
 ```
 
 ### Update your database info (optional)
@@ -62,17 +60,21 @@ $ $VENV/bin/pip install -e .
 $ $VENV/bin/pserve development.ini
 ```
 
-Migrating Memo
-===================
+------------------------------------------------------
 
 Our migration tries to reach a balance point between "do it in pyramid's way" and "just make it Pylons compatible for the sake of workload." General migration strategies can be found [here](https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/pylons/index.html). Some specific tips or tracks related to Stemformatics project are listed below.
 
+Deprecated pylons globals
+========================================
+
+The `lib.deprecated_pylons_global` file is the place where we support and mimic the behaviour of
+```python
+from pylons import request, response, session, tmpl_context as c, app_globals as g, url, config
+```
+
 Request, response, and session
 --------------------------------
-Pylons provides a global object of `request`, `response`, and `session` respectively via
-```python
-from pylons import request, response, session
-```
+
 I personally think it is a bad design, since it makes module testing difficult, and sometimes it lures developers to access the `request`, `response` or `session` object in the model layer.
 
 In Pyramid, you can use the `request.response` and the `request.session` objects wrapped in `request` for convenicne, if you don't want to create your own. Thus the focus is how to access `request` in places where pylons uses a global.
@@ -100,45 +102,9 @@ request = pyramid.threadlocal.get_current_request()
 response = request.response
 session = request.session
 ```
-
-A shortcut `magic_globals` object can be found in `lib.deprecated_pylons_globals`.
+The `magic_globals` object in `lib.deprecated_pylons_globals` provides a shortcut when you have to access them in models.
 
 For more information, see [this page](https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/pylons/request.html).
-
-URL generator
--------------------
-
-Pyramid has it's own mechanism to generate urls, which you should follow. The global `url` generator object you can find in `lib.deprecated_pylons_globals` is used to be compatible with the old Pylons patterns, namely:
-```python
-url(controller = 'c', action = 'a')
-    -> '/c/a'
-url(controller = 'c', action = 'a', qualified = True)
-    -> 'https://www.s4m.org/c/a'
-url('/c/a')
-    ->  '/c/a'
-url('c/a')
-    ->  'c/a'
-url('c/a', qualified = True)
-    ->  'https://www.s4m.org/c/a'
-url('https://example.com/index')
-    -> 'https://example.com/index'
-```
-
-The `set_environ()` method of the url generator is designed to work around the `url.environ['pylons.routes_dict']` dictionary used to get the name of the controller or action. It adopts a naive method in which path info is parsed with the pattern `/{controller}/{action}/{id}`. Those special routing rules should redirect to the "orthodox" url first if they need a correct `url.environ['pylons.routes_dict']['controller']` or `url.environ['pylons.routes_dict']['action']` value.
-
-Redirect
-------------------------
-Pyramid officially recommends returning a redirect, i.e. a `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of Traceback in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
-
-As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should **remember to add a `return`** when there isn't one.
-```python
-# This doesn't work if HTTPFound is returned, but not raised,
-# because the response object is discarded after this line.
-redirect(some info)
-
-# Remember to add a return
-return redirect(some info)
-```
 
 tmpl\_context as c
 --------------------------------
@@ -181,11 +147,102 @@ c = magic_globals.c
 ### some code that sets attributes of c ###
 ```
 
+URL generator
+-------------------
+
+Pyramid has it's own mechanism to generate urls, which you should follow. The global `url` generator object you can find in `lib.deprecated_pylons_globals` is used to be compatible with the old Pylons patterns, namely:
+```python
+url(controller = 'c', action = 'a')
+    -> '/c/a'
+url(controller = 'c', action = 'a', qualified = True)
+    -> 'https://www.s4m.org/c/a'
+url('/c/a')
+    ->  '/c/a'
+url('c/a')
+    ->  'c/a'
+url('c/a', qualified = True)
+    ->  'https://www.s4m.org/c/a'
+url('https://example.com/index')
+    -> 'https://example.com/index'
+```
+
+The `set_environ()` method of the url generator is designed to work around the `url.environ['pylons.routes_dict']` dictionary used to get the name of the controller or action. It adopts a naive method in which path info is parsed with the pattern `/{controller}/{action}/{id}`. Those special routing rules should redirect to the "orthodox" url first if they need a correct `url.environ['pylons.routes_dict']['controller']` or `url.environ['pylons.routes_dict']['action']` value.
+
+g and config
+------------------------
+`app_globals` and `config` are _real_ globals, and you can see in `deprecated_pylons_globals` they are both an initially-empty container shared globally.
+
+Defending the design of _magic_ globals and _real_ globals
+-----------------------------------------
+
+### *Real* globals
+
+`config`,`g`, and `db` imported from the model are "real" globals, which means you aren't supposed to define them in every function once you import them on the top. By doing so, we shouldn't treat them as _magic_ globals, because it's the intrinsic property as a globally shared container that other parts of the application want to visit; they're supposed to behave so (though it's another topic whether it's necessary to use global containers).
+
+### *Fake* globals
+
+However, `request`, `resposne` and `session` are on the contrary. I want everyone to tell what `c` is in _every_ function in advance (if `c` exists of course), namely `c = self.request.c` in controllers or `magic_globals.fetch(); c = magic_globals.c` in models. The same applies to `request`, `resposne` and `session`.  The rationale behind it is that they are **request-local**; they are "fake globals." That's why all 4 of them sit in the `MagicGlobalsFromRequest` object, and where _magic_ comes from.
+
+Redirect
+======================================
+
+Pyramid officially recommends returning a redirect, i.e. a `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of Traceback in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
+
+As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should **remember to add a `return`** when there isn't one.
+```python
+# This doesn't work if HTTPFound is returned, but not raised,
+# because the response object is discarded after this line.
+redirect(some info)
+
+# Remember to add a return
+return redirect(some info)
+```
+
 Choose an action renderer type
---------------------------------
+=======================================
+
 In Pyramid, every action needs to return a response, and the response needs to be associated with a renderer.
 The renderer type needs to be explicitly specified, and this is different in Pylons.
 In Pylons, an action can just return a piece of String in JSON format without specifying anything.
 In Pyramid, returning anything without specifying a renderer type will result in an error.
 Therefore, if an action returns a `mako` page, the renderer should point to a `mako` file. If an action returns some data, it's best to specify
 the renderer type as `renderer='string'`. (This is because our code does the formatting already; returning them as a string will keep the format as we process.)
+
+Database ORM
+=====================
+
+We still use an `SQLSoup` object as the representation of the database in `model/stemformatics`.
+
+However, a simple `SQLSoup` wrapper is designed to defer the initialisation of `SQLSoup`. I couldn't find another way to setup an "empty" `SQLSoup` instance, and bind the db connection later after we get the db configuration info (i.e. in the `main` function).
+```python
+class _SQLSoupWrapper(sqlsoup.SQLSoup):
+    def __init__(self):
+        pass
+
+    def lazy_init(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+```
+
+We need to defer the _actual_ initialisation where the db connection is made, because the instantiation happens during the initial importing phase, **before** the `main` function of the application is run. That means you don't have the db url when db is initialised, and an exception is raised.
+
+Defending the wrapper design
+---------------
+
+### Why does Pyramid's tutorial not use a wrapper
+
+Pyramid's tutorial doesn't use `sqlsoup`; that's why they can have an idle `DBSession`, then bind it to the url fetched from `ini` later in the `main` function.
+
+### Why not stick with our original design in Pylons
+In our Pylons code, we made `db = None` first, then called a function that uses global variables to modify `db`.
+```python
+db = None
+
+def init_model(db_engine):
+    global db
+    db = blah blah....
+```
+The main disadvantages of this design are:  
+* You __must__ make sure that you have called `init_model` absolutely before any other parts of the application that import `db`. This is very error-prone, especially when there are so many complicated dependencies of import on the top of your file. "Pain in the ass."
+* It reduces the readability. People who want to import a `NoneType` `db` will easily get confused by that the `db` imported is not `None` as is written in the source code, if they are unaware of the `init_model` executed before.
+
+The first thing you need to do in Pyramid if you adopt that design, is to put those `import SomeController` lines from the top of the file into the `main` function. Otherwise you will receive a `NoneType` error arising from `db`, because `BaseController` has imported a `db` of `NoneType` way ahead of `init_model`.
