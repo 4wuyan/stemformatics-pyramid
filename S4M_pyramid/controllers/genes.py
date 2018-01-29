@@ -13,10 +13,27 @@ import json
 import formencode.validators as fe
 import re
 from pyramid.renderers import render_to_response
+from asbool import asbool
 import S4M_pyramid.lib.helpers as h
 
 class GenesController(BaseController):
-    
+
+    def __init__(self): #CRITICAL-3
+
+        super(GenesController, self).__before__ ()
+        self.human_db = config['human_db']
+        self.mouse_db = config['mouse_db']
+        c.human_db = self.human_db
+        c.mouse_db = self.mouse_db
+
+
+        self.default_human_dataset = int(config['default_human_dataset'])
+        self.default_mouse_dataset = int(config['default_mouse_dataset'])
+        self.useSqlSoup = True
+
+        if 'useSqlSoup' in config:
+            self.useSqlSoup = asbool(config['useSqlSoup'])
+
     def search(self):
         c = self.request.c
         request = self.request
