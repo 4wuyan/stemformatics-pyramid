@@ -18,9 +18,10 @@ import S4M_pyramid.lib.helpers as h
 
 class GenesController(BaseController):
 
-    def __init__(self): #CRITICAL-3
+    def __init__(self,request): #CRITICAL-3
 
-        super(GenesController, self).__before__ ()
+        super().__init__(request)
+        c = self.request.c
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         c.human_db = self.human_db
@@ -102,7 +103,7 @@ class GenesController(BaseController):
                     audit_dict = {'ref_type':'search_term','ref_id':c.searchQuery,'uid':c.uid,'url':url,'request':request}
                     result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-            return render_to_response('S4M_pyramid:templates/genes/summary.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return render_to_response('S4M_pyramid:templates/genes/search.mako',self.deprecated_pylons_data_for_view,request=self.request)
         else:
             # Task #396 - error with ie8 downloading with these on SSL
             del response.headers['Cache-Control']

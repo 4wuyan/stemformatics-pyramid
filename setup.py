@@ -25,6 +25,7 @@ requires = [
     'paginate',
     'decorator',
     'numpy',
+    'asbool'
     ]
 
 tests_require = [
