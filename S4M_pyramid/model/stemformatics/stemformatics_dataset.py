@@ -1543,7 +1543,7 @@ All functions have a try that will return None if errors are found
             delimiter = config['redis_delimiter']
             label_name = "user_dataset_availability"+delimiter+str(uid)
             try:
-                dict_ds_ids = json.loads(r_server.get(label_name))
+                dict_ds_ids = json.loads(r_server.get(label_name).decode('utf-8'))
                 temp_list_of_ds_ids = []
                 for str_ds_id in dict_ds_ids:
                     ds_id = int(str_ds_id)
@@ -1554,7 +1554,8 @@ All functions have a try that will return None if errors are found
 
                     if status in ("Admin","Annotate","Available"):
                         temp_list_of_ds_ids.append(ds_id)
-            except:
+            except Exception as e:
+                print(e)
                 temp_list_of_ds_ids = None
 
 
