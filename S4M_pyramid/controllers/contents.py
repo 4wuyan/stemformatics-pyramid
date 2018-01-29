@@ -85,9 +85,3 @@ class ContentsController(BaseController):
         c.title = "Registration submitted"
         return self.deprecated_pylons_data_for_view
 
-    @action(renderer='templates/workbench/error_message.mako')
-    def invalid_gene(self):
-        c = self.request.c
-        c.title = "Invalid Gene Search"
-        c.message = "You have not entered a proper gene. Please go back and enter in another gene."
-        return self.deprecated_pylons_data_for_view

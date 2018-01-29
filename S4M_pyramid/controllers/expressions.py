@@ -17,7 +17,6 @@ import S4M_pyramid.lib.helpers as h
 
 
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
-import pyramid.httpexceptions as e
 
 class ExpressionsController(BaseController):
     # 'sca' is short for scatter.  Makes validity checking easier.
@@ -83,9 +82,7 @@ class ExpressionsController(BaseController):
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if isinstance(result,e.HTTPFound):
-            return result
-        elif result != "1":
+        if result != "1":
             return self._temp.render
         """ This sets the type of graph that will be available. So you can have options
         such as miRNA,gene_set_id  and probeID with an appropriate ref_id.  """
@@ -152,7 +149,7 @@ class ExpressionsController(BaseController):
 
         # now check the dataset status
         if self._temp.dataset_status != "Available":
-            redirect(url(controller='contents', action='index'), code=404)
+            return redirect(url(controller='contents', action='index'), code=404)
         if ref_type == "ensemblID":
             result = self._check_gene_status()  #This is in lib/base.py
             if result == "0":
@@ -362,7 +359,7 @@ class ExpressionsController(BaseController):
             # check if user has access to gene list
             status = Stemformatics_Gene_Set.check_gene_set_availability(gene_set_id, c.uid)
             if status == False:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
             species = Stemformatics_Gene_Set.get_species(db, c.uid, gene_set_id)
             c.gene_set_name = gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db, c.uid, gene_set_id)
             db_id = Stemformatics_Gene_Set.get_db_id(db, c.uid, gene_set_id)
@@ -625,9 +622,9 @@ class ExpressionsController(BaseController):
                     session = self.request.session
                     session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
                     session.save()
-                    return redirect(h.url('/auth/login'))
+                    raise redirect(h.url('/auth/login'))
                 else:
-                    return redirect(self.request.url + '&force_choose=yes')
+                    raise redirect(self.request.url + '&force_choose=yes')
 
             # should be the same for all datasets
             self._temp.ref_type = 'ensemblID'
@@ -650,8 +647,6 @@ class ExpressionsController(BaseController):
             return self._temp.render
 
         result = self._summary_get_gene_details()
-        if isinstance(result,e.HTTPFound):
-            return result
         if not result:
             return self._temp.render
 
@@ -703,7 +698,7 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Gene.get_genes(db, c.species_dict, geneSearch, db_id, False, None)
 
         if(result is None):
-            return redirect(url(controller='contents', action='invalid_gene'), code=404)
+            raise redirect(url(controller='contents', action='index'), code=404)
 
         if len(result) ==1 :
             original = geneSearch
@@ -730,7 +725,7 @@ class ExpressionsController(BaseController):
         self._temp.returnData = returnData = Stemformatics_Gene.get_genes(db,c.species_dict,geneSearch,db_id,True,None)
 
         if returnData == {} or returnData == None:
-            return redirect(url(controller='contents', action='invalid_gene'), code=404)
+            raise redirect(url(controller='contents', action='invalid_gene'), code=404)
 
         for symbol in returnData:
             self._temp.symbol = returnData[symbol]['symbol']

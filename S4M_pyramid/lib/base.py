@@ -171,10 +171,10 @@ class BaseController():
                 c.user = None
                 self.request.session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
                 self.request.session.save()
-                return redirect(h.url('/auth/login'))
+                raise redirect(h.url('/auth/login'))
             else:
                 self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
-                return redirect(url(controller='contents', action='index'), code=404)
+                raise redirect(url(controller='contents', action='index'), code=404)
         self._temp.dataset_status = dataset_status
 
 
@@ -217,7 +217,7 @@ class BaseController():
             if ensemblID not in this_url:
                 this_url = re.sub('gene=[\w\-\@]{2,}&','',this_url)
                 this_url = this_url+'&gene='+ensemblID+ '&db_id='+str(db_id)
-                return redirect(this_url)
+                raise redirect(this_url)
 
         else:
             # get a list together with some more details

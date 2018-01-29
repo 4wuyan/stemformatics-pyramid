@@ -10,4 +10,8 @@ def redirect(url, **kwargs):
     So here I just use the default 302 HTTPFound, which is also the default code
     in pylons.controllers.util.redirect
     '''
+    code = kwargs.pop('code', None)
+    if code:
+        if code == 404:
+            return e.HTTPNotFound()
     return e.HTTPFound(url)
