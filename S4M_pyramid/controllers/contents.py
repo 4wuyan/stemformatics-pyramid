@@ -61,6 +61,7 @@ class ContentsController(BaseController):
         c = self.request.c
         # set up C
         c.title = c.site_name + " - Our Publications"
+        c.data_publications = Stemformatics_Dataset.get_data_publications()
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/disclaimer.mako")
