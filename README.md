@@ -241,7 +241,8 @@ def init_model(db_engine):
     global db
     db = blah blah....
 ```
-The main disadvantages of this design are:  
+The main disadvantages of this design are:
+
 * You __must__ make sure that you have called `init_model` absolutely before any other parts of the application that import `db`. This is very error-prone, especially when there are so many complicated dependencies of import on the top of your file. "Pain in the ass."
 * It reduces the readability. People who want to import a `NoneType` `db` will easily get confused by that the `db` imported is not `None` as is written in the source code, if they are unaware of the `init_model` executed before.
 
