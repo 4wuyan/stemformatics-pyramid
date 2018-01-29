@@ -1555,7 +1555,7 @@ All functions have a try that will return None if errors are found
                     if status in ("Admin","Annotate","Available"):
                         temp_list_of_ds_ids.append(ds_id)
             except Exception as e:
-                print(e)
+                #print(e)
                 temp_list_of_ds_ids = None
 
 

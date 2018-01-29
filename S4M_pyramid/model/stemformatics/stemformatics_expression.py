@@ -739,11 +739,9 @@ class Stemformatics_Expression(object):
             return True
 
         datasets_dict = Stemformatics_Dataset.get_all_x_platform_datasets_for_user(uid,db_id,role)
-        print(datasets_dict)
 
         # graph_values has two keys, full_data and sample_data returned
         graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db_id,datasets_dict,ensembl_id,all_sample_metadata)
-        print(graph_values)
         # set both full_data and sample_data
         result = Stemformatics_Expression.set_yugene_graph_values(uid,ensembl_id,db_id,graph_values)
         return result
