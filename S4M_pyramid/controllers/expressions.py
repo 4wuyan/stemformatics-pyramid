@@ -702,6 +702,9 @@ class ExpressionsController(BaseController):
         get_description = True
         result = Stemformatics_Gene.get_genes(db, c.species_dict, geneSearch, db_id, False, None)
 
+        if(result is None):
+            return redirect(url(controller='contents', action='index'), code=404)
+
         if len(result) ==1 :
             original = geneSearch
             temp_gene = next(iter(result.values()))
