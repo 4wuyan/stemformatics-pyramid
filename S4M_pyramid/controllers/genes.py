@@ -7,6 +7,7 @@ import json
 import formencode.validators as fe
 import re
 from pyramid.renderers import render_to_response
+from asbool import asbool
 import S4M_pyramid.lib.helpers as h
 
 class GenesController(BaseController):
@@ -32,7 +33,6 @@ class GenesController(BaseController):
         c = self.request.c
         request = self.request
         response = self.request.response
-        db = self.db_deprecated_pylons_orm
         c.title = c.site_name+" - Gene Search - Search for your gene of interest"
         c.searchQuery = request.params.get("gene", None)
         if c.searchQuery is None:
@@ -116,7 +116,6 @@ class GenesController(BaseController):
     @action(renderer="string")
     def get_autocomplete(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         request = self.request
         geneSearch = request.params.get("term")
         try:
@@ -135,7 +134,6 @@ class GenesController(BaseController):
     def search_and_choose_genes_ajax(self):
         request = self.request
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         temp_data = {}
         search_query = request.params.get("filter", None)
         db_id = request.params.get("db_id")
@@ -154,7 +152,6 @@ class GenesController(BaseController):
     def feature_search(self):
         request = self.request
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
 
         c.title = c.site_name+" - Feature Search - Search for your feature of interest"
         c.db_id = db_id = request.params.get("db_id")
@@ -210,7 +207,6 @@ class GenesController(BaseController):
     def download_yugene(self):
         request = self.request
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         response = self.request.response
         geneSearch = request.params.get("gene")
         geneSearch = str(geneSearch)

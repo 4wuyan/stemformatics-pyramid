@@ -49,7 +49,7 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
-    config.add_handler("gene","/gene/{action}",handler=GenesController)
+    config.add_handler("genes","/genes/{action}",handler=GenesController)
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
