@@ -264,7 +264,7 @@ class ExpressionsController(BaseController):
     def probe_result(self):
         c = self.request.c
         self._get_inputs_for_graph()
-        c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         self._check_dataset_status()
         c.dataset_status = self._temp.dataset_status
         c.ref_type = self._temp.ref_type = 'probeID'
@@ -433,7 +433,7 @@ class ExpressionsController(BaseController):
         c.sortBy = self._temp.sortBy = comparison_type
         c.ds_id = self._temp.ds_id = ds_id
         c.choose_dataset_immediately = self._temp.choose_dataset_immediately = False
-        c.chip_type = Stemformatics_Dataset.getChipType(db, c.ds_id)
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         gene_set_items = Stemformatics_Gene_Set.getGeneSetData_without_genome_annotations(db, c.uid, gene_set_id)
         self._temp.url = self.request.environ.get('PATH_INFO')
 
@@ -859,7 +859,7 @@ class ExpressionsController(BaseController):
         self._get_inputs_for_graph()
         self._check_dataset_status()
         c.dataset_status = self._temp.dataset_status
-        c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         c.ref_type = self._temp.ref_type = self._temp.feature_type
         c.symbol = c.ref_id = self._temp.ref_id = self._temp.feature_id
         show_limited = True
