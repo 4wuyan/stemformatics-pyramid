@@ -192,13 +192,15 @@ Redirect
 
 ### When to return
 
-Return it in **action methods**, where you need to return a response anyway. This is to avoid overwhelming the log, because to some degree they can be considered as legal responses.
+Return them in **action methods**, where you need to return a response anyway.
+This is to avoid overwhelming the log, because to some degree they can be considered as legal responses here.
 
 ### When to raise
 
-Raise it in **helper functions**, because they are _real exceptions_. Raising it simply breaks the calling function(s), throws the exception until Pyramid handles it internally, namely returning it directly as a resposne. Otherwise you'll need to do a type check using `isinstance` in each calling function(s) above in the call stack, which is tedious, annoying and error-prone, and also reduces readability.
-
-In conclusion, deprecated_pylons_abort_and_redirect always returns an object to you, and it's up to you whether to return or raise it.
+Raise them in **helper functions**, because they are _real exceptions_.
+Raising `HTTPException` simply breaks the calling function(s), throws the exception until Pyramid handles it internally, namely returning it directly as a response.
+Otherwise you'll need to do a type check using `isinstance` in each calling function(s) above in the call stack,
+which is tedious, annoying and error-prone, and also reduces readability.
 
 Choose an action renderer type
 =======================================
