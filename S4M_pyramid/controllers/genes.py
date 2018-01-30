@@ -247,6 +247,7 @@ class GenesController(BaseController):
             data += row+"\n"
 
         return data
+
     @action(renderer="templates/workbench/gene_set_index.mako")
     def public_gene_set_index(self):
         request = self.request
@@ -274,4 +275,33 @@ class GenesController(BaseController):
         c.public = True
         c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'View Public Gene Lists']]
+        return self.deprecated_pylons_data_for_view
+
+
+    @action(renderer="templates/workbench/gene_set_index.mako")
+    def gene_set_index(self):
+        request = self.request
+        c = self.request.c
+        Stemformatics_Auth.set_smart_redirect(h.url('/workbench/gene_set_index'))
+        ensembl_id  = request.params.get('ensembl_id')
+        initial_filter  = request.params.get('filter')
+        c.message  = request.params.get('message')
+        if ensembl_id is None:
+            result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
+            c.gene_sets_in_search = None
+        else:
+            result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
+            search_result_for_gene = Stemformatics_Gene_Set.get_numbers_for_gene_lists_for_gene(db,c.uid,ensembl_id)
+            c.gene_sets_in_search = search_result_for_gene[2]
+
+        if initial_filter is not None:
+            c.initial_filter = initial_filter
+        else:
+            c.initial_filter = ""
+
+        c.result = result
+        c.public = False
+        c.title = c.site_name+' Analyses  - View Gene Lists'
+        c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists']]
+        c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         return self.deprecated_pylons_data_for_view
