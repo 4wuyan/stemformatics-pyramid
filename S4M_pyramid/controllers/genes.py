@@ -156,3 +156,103 @@ class GenesController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json_data
+
+    @action(renderer="templates/expressions/feature_search.mako")
+    def feature_search(self):
+        request = self.request
+        c = self.request.c
+        db = self.db_deprecated_pylons_orm
+
+        c.title = c.site_name+" - Feature Search - Search for your feature of interest"
+        c.db_id = db_id = request.params.get("db_id")
+        c.feature_type = feature_type = request.params.get("feature_type")
+        c.feature_search_term = feature_search_term = request.params.get("feature_search_term")
+        use_json = False
+        c.extra_message = ""
+        if feature_search_term is None or len(feature_search_term) == 0:
+            feature_search_term = ""
+            c.data = None
+        else:
+            c.data = Stemformatics_Gene.find_feature_search_items(feature_search_term,db_id,feature_type,use_json)
+            if c.data == [] or c.data is None:
+                c.data == []
+                c.extra_message = "No features found. Please change your search term."
+            elif len(c.data) > 100:
+                c.data = c.data[0:100]
+                c.extra_message = "Too many features found, showing first 100. Please add to your search term."
+        return self.deprecated_pylons_data_for_view
+
+    def get_feature_search_autocomplete(self):
+
+        request = self.request
+        c = self.request.c
+
+        c.feature_search_term = feature_search_term = request.params.get("term")
+        c.db_id = db_id = request.params.get("db_id")
+        c.feature_type = feature_type = request.params.get("feature_type")
+        try:
+            species = c.species_dict[int(c.db_id)]['sci_name']
+        except:
+            species = None
+
+        c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
+        if request.params.get("raise_error") == "true":
+            raise Error
+
+        return c.data
+
+    def _convert_genes_dict_to_csv(self,ensembl_id,genes_dict):
+        csv_text = "Symbol	Aliases	Description	Species	Ensembl ID	Entrez ID	Chromosome Location\n"
+        for gene in genes_dict:
+            if ensembl_id is not None and ensembl_id != gene:
+               continue
+            temp = genes_dict[gene]
+            direction ='+' if temp['Location']['direction'] != -1 else '-'
+            location = 'chr'+str(temp['Location']['chr'])+':'+str(temp['Location']['start'])+'-'+str(temp['Location']['end'])+','+direction
+            csv_text += temp['symbol']+"	"+temp['aliases']+"	"+temp['description'].replace('<br />','')+"	"+temp['species']+"	"+temp['EnsemblID']+"	"+temp['EntrezID']+"	"+location+"\n"
+
+        return csv_text
+
+    action(renderer="string")#This might need to change as download may need to be a .tsv file
+    def download_yugene(self):
+        request = self.request
+        c = self.request.c
+        db = self.db_deprecated_pylons_orm
+        response = self.request.response
+        geneSearch = request.params.get("gene")
+        geneSearch = str(geneSearch)
+        c.ensemblID = geneSearch
+
+        db_id = request.params.get("db_id")
+        db_id = int(db_id)
+        param_view_by = request.params.get("choose_to_view_by")
+        if param_view_by is None:
+            choose_to_view_by = 0 # cell type
+        else:
+            choose_to_view_by = int(param_view_by)
+        c.choose_to_view_by = choose_to_view_by
+
+
+
+        param_show_lower = request.params.get("show_lower")
+        if param_show_lower is None:
+            show_lower = 'Dataset' # cell type
+        else:
+            show_lower = param_show_lower
+
+        datasets_dict = Stemformatics_Dataset.get_all_x_platform_datasets_for_user(db,c.uid,db_id)
+        c.platform_title =  'None'
+        yugene_granularity_for_gene_search = 'full'
+        graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db,db_id,datasets_dict,c.ensemblID,choose_to_view_by,show_lower,g.all_sample_metadata,yugene_granularity_for_gene_search)
+        del response.headers['Cache-Control']
+        del response.headers['Pragma']
+        response.headers['Content-type'] = 'text/tab-separated-values'
+        stemformatics_version = config['stemformatics_version']
+        response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.tsv'
+        response.charset= "utf8"
+        data = "dataset_id\tdataset_name\tsample_id\tprobe_id\tyugene_value\n"
+
+        for row in graph_values['export']:
+            data += row+"\n"
+
+        return data
