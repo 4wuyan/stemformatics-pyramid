@@ -247,3 +247,31 @@ class GenesController(BaseController):
             data += row+"\n"
 
         return data
+    @action(renderer="templates/workbench/gene_set_index.mako")
+    def public_gene_set_index(self):
+        request = self.request
+        c = self.request.c
+        ensembl_id  = request.params.get('ensembl_id')
+        initial_filter  = request.params.get('filter')
+        uid = 0
+        result = Stemformatics_Gene_Set.getGeneSets(db,uid)
+
+        if ensembl_id is not None:
+            search_result_for_gene = Stemformatics_Gene_Set.get_numbers_for_gene_lists_for_gene(db,uid,ensembl_id)
+            c.gene_sets_in_search = search_result_for_gene[2]
+        else:
+            c.gene_sets_in_search = None
+
+        if initial_filter is not None:
+            c.initial_filter = initial_filter
+        else:
+            c.initial_filter = ""
+
+        c.message  = request.params.get('message')
+        result = Stemformatics_Gene_Set.getGeneSets(db,uid)
+        c.result = result
+        c.title = c.site_name+' Analyses  - View Gene Lists'
+        c.public = True
+        c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
+        c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'View Public Gene Lists']]
+        return self.deprecated_pylons_data_for_view
