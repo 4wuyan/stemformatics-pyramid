@@ -523,8 +523,9 @@ class Stemformatics_Expression(object):
 
         result = {}
         for probe in probe_list:
-            temp_row = r_server.get('gct_values'+delimiter+str(ds_id)+delimiter+probe).decode("utf-8")
+            temp_row = r_server.get('gct_values'+delimiter+str(ds_id)+delimiter+probe)
             if temp_row is not None:
+                temp_row = temp_row.decode("utf-8")
                 row = temp_row.split(delimiter)
                 result[probe] = row
         return result
@@ -538,8 +539,9 @@ class Stemformatics_Expression(object):
         result = {}
         for probe in probe_list:
             redis_string = 'cumulative_values'+delimiter+str(ds_id)+delimiter+probe
-            temp_row = r_server.get(redis_string.encode('utf-8')).decode('utf-8')
+            temp_row = r_server.get(redis_string.encode('utf-8'))
             if temp_row is not None:
+                temp_row = temp_row.decode("utf-8")
                 row = temp_row.split(delimiter)
                 result[probe] = row
         return result
