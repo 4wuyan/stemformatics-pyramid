@@ -273,7 +273,7 @@ class GenesController(BaseController):
         c.result = result
         c.title = c.site_name+' Analyses  - View Gene Lists'
         c.public = True
-        c.publish_gene_set_email_address = "email" #Stemformatics_Auth.get_publish_gene_set_email_address()
+        c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'View Public Gene Lists']]
         return self.deprecated_pylons_data_for_view
 
@@ -303,5 +303,5 @@ class GenesController(BaseController):
         c.public = False
         c.title = c.site_name+' Analyses  - View Gene Lists'
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists']]
-        c.publish_gene_set_email_address = "email" #Stemformatics_Auth.get_publish_gene_set_email_address()
+        c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         return self.deprecated_pylons_data_for_view
