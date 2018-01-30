@@ -63,7 +63,7 @@ class GenesController(BaseController):
         genes_dict =  {}
 
         if c.searchQuery:
-            c.searchQuery = str(c.searchQuery).encode('utf-8')
+            c.searchQuery = str(c.searchQuery)#encode('utf-8')#Not needed in python3
             c.title = c.site_name+" - Gene Search for %s" % c.searchQuery
 
         try:
