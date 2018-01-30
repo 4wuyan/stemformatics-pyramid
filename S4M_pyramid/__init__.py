@@ -4,9 +4,10 @@ from S4M_pyramid.controllers.workbench import WorkbenchController
 from S4M_pyramid.controllers.contents import ContentsController
 from S4M_pyramid.controllers.expressions import ExpressionsController
 from S4M_pyramid.controllers.auth import AuthController
-from S4M_pyramid.environment import deprecated_pylons_environment
 
 def main(global_config, **settings):
+    setup_deprecated_pylons_globals(settings)
+    setup_database_connection(settings)
     """ This function returns a Pyramid WSGI application.
     """
     config = Configurator(settings=settings)
@@ -47,9 +48,29 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
-    #load_enviroment now loads app_globals and the ORM variable prior to server start-up
-    deprecated_pylons_environment.load_environment()
     return config.make_wsgi_app()
+
+def setup_deprecated_pylons_globals(settings):
+    from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g, config
+    from S4M_pyramid.model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
+
+    # update deprecated pylons "config" global
+    config.update(settings)
+    Stemformatics_Admin.trigger_update_configs()
+
+    # set up g
+    g.all_sample_metadata = Stemformatics_Expression.setup_all_sample_metadata()
+
+def setup_database_connection(settings):
+    from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm
+    from sqlalchemy import engine_from_config
+    engine = engine_from_config(settings, prefix='model.stemformatics.db.')
+
+    # Defer the actual initialisation of the SQLSoup instance,
+    # Because we don't have the engine info until this moment.
+    db_deprecated_pylons_orm.lazy_init(engine)
+    # For more info, see the source code at model/stemformatics/__init__.py
+
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
     def redirect_view(request):

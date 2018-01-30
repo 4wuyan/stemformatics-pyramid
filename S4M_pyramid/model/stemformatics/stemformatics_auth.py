@@ -11,10 +11,9 @@ import re
 import string
 import json
 
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 
-from S4M_pyramid.config import config
 from decorator import decorator
 import smtplib
 

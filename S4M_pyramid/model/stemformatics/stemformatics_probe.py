@@ -4,7 +4,7 @@ log = logging.getLogger(__name__)
 
 import re , string , json , psycopg2 , psycopg2.extras
 
-from S4M_pyramid.config import config
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 
 
 __all__ = ['Stemformatics_Probe']

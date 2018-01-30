@@ -1,13 +1,7 @@
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.config import config
-from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
-from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
-from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
-from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
-from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
-from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals,url
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set, db_deprecated_pylons_orm as db
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
@@ -63,7 +57,7 @@ class ExpressionsController(BaseController):
     #    c.ds_id = int(self.request.params.get('ds_id'))
     #    c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
     #    c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-    #    c.handle = Stemformatics_Dataset.getHandle(self.db_deprecated_pylons_orm,c.ds_id)
+    #    c.handle = Stemformatics_Dataset.getHandle(db, c.ds_id)
     #    return self.deprecated_pylons_data_for_view
 
     '''Note that this function doesn't use action decorator. because it has more than one possible
@@ -77,7 +71,6 @@ class ExpressionsController(BaseController):
         self._check_dataset_status()  # This is in lib/base.py
         result = self._check_gene_status()  # This is in lib/base.py
 
-        db = self.db_deprecated_pylons_orm #pyramid's way to setup orm db
 
         """ If not result, then there was an error and we want to render an option
         to select a proper gene. With the dataset, if there is no dataset, we
@@ -215,8 +208,6 @@ class ExpressionsController(BaseController):
         force_choose = self.request.params.get('force_choose')
         c.graphType = str(self.request.params.get("graphType"))
 
-        db = self.db_deprecated_pylons_orm
-
         try:
             db_id = int(self.request.params.get('db_id'))
         except:
@@ -275,7 +266,6 @@ class ExpressionsController(BaseController):
 
     def probe_result(self):
         c = self.request.c
-        db=self.db_deprecated_pylons_orm
         self._get_inputs_for_graph()
         c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
         self._check_dataset_status()
@@ -307,7 +297,6 @@ class ExpressionsController(BaseController):
         db_id = self.request.params.get("db_id","")
         gene_set_id = self.request.params.get("gene_set_id","")
         c.db_id = int(db_id)
-        db=self.db_deprecated_pylons_orm
 
         if gene_set_id is None:
             c.url = h.url('/expressions/result?graphType='+str(graphType)+'&gene='+str(gene)+'&db_id='+str(db_id))
@@ -325,7 +314,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         c.analysis = 3
         c.title = c.site_name + ' Analyses  - MultiGene Expression Graph Wizard'
-        db = self.db_deprecated_pylons_orm
         #try: #this block is not in use
         #    db_id = int(db_id)
         #except:
@@ -494,7 +482,6 @@ class ExpressionsController(BaseController):
 
     def multi_dataset_result(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         if c.uid == 0 or c.uid == "":
             c.message = "You do not have access to this page. Please check you are logged in."
             c.title = c.site_name+" Multiview - No access"
@@ -559,7 +546,6 @@ class ExpressionsController(BaseController):
 
     def _check_multiple_datasets_status(self):
         c = self.request.c
-        db=self.db_deprecated_pylons_orm
         graphType = self._temp.graphType
         db_id = self._temp.db_id
         original_temp_datasets = self._temp.original_temp_datasets
@@ -612,7 +598,6 @@ class ExpressionsController(BaseController):
         result = {}
         dataset_status = {}
         self._temp.view_data = {}
-        db = self.db_deprecated_pylons_orm
         for ds_id in datasets:
 
             # check user has access first
@@ -691,7 +676,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         geneSearch = self._temp.geneSearch
         db_id = self._temp.db_id
-        db = self.db_deprecated_pylons_orm
         request = self.request
 
 
@@ -738,7 +722,6 @@ class ExpressionsController(BaseController):
 
     def _summary_set_outputs(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         c.ensemblID = self._temp.ensemblID
         c.symbol = self._temp.symbol
         c.db_id = db_id = self._temp.db_id
@@ -765,7 +748,6 @@ class ExpressionsController(BaseController):
         param_view_by = self._temp.param_view_by
         param_show_lower = self._temp.param_show_lower
         yugene_granularity_for_gene_search ='auto'
-        g = config['deprecated_pylons_app_globals']
         self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
 
 
@@ -782,7 +764,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         uid = c.uid
         request = self.request
-        g = config["deprecated_pylons_app_globals"]
         filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene",""))
         db_id = int(request.params.get("db_id",""))
@@ -841,7 +822,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         uid = c.uid
         request = self.request
-        g = config["deprecated_pylons_app_globals"]
         c.filters = filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene"))
         db_id = int(request.params.get("db_id"))

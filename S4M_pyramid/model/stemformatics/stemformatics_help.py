@@ -16,7 +16,7 @@ import urllib
 import os
 import shutil
 import zipfile
-from S4M_pyramid.config import config
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 __all__ = ['Stemformatics_Help']
 
 
