@@ -138,3 +138,21 @@ class GenesController(BaseController):
 
         return json.dumps(returnData)
 
+    @action(renderer="string")
+    def search_and_choose_genes_ajax(self):
+        request = self.request
+        c = self.request.c
+        db = self.db_deprecated_pylons_orm
+        temp_data = {}
+        search_query = request.params.get("filter", None)
+        db_id = request.params.get("db_id")
+
+        max_number = 20
+        temp_data = Stemformatics_Gene.search_and_choose_genes(db,c.species_dict,search_query,db_id,max_number)
+
+        json_data = json.dumps(temp_data)
+
+        audit_dict = {'ref_type':'search_term','ref_id':search_query,'uid':c.uid,'url':url,'request':request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return json_data
