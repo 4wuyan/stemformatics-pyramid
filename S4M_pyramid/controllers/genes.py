@@ -148,7 +148,7 @@ class GenesController(BaseController):
 
         return json_data
 
-    @action(renderer="templates/expressions/feature_search.mako")
+    @action(renderer="templates/genes/feature_search.mako")
     def feature_search(self):
         request = self.request
         c = self.request.c
@@ -172,6 +172,7 @@ class GenesController(BaseController):
                 c.extra_message = "Too many features found, showing first 100. Please add to your search term."
         return self.deprecated_pylons_data_for_view
 
+    @action(renderer="string")
     def get_feature_search_autocomplete(self):
 
         request = self.request
@@ -187,7 +188,8 @@ class GenesController(BaseController):
 
         c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
         if request.params.get("raise_error") == "true":
-            raise Error
+            #raise Error
+            pass
 
         return c.data
 

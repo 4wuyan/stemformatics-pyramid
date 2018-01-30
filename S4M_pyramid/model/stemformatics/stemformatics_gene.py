@@ -1053,7 +1053,7 @@ class Stemformatics_Gene(object):
 
         feature_search_items = {}
         feature_annotation_file = config['feature_annotation_file']
-        output = subprocess.check_output("grep -i \""+feature_search_term+"\" "+feature_annotation_file+"; exit 0",shell=True)
+        output = subprocess.check_output("grep -i \""+feature_search_term+"\" "+feature_annotation_file+"; exit 0",shell=True).decode("utf-8")
         if output == "":
             if use_json:
                 return json.dumps(["No features found. Please try again"])
