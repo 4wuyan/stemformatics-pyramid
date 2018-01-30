@@ -498,7 +498,7 @@ class Stemformatics_Expression(object):
 
         label_name = 'cumulative_labels'+delimiter+str(ds_id)
         try:
-            label_names = r_server.get(label_name).split(delimiter)
+            label_names = r_server.get(label_name).decode('utf-8').split(delimiter)
             return label_names
         except:
             return None
@@ -537,7 +537,8 @@ class Stemformatics_Expression(object):
 
         result = {}
         for probe in probe_list:
-            temp_row = r_server.get('cumulative_values'+delimiter+str(ds_id)+delimiter+probe)
+            redis_string = 'cumulative_values'+delimiter+str(ds_id)+delimiter+probe
+            temp_row = r_server.get(redis_string.encode('utf-8')).decode('utf-8')
             if temp_row is not None:
                 row = temp_row.split(delimiter)
                 result[probe] = row
@@ -741,7 +742,6 @@ class Stemformatics_Expression(object):
 
         # graph_values has two keys, full_data and sample_data returned
         graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db_id,datasets_dict,ensembl_id,all_sample_metadata)
-
         # set both full_data and sample_data
         result = Stemformatics_Expression.set_yugene_graph_values(uid,ensembl_id,db_id,graph_values)
         return result
