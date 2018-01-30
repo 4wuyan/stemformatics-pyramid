@@ -186,17 +186,19 @@ However, `request`, `resposne`, `session` and `c` are on the contrary. I want ev
 Redirect
 ======================================
 
-Pyramid officially recommends returning a redirect, i.e. an `HTTPFound` object that's a subclass of `Response`, instead of raising one. Raising `HTTPFound` just causes lots of Traceback in your log. Hence you can see `return` in `redirect` in `lib.deprecated_pylons_abort_and_redirect`.
+`lib.deprecated_pylons_abort_and_redirect` provides a handy shortcut to be compatible with Pylons `redirect`. However, `HTTPFound` and `HTTPNotFound` in Pyramid are `Response` as well as `HTTPException`, which means you can either return or raise them.
 
-As a result, though the `redirect` in `lib.deprecated_pytlons_abort_and_redirect` is a handy shortcut which avoids changing every `redirect` call, you should **remember to add a `return`** when there isn't one.
-```python
-# This doesn't work if HTTPFound is returned, but not raised,
-# because the response object is discarded after this line.
-redirect(some info)
+`lib.deprecated_pylons_abort_and_redirect` always _return_ an object to you, and it's up to you, the one who calls `redirect`, to decide whether to return or raise it.
 
-# Remember to add a return
-return redirect(some info)
-```
+### When to return
+
+Return it in **action methods**, where you need to return a response anyway. This is to avoid overwhelming the log, because to some degree they can be considered as legal responses.
+
+### When to raise
+
+Raise it in **helper functions**, because they are _real exceptions_. Raising it simply breaks the calling function(s), throws the exception until Pyramid handles it internally, namely returning it directly as a resposne. Otherwise you'll need to do a type check using `isinstance` in each calling function(s) above in the call stack, which is tedious, annoying and error-prone, and also reduces readability.
+
+In conclusion, deprecated_pylons_abort_and_redirect always returns an object to you, and it's up to you whether to return or raise it.
 
 Choose an action renderer type
 =======================================
@@ -233,6 +235,7 @@ Defending the wrapper design
 Pyramid's tutorial doesn't use `sqlsoup`; that's why they can have an idle `DBSession`, then bind it to the url fetched from `ini` later in the `main` function.
 
 ### Why not stick with our original design in Pylons
+
 In our Pylons code, we made `db = None` first, then called a function that uses global variables to modify `db`.
 ```python
 db = None
