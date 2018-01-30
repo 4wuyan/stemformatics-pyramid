@@ -14,7 +14,7 @@ import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
-from S4M_pyramid.config import config
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 import subprocess
 
 
@@ -186,7 +186,7 @@ class Stemformatics_Gene(object):
     """
     @staticmethod
     def get_genes(db,species_dict,geneSearch,db_id,explicitSearch,maxNumber): #CRITICAL-2 #CRITICAL-4
-        
+
        # geneSearch = geneSearch.encode('utf-8') #the encode step is unnesssary in python3
        # and it causes error when the encoded string is used in re
         geneSearchFinal = Stemformatics_Gene._preGeneSearch(geneSearch)
@@ -496,7 +496,7 @@ class Stemformatics_Gene(object):
 
     @staticmethod
     def _preGeneSearch(geneSearch):
-        
+
             geneSearch = geneSearch.strip()
 
             genes = re.findall("[\/\w\.\-\@]{1,}",geneSearch)
@@ -518,7 +518,7 @@ class Stemformatics_Gene(object):
                     geneSearchFinal = geneSearchFinal + genes[i]
 
             return geneSearchFinal
-        
+
 
     @staticmethod
     def get_ensembl_from_probe(db,probe_list,db_id):

@@ -5,8 +5,7 @@ log = logging.getLogger(__name__)
 import sqlalchemy as SA
 from sqlalchemy import or_, and_, desc
 
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
-from S4M_pyramid.config import config
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, config
 
 from decorator import decorator
 

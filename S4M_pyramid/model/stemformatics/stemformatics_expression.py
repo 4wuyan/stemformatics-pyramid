@@ -14,7 +14,7 @@ from S4M_pyramid.model.stemformatics.stemformatics_probe import *
 #CRITICAL-6
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene # wouldn't work otherwise??
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
-from S4M_pyramid.config import config
+from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g, config
 
 
 
@@ -952,7 +952,7 @@ class Stemformatics_Expression(object):
     def get_expression_graph_data(ds_id,ref_id,ref_type,db_id):
         # ref_type can be ensemblID,gene_set_id,probeID,miRNA
         # ref_id passed is a list of ref_id's
-       
+
         if ref_type == "ensemblID":
             data = Stemformatics_Expression.get_expression_data_from_genes(ref_id, ds_id, db_id)
             return data
@@ -1123,7 +1123,6 @@ class Stemformatics_Expression(object):
                 chip_id = sample_labels[sample_count]
                 standard_deviation = Stemformatics_Expression.get_standard_deviation(ds_id,chip_id,probe_id)
                 sample_count += 1
-                g = config["deprecated_pylons_app_globals"]
                 metaDataValues = g.all_sample_metadata[chip_type][chip_id][ds_id]
                 sample_id = metaDataValues['Replicate Group ID']
                 limitSortby_data = {}

@@ -1,16 +1,12 @@
 # inspired by https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/pylons/index.html
-# author: WU Yan
-# original date: 5 Jan 2018
-# last modified: 23 Jan 2018
 
 import pyramid
-
 
 class tmpl_context:
     pass
 
 # https://docs.galaxyproject.org/en/master/_modules/routes/util.html
-class url_generator:
+class UrlGenerator(object):
     def __call__(self, *args, **kwargs):
         self.request = pyramid.threadlocal.get_current_request()
         is_qualified = kwargs.pop('qualified', False)
@@ -56,7 +52,7 @@ class url_generator:
         self.request = request
 
 
-class deprecated_pylons_globals:
+class MagicGlobalsFromRequest(object):
     '''
     In Pylons, we have
         from pylons import request, response, session
@@ -85,5 +81,14 @@ class deprecated_pylons_globals:
         self.session = self.request.session
         self.c = self.request.c
 
-magic_globals = deprecated_pylons_globals()
-url = url_generator()
+class AppGlobals(object):
+     """Globals acts as a container for objects available throughout the
+     life of the application
+     """
+     pass
+
+
+magic_globals = MagicGlobalsFromRequest()
+url = UrlGenerator()
+app_globals = AppGlobals()
+config = {}

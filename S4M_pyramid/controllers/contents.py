@@ -2,7 +2,6 @@ from pyramid_handlers import action
 from pyramid.response import Response
 from pyramid.renderers import render_to_response
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.config import config
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
 import psycopg2
 import psycopg2.extras
@@ -85,9 +84,3 @@ class ContentsController(BaseController):
         c.title = "Registration submitted"
         return self.deprecated_pylons_data_for_view
 
-    @action(renderer='templates/workbench/error_message.mako')
-    def invalid_gene(self):
-        c = self.request.c
-        c.title = "Invalid Gene Search"
-        c.message = "You have not entered a proper gene. Please go back and enter in another gene."
-        return self.deprecated_pylons_data_for_view

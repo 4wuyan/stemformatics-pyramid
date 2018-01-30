@@ -8,43 +8,47 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from .stemformatics_dataset import Stemformatics_Dataset
+from .stemformatics_expression import Stemformatics_Expression
+from .stemformatics_gene import Stemformatics_Gene
+from .stemformatics_audit import Stemformatics_Audit
+from .stemformatics_auth import Stemformatics_Auth
+from .stemformatics_admin import Stemformatics_Admin
+from .stemformatics_probe import Stemformatics_Probe
+from .stemformatics_gene_set import Stemformatics_Gene_Set
+from .stemformatics_notification import Stemformatics_Notification
+from .stemformatics_help import Stemformatics_Help
+# from .stemformatics_export import *
+# from .stemformatics_msc_signature import *
+# from .stemformatics_transcript import *
+# from .stemformatics_job import *
+# from .stemformatics_shared_resource import *
+# from .stemformatics_ensembl_upgrade import *
+
 import zlib
 import json
 
-# we are trying to avoid using "import *" in the new pyramid code,
-# therefore __all__ might also need to be avoided
-#__all__ = [
+import sqlsoup
+class _SQLSoupWrapper(sqlsoup.SQLSoup):
+    '''
+    This wrapper is designed to defer the initialisation of the SQLSoup instance.
+    I couldn't find another way to setup an "empty" SQLSoup instance,
+    and bind the db connection later after we get the db configuration info (i.e. in main function).
 
-    # From imported modules ...
-    #'Stemformatics_Dataset',
-    #'Stemformatics_Audit',
-    #'Stemformatics_Gene',
-    #'Stemformatics_Transcript',
-    #'Stemformatics_Expression',
-    #'Stemformatics_Probe',
-    #'Stemformatics_Admin',
-    #'Stemformatics_Auth',
-    #'Stemformatics_Export',
-    #'Stemformatics_Job',
-    #'Stemformatics_Shared_Resource',
-    #'Stemformatics_Ensembl_Upgrade',
-    #'Stemformatics_Notification',
-    #'Stemformatics_Msc_Signature',
-    #'Stemformatics_Gene_Set',
-    #'Stemformatics_Help'
-#]
+    I need to defer the initialisation, because this file will be executed during the initial
+    importing phase, before the main function of the application is run.
+    That means you don't have the db url when db is initialised, and an exception is raised.
 
+    In Pyramid's tutorial, they don't use sqlsoup; that's why they can have an idle
+    DBSession initialised here, then bind it to the url fetched from ini later in main.
+    '''
+    def __init__(self):
+        pass
 
-# ------------------------------------------------------------------------------
-# In pylons,this is used to setup the db variable for ORM use, we do the setup
-# at the controller level to make the code more readable in pyramid,therefore this
-# method is deprecated
-# ------------------------------------------------------------------------------
+    def lazy_init(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-#db = None
-#engine = None
+db_deprecated_pylons_orm = _SQLSoupWrapper()
 
-def init_model(db_engine):
-    pass
 
 

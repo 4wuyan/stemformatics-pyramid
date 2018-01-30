@@ -1,13 +1,7 @@
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.config import config
-from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
-from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
-from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
-from S4M_pyramid.model.stemformatics.stemformatics_audit import Stemformatics_Audit
-from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
-from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set
-from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals,url
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set, db_deprecated_pylons_orm as db
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
 import formencode.validators as fe
@@ -17,7 +11,6 @@ import S4M_pyramid.lib.helpers as h
 
 
 FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
-import pyramid.httpexceptions as e
 
 class ExpressionsController(BaseController):
     # 'sca' is short for scatter.  Makes validity checking easier.
@@ -63,7 +56,7 @@ class ExpressionsController(BaseController):
     #    c.ds_id = int(self.request.params.get('ds_id'))
     #    c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
     #    c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-    #    c.handle = Stemformatics_Dataset.getHandle(self.db_deprecated_pylons_orm,c.ds_id)
+    #    c.handle = Stemformatics_Dataset.getHandle(db, c.ds_id)
     #    return self.deprecated_pylons_data_for_view
 
     '''Note that this function doesn't use action decorator. because it has more than one possible
@@ -77,15 +70,12 @@ class ExpressionsController(BaseController):
         self._check_dataset_status()  # This is in lib/base.py
         result = self._check_gene_status()  # This is in lib/base.py
 
-        db = self.db_deprecated_pylons_orm #pyramid's way to setup orm db
 
         """ If not result, then there was an error and we want to render an option
         to select a proper gene. With the dataset, if there is no dataset, we
         simply choose a default to render the graph in the background before
         we allow the user to choose a proper dataset.  """
-        if isinstance(result,e.HTTPFound):
-            return result
-        elif result != "1":
+        if result != "1":
             return self._temp.render
         """ This sets the type of graph that will be available. So you can have options
         such as miRNA,gene_set_id  and probeID with an appropriate ref_id.  """
@@ -152,7 +142,7 @@ class ExpressionsController(BaseController):
 
         # now check the dataset status
         if self._temp.dataset_status != "Available":
-            redirect(url(controller='contents', action='index'), code=404)
+            return redirect(url(controller='contents', action='index'), code=404)
         if ref_type == "ensemblID":
             result = self._check_gene_status()  #This is in lib/base.py
             if result == "0":
@@ -215,8 +205,6 @@ class ExpressionsController(BaseController):
         force_choose = self.request.params.get('force_choose')
         c.graphType = str(self.request.params.get("graphType"))
 
-        db = self.db_deprecated_pylons_orm
-
         try:
             db_id = int(self.request.params.get('db_id'))
         except:
@@ -275,7 +263,6 @@ class ExpressionsController(BaseController):
 
     def probe_result(self):
         c = self.request.c
-        db=self.db_deprecated_pylons_orm
         self._get_inputs_for_graph()
         c.chip_type = Stemformatics_Dataset.getChipType(db,c.ds_id)
         self._check_dataset_status()
@@ -307,7 +294,6 @@ class ExpressionsController(BaseController):
         db_id = self.request.params.get("db_id","")
         gene_set_id = self.request.params.get("gene_set_id","")
         c.db_id = int(db_id)
-        db=self.db_deprecated_pylons_orm
 
         if gene_set_id is None:
             c.url = h.url('/expressions/result?graphType='+str(graphType)+'&gene='+str(gene)+'&db_id='+str(db_id))
@@ -325,7 +311,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         c.analysis = 3
         c.title = c.site_name + ' Analyses  - MultiGene Expression Graph Wizard'
-        db = self.db_deprecated_pylons_orm
         #try: #this block is not in use
         #    db_id = int(db_id)
         #except:
@@ -362,7 +347,7 @@ class ExpressionsController(BaseController):
             # check if user has access to gene list
             status = Stemformatics_Gene_Set.check_gene_set_availability(gene_set_id, c.uid)
             if status == False:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
             species = Stemformatics_Gene_Set.get_species(db, c.uid, gene_set_id)
             c.gene_set_name = gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db, c.uid, gene_set_id)
             db_id = Stemformatics_Gene_Set.get_db_id(db, c.uid, gene_set_id)
@@ -494,7 +479,6 @@ class ExpressionsController(BaseController):
 
     def multi_dataset_result(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         if c.uid == 0 or c.uid == "":
             c.message = "You do not have access to this page. Please check you are logged in."
             c.title = c.site_name+" Multiview - No access"
@@ -559,7 +543,6 @@ class ExpressionsController(BaseController):
 
     def _check_multiple_datasets_status(self):
         c = self.request.c
-        db=self.db_deprecated_pylons_orm
         graphType = self._temp.graphType
         db_id = self._temp.db_id
         original_temp_datasets = self._temp.original_temp_datasets
@@ -612,7 +595,6 @@ class ExpressionsController(BaseController):
         result = {}
         dataset_status = {}
         self._temp.view_data = {}
-        db = self.db_deprecated_pylons_orm
         for ds_id in datasets:
 
             # check user has access first
@@ -625,9 +607,9 @@ class ExpressionsController(BaseController):
                     session = self.request.session
                     session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
                     session.save()
-                    return redirect(h.url('/auth/login'))
+                    raise redirect(h.url('/auth/login'))
                 else:
-                    return redirect(self.request.url + '&force_choose=yes')
+                    raise redirect(self.request.url + '&force_choose=yes')
 
             # should be the same for all datasets
             self._temp.ref_type = 'ensemblID'
@@ -650,8 +632,6 @@ class ExpressionsController(BaseController):
             return self._temp.render
 
         result = self._summary_get_gene_details()
-        if isinstance(result,e.HTTPFound):
-            return result
         if not result:
             return self._temp.render
 
@@ -691,7 +671,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         geneSearch = self._temp.geneSearch
         db_id = self._temp.db_id
-        db = self.db_deprecated_pylons_orm
         request = self.request
 
 
@@ -702,8 +681,8 @@ class ExpressionsController(BaseController):
         get_description = True
         result = Stemformatics_Gene.get_genes(db, c.species_dict, geneSearch, db_id, False, None)
 
-        if(result is None):
-            return redirect(url(controller='contents', action='invalid_gene'), code=404)
+        if (result is None):
+            raise redirect(url(controller='contents', action='index'), code=404)
 
         if len(result) ==1 :
             original = geneSearch
@@ -730,7 +709,7 @@ class ExpressionsController(BaseController):
         self._temp.returnData = returnData = Stemformatics_Gene.get_genes(db,c.species_dict,geneSearch,db_id,True,None)
 
         if returnData == {} or returnData == None:
-            return redirect(url(controller='contents', action='invalid_gene'), code=404)
+            raise redirect(url(controller='contents', action='index'), code=404)
 
         for symbol in returnData:
             self._temp.symbol = returnData[symbol]['symbol']
@@ -741,7 +720,6 @@ class ExpressionsController(BaseController):
 
     def _summary_set_outputs(self):
         c = self.request.c
-        db = self.db_deprecated_pylons_orm
         c.ensemblID = self._temp.ensemblID
         c.symbol = self._temp.symbol
         c.db_id = db_id = self._temp.db_id
@@ -768,7 +746,6 @@ class ExpressionsController(BaseController):
         param_view_by = self._temp.param_view_by
         param_show_lower = self._temp.param_show_lower
         yugene_granularity_for_gene_search ='auto'
-        g = config['deprecated_pylons_app_globals']
         self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
 
 
@@ -785,7 +762,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         uid = c.uid
         request = self.request
-        g = config["deprecated_pylons_app_globals"]
         filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene",""))
         db_id = int(request.params.get("db_id",""))
@@ -844,7 +820,6 @@ class ExpressionsController(BaseController):
         c = self.request.c
         uid = c.uid
         request = self.request
-        g = config["deprecated_pylons_app_globals"]
         c.filters = filters = str( request.params.get("filters",None))
         ensembl_id = str( request.params.get("gene"))
         db_id = int(request.params.get("db_id"))
