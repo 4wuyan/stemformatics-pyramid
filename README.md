@@ -32,6 +32,7 @@ An example that adds some configuration settings into the configuration table in
 psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('validation_regex', '(?=^.{12,}$)(?=.*\s+).*$');"
 psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('from_email', 'noreply@stemformatics.org');"
 psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('secret_hash_parameter_for_unsubscribe', 'I LOVE WY');"
+psql -U portaladmin portal_beta -c "insert into stemformatics.configs (ref_type,ref_id) values('publish_gene_set_email_address', 'fake_email');"
 ```
 
 Setup your virtual environment (optional, but recommended)
@@ -211,6 +212,17 @@ In Pylons, an action can just return a piece of String in JSON format without sp
 In Pyramid, returning anything without specifying a renderer type will result in an error.
 Therefore, if an action returns a `mako` page, the renderer should point to a `mako` file. If an action returns some data, it's best to specify
 the renderer type as `renderer='string'`. (This is because our code does the formatting already; returning them as a string will keep the format as we process.)
+
+String encode and decode
+=======================================
+Python2 and Python3 have different format for strings(Unicode vs bytes). In our redis configuration, The data stored in redis is in byte format 
+so in pylons server(python2), there is no encode/decode needed. But this is a issue for pyramid server, as we need to encode the string when pass data
+into redis and decode string when getting data from redis. 
+
+Atm we are doing this encode/decode process manually inside the code. Another options would be to change the redis configuration to suit python3's requirement.
+But because the migration process didn't finish and if we change the configuration for redis our pylons server will break. Therefore we have to settle for this 
+more complicated solution so that both servers are compatible.
+
 
 Database ORM
 =====================
