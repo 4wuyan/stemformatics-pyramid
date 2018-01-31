@@ -358,7 +358,7 @@ class GenesController(BaseController):
                     redirect_url = Stemformatics_Auth.get_smart_redirect(default_url)
                     # now delete redis keys for that gene list
                     Stemformatics_Gene_Set.delete_short_term_redis_keys_for_a_gene_list(gene_set_id)
-                    redirect(redirect_url)
+                    return redirect(redirect_url)
             else:
                 result = Stemformatics_Gene_Set.addGeneSet(db,c.uid,gene_set_name,gene_set_description,db_id,saveSet)
                 if result is None:
@@ -367,7 +367,7 @@ class GenesController(BaseController):
                     return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
                 else:
                     # result should be the gene set id
-                    redirect(url('/workbench/gene_set_view/'+str(result)))
+                    return redirect(url('/workbench/gene_set_view/'+str(result)))
 
         # this is the entry for the copy
         c.hide_save = False
