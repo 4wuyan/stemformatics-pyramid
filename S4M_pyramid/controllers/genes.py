@@ -279,6 +279,7 @@ class GenesController(BaseController):
 
 
     @action(renderer="templates/workbench/gene_set_index.mako")
+    @Stemformatics_Auth.authorise(db)
     def gene_set_index(self):
         request = self.request
         c = self.request.c
