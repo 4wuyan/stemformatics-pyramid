@@ -1130,11 +1130,11 @@ All functions have a try that will return None if errors are found
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
         except:
             uid = 0 #default guest account
             label_name = "user_dataset_availability"+delimiter+str(uid)
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
 
         if role is None:
             role = 'view'
