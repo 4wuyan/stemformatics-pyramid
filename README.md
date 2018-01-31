@@ -221,7 +221,7 @@ which can be represented explicitly as `b'...'` and `u'...'`, respectively.
 Unicode can be encoded into Bytes by `u'123'.encode('utf-8')`; Bytes can be decoded into Unicode by `b'123'.decode('utf-8')`.
 
 Python 2 and Python 3 use different formats for default `str` strings (Bytes vs Unicode).
-```python
+```
 # Python 2
 >>> type('string')
 <type 'str'>
