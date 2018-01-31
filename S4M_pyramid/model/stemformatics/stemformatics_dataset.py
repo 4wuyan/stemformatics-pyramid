@@ -16,7 +16,7 @@ import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.lib.deprecated_pylons_globals import config
 #from S4M_pyramid.lib.state import *
-#from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
+from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
 #from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
 
 __all__ = ['Stemformatics_Dataset']
@@ -418,7 +418,7 @@ All functions have a try that will return None if errors are found
             filter_rohart_msc_test = False
 
         if filter_rohart_msc_test:
-            from guide.model.stemformatics.stemformatics_msc_signature import Stemformatics_Msc_Signature
+            from S4M_pyramid.model.stemformatics.stemformatics_msc_signature import Stemformatics_Msc_Signature
             list_of_msc_ds_ids = Stemformatics_Msc_Signature.get_all_dataset_msc_access()
 
 
@@ -1927,7 +1927,7 @@ All functions have a try that will return None if errors are found
     def triggers_for_change_in_dataset(db,ds_id = None):
         Stemformatics_Auth.setup_redis_get_dict_of_user_dataset_availability(db)
         Stemformatics_Dataset.setup_redis_choose_dataset_details(db)
-        from guide.model.stemformatics.stemformatics_notification import Stemformatics_Notification # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_notification import Stemformatics_Notification # wouldn't work otherwise??
         Stemformatics_Notification.set_project_headers(db)
 
 
@@ -1943,7 +1943,7 @@ All functions have a try that will return None if errors are found
         build_dict = {}
         chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
 
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
 
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
         number_of_samples = len(sample_labels)
@@ -2024,7 +2024,7 @@ All functions have a try that will return None if errors are found
 
 
         # all samples
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         g.all_sample_metadata = Stemformatics_Expression.setup_dataset_sample_metadata(db,g.all_sample_metadata,ds_id)
 
 
@@ -2245,8 +2245,8 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options): #CRITICAL-4
 
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
-        from guide.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
         use_galaxy = config['use_galaxy_server']
 
         # get chip type from dataset id
@@ -2272,7 +2272,7 @@ All functions have a try that will return None if errors are found
                 probe_list = [ probe.strip() for probe in temp_probes]
             else:
                 probe_list = ref_id
-            from guide.model.stemformatics.stemformatics_probe import Stemformatics_Probe # wouldn't work otherwise??
+            from S4M_pyramid.model.stemformatics.stemformatics_probe import Stemformatics_Probe # wouldn't work otherwise??
             probe_dict = Stemformatics_Probe.get_gene_mappings_for_probe(probe_list,db_id,chip_type)
 
         # now go through gct file and convert probe ids to be gene name and probe ids
@@ -2466,9 +2466,9 @@ All functions have a try that will return None if errors are found
 
         for ds_id in datasets:
             row = datasets[ds_id]
-            file_text += "\t<dataset id='"+unicode(ds_id)+"'>\n"
+            file_text += "\t<dataset id='"+str(ds_id)+"'>\n"
             for temp_ds_name in row:
-                ds_value = unicode(row[temp_ds_name])
+                ds_value = str(row[temp_ds_name])
                 ds_name  = temp_ds_name.replace(' ','_')
                 file_text += "\t\t<"+ds_name+"><![CDATA["+ds_value+"]]></"+ds_name+">\n"
 
@@ -3014,7 +3014,7 @@ All functions have a try that will return None if errors are found
         result_dict = {}
 
 
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
 
         problem_list = []
         ok_list = []
@@ -3193,7 +3193,7 @@ All functions have a try that will return None if errors are found
         message_list = []
         if ds_id == 0 or not isinstance(ds_id,int):
             return message_list
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
         samples_from_biosamples_table = Stemformatics_Expression.get_samples_via_biosamples(ds_id)
         samples_from_gct = Stemformatics_Expression.get_sample_ids_from_expression_file(ds_id,'gct')

@@ -4,6 +4,7 @@ from S4M_pyramid.controllers.workbench import WorkbenchController
 from S4M_pyramid.controllers.contents import ContentsController
 from S4M_pyramid.controllers.expressions import ExpressionsController
 from S4M_pyramid.controllers.auth import AuthController
+from S4M_pyramid.controllers.genes import GenesController
 
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
@@ -48,6 +49,7 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
+    config.add_handler("genes","/genes/{action}",handler=GenesController)
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
