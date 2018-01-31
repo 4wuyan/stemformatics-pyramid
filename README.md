@@ -210,19 +210,44 @@ In Pyramid, every action needs to return a response, and the response needs to b
 The renderer type needs to be explicitly specified, and this is different in Pylons.
 In Pylons, an action can just return a piece of String in JSON format without specifying anything.
 In Pyramid, returning anything without specifying a renderer type will result in an error.
-Therefore, if an action returns a `mako` page, the renderer should point to a `mako` file. If an action returns some data, it's best to specify
+Therefore, if an action returns a mako page, the renderer should point to a mako file. If an action returns some data, it's best to specify
 the renderer type as `renderer='string'`. (This is because our code does the formatting already; returning them as a string will keep the format as we process.)
 
-String encode and decode
+String encoding and decoding
 =======================================
-Python2 and Python3 have different format for strings(Unicode vs bytes). In our redis configuration, The data stored in redis is in byte format 
-so in pylons server(python2), there is no encode/decode needed. But this is a issue for pyramid server, as we need to encode the string when pass data
-into redis and decode string when getting data from redis. 
 
-Atm we are doing this encode/decode process manually inside the code. Another options would be to change the redis configuration to suit python3's requirement.
-But because the migration process didn't finish and if we change the configuration for redis our pylons server will break. Therefore we have to settle for this 
-more complicated solution so that both servers are compatible.
+There are two different types of string (`str`) in Python: Byte string and Unicode string,
+which can be represented explicitly as `b'...'` and `u'...'`, respectively.
+Unicode can be encoded into Bytes by `u'123'.encode('utf-8')`; Bytes can be decoded into Unicode by `b'123'.decode('utf-8')`.
 
+Python 2 and Python 3 use different formats for default `str` strings (Bytes vs Unicode).
+```python
+# Python 2
+>>> type('string')
+<type 'str'>
+>>> type(b'string')
+<type 'str'>
+>>> type(u'string')
+<type 'unicode'>
+
+# Python 3
+>>> type('string')
+<class 'str'>
+>>> type(b'string')
+<class 'bytes'>
+>>> type(u'string')
+<class 'str'>
+```
+
+In our redis configuration, the data stored in redis are in `bytes` format.
+So in our Pylons server (Python 2), no encoding or decoding is needed.
+But this is an issue for our Pyramid server, as we need to encode the string when passing data
+into redis and decode string when getting data from redis.
+
+At the moment, we are doing this encoding/decoding process manually inside the code.
+Another option would be to change the redis configuration to suit Python3's requirement.
+But the migration process hasn't finished and our pylons server will break if we change the configuration for redis.
+Therefore we have to settle for this more complicated solution so that both servers are compatible.
 
 Database ORM
 =====================
