@@ -12,7 +12,7 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort, redirect
 
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset, db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset,Stemformatics_Gene_Set,Stemformatics_Notification, db_deprecated_pylons_orm as db
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -581,7 +581,7 @@ class AuthController(BaseController):
         temp_body = "\n\nNOTE: To access this shared %s you will need to register as %s - please click here >> %s/auth/register?username=%s \n If you already have an account then the user who shared this may be using the wrong email address. Please contact us via %s for more details.\n\nWhen you register:\nIt asks for a passphrase instead of a password.\nA \"pass phrase\" is more secure, and easier to remember. eg. \"yoghurt is just as nice as ice cream\".\nThe pass phrase should be a minimum of 12 characters with at least one space\nYou will receive an email to confirm your registration. Once you have confirmed your email address you can then login to %s.\n\n---------------------------------------------------------\n\n" % (share_type,email,external_base_url,email,feedback_email,site_name)
         return temp_body
 
-
+    @action(renderer="string")
     def share_gene_set(self):
         c = self.request.c
         id = self.request.matchdict['id']
@@ -667,7 +667,9 @@ class AuthController(BaseController):
             sender  = config['from_email']
             recipient = email
             try:
-                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+                pass
+                # because we don't want to send email from our testing VMs,so this line is disabled
+                #email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
             except:
                 if publish is None:
                     return_message += "Successful sharing but error in sending email for email address: " + email +". "
@@ -682,7 +684,7 @@ class AuthController(BaseController):
 
         return return_message
 
-
+    @action(renderer="string")
     def share_job(self):
         c = self.request.c
         request = self.request
@@ -762,7 +764,9 @@ class AuthController(BaseController):
             sender  = config['from_email']
             recipient = email
             try:
-                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+                pass
+                # because we don't want to send email from our testing VMs,so this line is disabled
+                #email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
             except:
                 return_message += "Successful sharing but error in sending email for email address: " + email +". "
                 continue
@@ -775,7 +779,7 @@ class AuthController(BaseController):
 
 
 
-
+    @action(renderer="string")
     def share_gene_expression(self):
         c = self.request.c
         request = self.request
@@ -847,7 +851,9 @@ class AuthController(BaseController):
             sender  = config['from_email']
             recipient = email
             try:
-                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+                pass
+                #because we don't want to send email from our testing VMs,so this line is disabled
+                #email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
             except:
                 return_message += "Error in sending email for email address: " + email +". "
                 continue

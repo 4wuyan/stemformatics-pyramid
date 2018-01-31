@@ -306,3 +306,135 @@ class GenesController(BaseController):
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists']]
         c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         return self.deprecated_pylons_data_for_view
+
+    @Stemformatics_Auth.authorise(db)
+    def gene_set_bulk_import_manager(self): #CRITICAL-4
+        request = self.request
+        c = self.request.c
+        gene_set_id  = request.params.get('gene_set_id')
+        if gene_set_id is not None:
+            try:
+                gene_set_id = int(gene_set_id)
+            except:
+                gene_set_id = None
+        c.gene_set_id = gene_set_id
+        gene_set_name  = request.params.get('gene_set_name')
+        gene_set_description = request.params.get('description')
+        db_id = request.params.get('db_id')
+        geneSetRaw = request.params.get('revalidateText')
+        saveGeneSet = request.params.get('saveGeneSet')
+        revalidateGeneSet = request.params.get('validate')
+
+        search_type = request.params.get('search_type')
+
+        select_all_ambiguous_raw = request.params.get('select_all_ambiguous')
+
+        if select_all_ambiguous_raw == "1":
+            select_all_ambiguous = True
+        else:
+            select_all_ambiguous = False
+
+        c.select_all_ambiguous = select_all_ambiguous
+
+        saveSet = []
+        if saveGeneSet is not None:
+            for list in request.POST:
+                if list.startswith('ENS') :
+                    saveSet.append(list)
+
+            if gene_set_id is not None:
+                change_name_result = Stemformatics_Gene_Set.update_gene_set_name(db,c.uid,gene_set_id,gene_set_name)
+                change_description_result = Stemformatics_Gene_Set.update_gene_set_description(db,c.uid,gene_set_id,gene_set_description)
+                replace_genes_result = Stemformatics_Gene_Set.replace_gene_set_items(db,c.uid,gene_set_id,saveSet)
+                if replace_genes_result is None:
+                    c.message = "Could not update the Gene List. "
+                    c.title = c.site_name+" Analyses - Error saving Gene List"
+                    return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
+                else:
+                    # result should be the gene set id
+                    # also change needs_attention to be False
+                    result = Stemformatics_Gene_Set.set_needs_attention_to_false(db,c.uid,gene_set_id)
+                    default_url =url('/workbench/gene_set_view/'+str(gene_set_id))
+                    redirect_url = Stemformatics_Auth.get_smart_redirect(default_url)
+                    # now delete redis keys for that gene list
+                    Stemformatics_Gene_Set.delete_short_term_redis_keys_for_a_gene_list(gene_set_id)
+                    redirect(redirect_url)
+            else:
+                result = Stemformatics_Gene_Set.addGeneSet(db,c.uid,gene_set_name,gene_set_description,db_id,saveSet)
+                if result is None:
+                    c.message = "Could not save Gene List. Please check the Gene List name is unique."
+                    c.title = c.site_name+" Analyses - Error saving Gene List"
+                    return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
+                else:
+                    # result should be the gene set id
+                    redirect(url('/workbench/gene_set_view/'+str(result)))
+
+        # this is the entry for the copy
+        c.hide_save = False
+        if revalidateGeneSet is None and saveGeneSet is None:
+            c.hide_save = True
+
+        if geneSetRaw != None and search_type != 'probes_using_chromosomal_locations':
+            m = re.findall('[\w\.\-\@]{1,}',geneSetRaw)
+        else:
+            if geneSetRaw != None and search_type == 'probes_using_chromosomal_locations':
+                m = re.findall('[\w\.\-\@\+\:\,]{1,}',geneSetRaw)
+            else:
+                m = []
+
+
+        # now input this list into a gene function that will return a dictionary
+        # { 'ILMN_2174394' : { 'original' : 'ILMN_2174394', 'symbol' : 'STAT1', 'status' : 'OK' } }
+        # If we make it a list of objects then we can sort, we cannot sort on a dictionary
+        if m != []:
+
+            if search_type is None:
+                search_type = 'all'
+
+            resultData = Stemformatics_Gene.get_unique_gene_fast(db,m,db_id,search_type,select_all_ambiguous)
+
+            c.search_type = search_type
+            c.gene_set_processed = resultData
+        else:
+            c.gene_set_processed = []
+            c.search_type = 'all'
+
+        c.gene_set_raw = geneSetRaw
+        c.gene_set_raw_list = m
+
+        c.db_id = db_id
+        c.error_message = ""
+        # return 'Successfully uploaded: %s, size: %i rows' % (myfile.filename, len(m))
+        c.title = c.site_name+' Analyses  - New Gene List'
+        c.breadcrumbs = [[h.url('/genes/search'),'Genes'],['','Bulk Import Manager']]
+
+        if gene_set_id is not None:
+            gene_set_result = Stemformatics_Gene_Set.getGeneSetData(db,c.uid,gene_set_id)
+            db_id = c.db_id = Stemformatics_Gene_Set.get_db_id(db,c.uid,gene_set_id)
+            gene_set = gene_set_result[0]
+            gene_set_items = gene_set_result[1]
+
+        if c.gene_set_raw is None and gene_set_id is not None:
+            c.gene_set_raw = ""
+            for gene in gene_set_items:
+                c.gene_set_raw += gene.gene_id+"\n"
+
+        if c.gene_set_raw == '' or c.gene_set_raw is None:
+            c.gene_set_raw = "Enter list here eg.\nSTAT1\nSTAT2"
+
+        if gene_set_name == 'None' or gene_set_name == '' or gene_set_name is None:
+            if gene_set_id is not None:
+                gene_set_name = gene_set.gene_set_name
+            else:
+                gene_set_name = ''
+
+        if gene_set_description == 'None'  or gene_set_description == '' or gene_set_description is None:
+            if gene_set_id is not None :
+                gene_set_description = gene_set.description
+            else:
+                gene_set_description = ''
+        c.gene_set_name = gene_set_name
+        c.description = gene_set_description
+        #if revalidateGeneSet == 'Validate':
+        #    raise Error
+        return render_to_response('S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako',self.deprecated_pylons_data_for_view,request=self.request)
