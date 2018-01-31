@@ -21,10 +21,11 @@ from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Aut
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , codecs , redis ,subprocess , re , string , json, datetime,glob#urllib2
+import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob#urllib2
 #from poster.encode import multipart_encode
 #from poster.streaminghttp import register_openers
 
+from S4M_pyramid.model import r_server
 
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
@@ -299,7 +300,6 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def getChooseDatasetDetails(db,uid,show_limited=False,db_id=None):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         label_name = 'choose_dataset_details'
         result = r_server.get(label_name)
         result = result.decode('utf-8')
@@ -471,7 +471,6 @@ All functions have a try that will return None if errors are found
         if format_type == "choose_dataset":
             # Note we now have a list of ds_ids and we just want to check them for access
             # and then get the metadata
-            r_server = redis.Redis(unix_socket_path=config['redis_server'])
             label_name = 'choose_dataset_details'
             result = r_server.get(label_name)
             temp_datasets = json.loads(result)
@@ -663,7 +662,6 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def setup_redis_choose_dataset_details(db): #CRITICAL-2
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         choose_dataset_dict = {}
 
         db.schema = 'public'
@@ -1110,7 +1108,6 @@ All functions have a try that will return None if errors are found
     def check_dataset_with_limitations(db,ds_id,uid):
         if uid == "":
             uid = 0
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         label_name = "user_dataset_availability"+delimiter+str(uid)
         try:
@@ -1126,7 +1123,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def check_dataset_availability(db,uid,ds_id,role=None):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
@@ -1155,7 +1151,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def get_dataset_availability(db,uid):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
@@ -1539,7 +1534,6 @@ All functions have a try that will return None if errors are found
         if role == 'normal' or role == None:
             if uid == "":
                 uid = 0
-            r_server = redis.Redis(unix_socket_path=config['redis_server'])
             delimiter = config['redis_delimiter']
             label_name = "user_dataset_availability"+delimiter+str(uid)
             try:
@@ -2787,7 +2781,6 @@ All functions have a try that will return None if errors are found
         cursor.close()
         conn.close()
 
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         expiry_time = config['expiry_time']
 
@@ -3111,7 +3104,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def set_expression_dataset_metadata_into_redis(ds_id,dataset_metadata):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         expiry_time = config['expiry_time']
@@ -3131,7 +3123,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def get_expression_dataset_metadata_from_redis(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = "dataset_metadata"+ delimiter + str(ds_id)
@@ -3349,7 +3340,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def delete_dataset_redis(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         probe_file = config['DatasetGCTFiles']+ 'dataset' +str(ds_id)+ '.gct'
         probes = []

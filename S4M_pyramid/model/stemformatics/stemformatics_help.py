@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 import sqlalchemy as SA
 from sqlalchemy import or_, and_, desc
 
-import redis
+from S4M_pyramid.model import r_server
 
 import re
 import string
@@ -141,7 +141,6 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def help_exists(help):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         has_tute = r_server.exists(Stemformatics_Help.get_tutorial_key(help))
         has_guide = r_server.exists(Stemformatics_Help.get_page_guide_key(help))
         return has_tute or has_guide
@@ -154,7 +153,6 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def get_all_help_from_page_key(page_key):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         pageguide_key = Stemformatics_Help.get_page_guide_key(page_key.split('|')[2])
 
@@ -176,17 +174,14 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def get_all_tutorial_keys():
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         return list(r_server.smembers(Stemformatics_Help.all_tutorials_key))
 
     @staticmethod
     def get_all_pageguide_keys():
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         return list(r_server.smembers(Stemformatics_Help.all_page_guides_key))
 
     @staticmethod
     def get_all_page_keys():
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         return list(r_server.smembers(Stemformatics_Help.all_pages_key))
 
     @staticmethod
@@ -225,7 +220,6 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def get_tutorial(tutorial):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         tutorial_key = Stemformatics_Help.get_tutorial_key(tutorial)
         tutorial_pages = r_server.smembers(tutorial_key)
         tutorial_start_page = r_server.get(Stemformatics_Help.get_tutorial_start_key(tutorial))
@@ -238,7 +232,6 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def save_tutorial(tutorial, start_page, json_data):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         tutorial_key = Stemformatics_Help.get_tutorial_key(tutorial)
         tutorial_start_key = Stemformatics_Help.get_tutorial_start_key(tutorial)
 
@@ -259,7 +252,6 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def delete_tutorial(tutorial):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         tutorial_key = Stemformatics_Help.get_tutorial_key(tutorial)
         tutorial_start_key = Stemformatics_Help.get_tutorial_start_key(tutorial)
@@ -283,20 +275,17 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def get_tutorial_start_page(tutorial):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         tutorial_start_key = Stemformatics_Help.get_tutorial_start_key(tutorial)
         return r_server.get(tutorial_start_key)
 
     @staticmethod
     def get_pageguide(page):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         page_guide_key = Stemformatics_Help.get_page_guide_key(page)
         data = r_server.get(page_guide_key)
         return json.loads(data)
 
     @staticmethod
     def save_pageguide(page, json_data):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         page_guide_key = Stemformatics_Help.get_page_guide_key(page)
         page_key = Stemformatics_Help.get_page_key(page)
@@ -311,7 +300,6 @@ class Stemformatics_Help(object):
 
     @staticmethod
     def delete_pageguide(page):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         page_guide_key = Stemformatics_Help.get_page_guide_key(page)
         page_key = Stemformatics_Help.get_page_key(page)

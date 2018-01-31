@@ -25,7 +25,7 @@ from email.utils import parseaddr, formataddr
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
 
 
-import redis
+from S4M_pyramid.model import r_server
 import json
 # HEADER_DATASETS = [{'name':'grandiose', 'datasetIDs':['5037', '6073', '6082', '6084', '6089', '6111']}]
 
@@ -154,7 +154,6 @@ class Stemformatics_Notification(object):
 
     @staticmethod
     def get_header_name_from_datasetId(datasetID):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         try:
             header = r_server.hget('project_headers',str(datasetID))
@@ -174,7 +173,6 @@ class Stemformatics_Notification(object):
         cursor.close()
         conn.close()
 
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         for row in result:

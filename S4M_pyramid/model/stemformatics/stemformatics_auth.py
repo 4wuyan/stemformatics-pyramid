@@ -37,7 +37,7 @@ from random import random
 import datetime
 
 import S4M_pyramid.lib.helpers as h
-import redis
+from S4M_pyramid.model import r_server
 
 
 
@@ -1250,7 +1250,6 @@ class Stemformatics_Auth(object):
 
     @staticmethod
     def setup_redis_get_dict_of_user_dataset_availability(db):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         data_result = Stemformatics_Auth.get_dict_of_user_dataset_availability(db)

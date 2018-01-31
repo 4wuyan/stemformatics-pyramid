@@ -1,4 +1,5 @@
-import re,string,json,numpy,os,redis,logging
+import re,string,json,numpy,os,logging
+from S4M_pyramid.model import r_server
 import subprocess
 log = logging.getLogger(__name__)
 import sqlalchemy as SA
@@ -232,7 +233,6 @@ class Stemformatics_Expression(object):
     """
     @staticmethod
     def set_yugene_graph_values(uid,ensembl_id,db_id,graph_values):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         expiry_time = config['expiry_time']
@@ -274,7 +274,6 @@ class Stemformatics_Expression(object):
     """
     @staticmethod
     def get_yugene_full_data_graph_values(uid,ensembl_id,db_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'full_data'+delimiter+str(uid)+delimiter+ensembl_id+delimiter+str(db_id)
@@ -304,7 +303,6 @@ class Stemformatics_Expression(object):
     """
     @staticmethod
     def get_yugene_sample_data_graph_values(uid,ensembl_id,db_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'sample_data'+delimiter+str(uid)+delimiter+ensembl_id+delimiter+str(db_id)
@@ -493,7 +491,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_cumulative_sample_labels(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'cumulative_labels'+delimiter+str(ds_id)
@@ -506,7 +503,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_sample_labels(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'gct_labels'+delimiter+str(ds_id)
@@ -518,7 +514,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_expression_rows(ds_id,probe_list):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         result = {}
@@ -533,7 +528,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_cumulative_rows(ds_id,probe_list):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         result = {}
@@ -548,7 +542,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_standard_deviation(ds_id,chip_id,probe_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         row_name = str('standard_deviation'+delimiter+str(ds_id)+delimiter+chip_id+delimiter+probe_id)
@@ -819,7 +812,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def set_breakdown_dict_to_redis(uid,ensembl_id,db_id,data,filter_value_start,filter_value_end):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         expiry_time = config['yugene_breakdown_dict_expiry_time']
@@ -834,7 +826,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_breakdown_dict_from_redis(uid,ensembl_id,db_id,filter_value_start,filter_value_end):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'breakdown_data'+delimiter+str(uid)+delimiter+ensembl_id+delimiter+str(db_id)+delimiter+str(filter_value_start) + delimiter+ str(filter_value_end)
@@ -1005,7 +996,6 @@ class Stemformatics_Expression(object):
     @staticmethod
     def get_mappings_for_miRNA(feature_id, species, ref_type, use_json,ds_id, db_id):
         # first check if mapping is in redis
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         ref_type = 'miRNA'
         feature_mapping = {}
@@ -1053,7 +1043,6 @@ class Stemformatics_Expression(object):
         db = None
         # check in redis
         unique_probe_list = set(probe_list)
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         expiry_time = config['expiry_time']
         ref_type = 'probeID'
@@ -1235,7 +1224,6 @@ class Stemformatics_Expression(object):
     @staticmethod
     def delete_data_from_redis(matching_pattern,exact_keys=False):
         my_keys = []
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         for label_name in matching_pattern:
             label_name = label_name.encode('utf-8')
@@ -1256,7 +1244,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_feature_mapping_stats(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         # get the mapping id for ds_id
         result = r_server.get("dataset_mapping_data")
@@ -1391,7 +1378,6 @@ class Stemformatics_Expression(object):
         redis_keys_list = {} #this is all the possible keys taht can exsit based on audit log
         exsiting_redis_keys_list = {} #this is list of keys from redis_keys_list that actually exist in redis
         delimiter = config["delimiter"]
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         for ds_id in ds_id_data:
             dataset_metadata_key = "dataset_metadata|"+ds_id
             redis_keys_list[ds_id] = [dataset_metadata_key]

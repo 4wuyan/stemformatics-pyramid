@@ -8,7 +8,7 @@ from sqlalchemy import or_, and_, desc
 import re
 import string
 import json
-import redis
+from S4M_pyramid.model import r_server
 import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
@@ -523,7 +523,6 @@ class Stemformatics_Gene(object):
     @staticmethod
     def get_ensembl_from_probe(db,probe_list,db_id):
         ensembl_list = []
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         db_id = int(db_id)
 
@@ -650,7 +649,6 @@ class Stemformatics_Gene(object):
     """
     @staticmethod
     def get_unique_gene_fast(db,geneSet,db_id,search_type,select_all_ambiguous,get_description = True,chip_type = 0,one_search_term = False): #CRITICAL-4 #CRITICAL-6
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         # try:
         human_db = int(config['human_db'])
@@ -830,7 +828,6 @@ class Stemformatics_Gene(object):
 
     @staticmethod
     def setup_bulk_import_manager_mappings(gene_mapping_raw_file_base_name,feature_mapping_raw_file_base_name): #CRITICAL-4
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
 
 
@@ -1211,7 +1208,6 @@ class Stemformatics_Gene(object):
         # setting db = None as we don't use it when getting chip Type
         db = None
         unique_gene_list = set(gene_list)
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
 
         # get the mapping id for ds_id
         result = r_server.get("dataset_mapping_data")
@@ -1283,7 +1279,6 @@ class Stemformatics_Gene(object):
 
     @staticmethod
     def set_mapping_data_in_redis(ref_type,ds_id,db_id,mapping_data,ref_id_not_in_redis):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
@@ -1316,7 +1311,6 @@ class Stemformatics_Gene(object):
         db = None
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         # first check the mapping for each gene set in redis
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         # get the mapping id for ds_id

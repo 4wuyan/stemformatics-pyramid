@@ -4,7 +4,7 @@ log = logging.getLogger(__name__)
 
 
 import re
-import redis
+from S4M_pyramid.model import r_server
 import datetime
 from datetime import timedelta
 
@@ -858,7 +858,6 @@ class Stemformatics_Gene_Set(object):
                 db_id = row['db_id']
                 gene_set_mapping_keys.append("gene_set_mapping_data"+delimiter+str(mapping_id)+delimiter+str(gene_set_id)+delimiter+'gene_set_id'+delimiter+str(db_id))
 
-            r_server = redis.Redis(unix_socket_path=config['redis_server'])
             delimiter = config['redis_delimiter']
 
             for key in gene_set_mapping_keys:

@@ -1,6 +1,8 @@
 #TODO-1
-import logging,redis
+import logging
 log = logging.getLogger(__name__)
+
+from S4M_pyramid.model import r_server
 
 import re , string , json , psycopg2 , psycopg2.extras
 
@@ -95,7 +97,6 @@ class Stemformatics_Probe(object):
     # probe_list is a string
     @staticmethod
     def set_probe_list(uid,probe_list_string):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'probe_list_string'+delimiter+str(uid)
@@ -109,7 +110,6 @@ class Stemformatics_Probe(object):
 
     @staticmethod
     def get_probe_list(uid):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = 'probe_list_string'+delimiter+str(uid)
