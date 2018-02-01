@@ -23,6 +23,7 @@ class tempData(object):
 class ApiController(BaseController):
     __name__ = 'ApiController'
 
+    #---------------------NOT MIGRATED--------------------------------
     def __before__(self):  #CRITICAL-3 #CRITICAL-4 #TODO-2
 
         super(ApiController, self).__before__ ()
@@ -48,6 +49,7 @@ class ApiController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def _copy_over_full_gct_file(self):
         # copy over dataset to job.gct
         datasetGCTFile = config['DatasetGCTFiles']+"dataset"+str(self._temp.ds_id)+".gct"
@@ -72,6 +74,7 @@ class ApiController(BaseController):
             p = subprocess.call(command,shell=True)
             return True
     # api create for RDS Monitoring of when we moved the HC processing to Galaxy
+    #---------------------NOT MIGRATED--------------------------------
     def get_hc_stats(self):
         start_date  = request.params.get('start_date')
         end_date  = request.params.get('end_date')
@@ -80,6 +83,7 @@ class ApiController(BaseController):
         hc_stats_json = json.dumps(hc_stats)
         return hc_stats_json
 
+    #---------------------NOT MIGRATED--------------------------------
     def gene_pattern_download(self,id): #CRITICAL-4
         # getting all of these from the database
         self._temp.job_id = int(id)
@@ -148,6 +152,7 @@ class ApiController(BaseController):
             p = subprocess.Popen(command,shell=True)
 
     # This fetch all the pending jobs from s4m and updates them based on galaxy job status
+    #---------------------NOT MIGRATED--------------------------------
     def get_galaxy_pending_jobs(self):
         import socket
         server_name = socket.gethostname()
@@ -168,6 +173,7 @@ class ApiController(BaseController):
         Stemformatics_Galaxy.update_job_status(db,status,galaxyInstance)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def update_job(self,id): #CRITICAL-4
         job_id = int(id)
 
@@ -271,6 +277,7 @@ class ApiController(BaseController):
         else:
             return "error"
 
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_job(self,id):  #CRITICAL-4
 
         job_id = int(id)
@@ -346,6 +353,7 @@ class ApiController(BaseController):
         result = Stemformatics_Job.write_gene_pathways_export_gene_set_annotation(gene_pathways_export,dict_pathway,dict_gene_set_details,gene_set_counts,genes_in_gene_set_count,total_number_genes)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def kill_pending_jobs(self):
         result = Stemformatics_Job.get_pending_jobs(db)
         kill_job_pending_hours = int(config['kill_job_pending_hours'])
@@ -389,6 +397,7 @@ class ApiController(BaseController):
                 p = subprocess.Popen(command,shell=True)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def remove_old_jobs(self):
 
         remove_old_job_days = int(config['remove_old_job_days'])
@@ -400,6 +409,7 @@ class ApiController(BaseController):
         Stemformatics_Job.bulk_delete_job(jobs)
 
     # This fetch all the old galaxy jobs and deletes the output files for those jobs on galaxy to free up disk space
+    #---------------------NOT MIGRATED--------------------------------
     def remove_galaxy_old_jobs(self):
         remove_old_job_days = int(config['remove_old_job_days'])
         delta_days = timedelta(days=remove_old_job_days)
@@ -422,6 +432,7 @@ class ApiController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def remind_users_of_expiring_jobs(self):
 
         job_reminder_days = int(config['remove_old_job_days']) - 7
@@ -449,6 +460,7 @@ class ApiController(BaseController):
                 Stemformatics_Notification.send_email(from_email, to_email, subject, body)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def biosamples_metadata_unique(self):
         #if ds_id is not None:
         #    ds_id = int(ds_id)
@@ -459,6 +471,7 @@ class ApiController(BaseController):
         return json.dumps(bs_result_uniq)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def dataset_metadata_unique(self):
         ds_result = Stemformatics_Dataset.getDatasetMetadata(db)
         ds_result_uniq = []
@@ -466,6 +479,7 @@ class ApiController(BaseController):
         return json.dumps(ds_result_uniq)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def dataset_metadata_for_annotations(self,id):
 
         try:
@@ -496,6 +510,7 @@ class ApiController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def biosamples_metadata_for_annotations(self,id):
 
         try:
@@ -520,6 +535,7 @@ class ApiController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def biosamples_metadata_summary_for_annotations(self,id):
 
         try:
@@ -559,6 +575,7 @@ class ApiController(BaseController):
         return data
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def get_dataset_list(self):
 
         result = Stemformatics_Dataset.get_all_dataset_ids(db)
@@ -569,6 +586,7 @@ class ApiController(BaseController):
         return json.dumps(metadata)
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def usage_statistics(self,id):
 
         delta = int(id)
@@ -643,16 +661,19 @@ class ApiController(BaseController):
 
         return body
 
+    #---------------------NOT MIGRATED--------------------------------
     def trigger_config_update(self):
         Stemformatics_Admin.trigger_update_configs()
         return "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     ''' This is to add one new dataset '''
+    #---------------------NOT MIGRATED--------------------------------
     def setup_new_dataset(self,id):
         ds_id = int(id)
         show_text = Stemformatics_Dataset.setup_new_dataset(db,ds_id)
         return show_text
 
+    #---------------------NOT MIGRATED--------------------------------
     def triggers_users_and_datasets(self):
         Stemformatics_Dataset.triggers_for_change_in_dataset(db)
         Stemformatics_Auth.triggers_for_change_in_user(db)
@@ -661,12 +682,14 @@ class ApiController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def setup_bulk_import_manager(self):
         gene_mapping_raw_file_base_name = config['gene_mapping_raw_file_base_name']
         feature_mapping_raw_file_base_name = config['feature_mapping_raw_file_base_name']
         result = Stemformatics_Gene.setup_bulk_import_manager_mappings(gene_mapping_raw_file_base_name,feature_mapping_raw_file_base_name)
         return "Done"
 
+    #---------------------NOT MIGRATED--------------------------------
     def check_redis_consistency_for_datasets(self):
         try:
             days = int(request.params.get('days'))
