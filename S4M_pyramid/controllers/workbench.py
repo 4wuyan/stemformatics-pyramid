@@ -52,7 +52,7 @@ class WorkbenchController(BaseController):
 #     # 'sca' is short for scatter.  Makes validity checking easier.
 #     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'scatter'}
 
-
+    #---------------------NOT MIGRATED--------------------------------
     def __before__(self): #CRITICAL-3
 
         super(WorkbenchController, self).__before__ ()
@@ -79,6 +79,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_upload(self):
 
         c.title = c.site_name+' Analyses - Upload New Gene List'
@@ -139,6 +140,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def delete_gene_from_set(self,id):
         gene_set_item_id = int(id)
 
@@ -155,6 +157,7 @@ class WorkbenchController(BaseController):
         return redirect(url('/workbench/gene_set_view/'+str(gene_set_id)))
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def add_gene_to_set(self):
         gene_set_id  = request.params.get('gene_set_id')
         db_id  = request.params.get('db_id')
@@ -171,6 +174,7 @@ class WorkbenchController(BaseController):
         return redirect(url('/workbench/gene_set_view/'+str(gene_set_id)+'?message='+message))
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def update_gene_set_name(self):
         gene_set_id  = int(request.params.get('gene_set_id'))
         gene_set_name  = request.params.get('gene_set_name')
@@ -188,6 +192,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_delete(self,id):
         gene_set_id = int(id)
 
@@ -204,6 +209,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def analysis(self,id):
         gene_set_id = int(id)
         species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
@@ -217,6 +223,7 @@ class WorkbenchController(BaseController):
         return render('workbench/choose_analysis.mako')
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def hierarchical_cluster_wizard(self): #CRITICAL-5
         delimiter = config['redis_delimiter']
         c.use_galaxy_server = use_galaxy = config['use_galaxy_server']
@@ -472,11 +479,13 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def comparative_marker_selection_wizard(self): #CRITICAL-5 DELETE
         return redirect(url('/contents/removal_of_comparative_marker_selection'))
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def jobs_index(self):
         c.status = Stemformatics_Job.return_all_status()
         c.analysis = Stemformatics_Job.return_all_analysis()
@@ -496,6 +505,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def job_view_result(self,id):  #CRITICAL-4
         job_id = int(id)
         use_galaxy_server = config['use_galaxy_server']
@@ -627,6 +637,7 @@ class WorkbenchController(BaseController):
             return self._view_gene_neighbour_output_file(openFile,job_id,c.db_id,c.p_value,analysis_server)
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def view_cms_image(self):
         gp_job_id = int(request.params.get('gp_job_id'))
         output_file= int(request.params.get('output_file'))
@@ -661,6 +672,7 @@ class WorkbenchController(BaseController):
 
     # Can set &download=true and it will download instead of display
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def view_image(self):
         src = request.params.get('src')
         download = request.params.get('download')
@@ -685,18 +697,21 @@ class WorkbenchController(BaseController):
         return text
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def job_delete(self,id):
         job_id = int(id)
         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def job_remove_shared(self,id):
         job_id = int(id)
         result = Stemformatics_Shared_Resource.delete_shared_resource(db,"Job",job_id,c.uid)
 
         return redirect(url('/workbench/jobs_index'))
 
+    #---------------------NOT MIGRATED--------------------------------
     def _view_cms_output_file(self,openFile,job_id,use_uid):
         f = open(openFile,'r')
         c.text = f.readlines()
@@ -762,6 +777,7 @@ class WorkbenchController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def _view_gene_neighbour_output_file(self,openFile,job_id,db_id,p_value,analysis_server):
 
         f = open(openFile,'r')
@@ -783,6 +799,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def save_gene_set(self):
         db_id  = request.params.get('db_id')
         probe_list = request.params.get('probe_list')
@@ -831,6 +848,7 @@ class WorkbenchController(BaseController):
         return redirect(h.url('/workbench/gene_set_view/'+str(gene_set_id)))
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def uniquely_identify_gene(self):
         original = request.params.get('original')
         db_id = request.params.get('db_id')
@@ -855,6 +873,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_gene_preview(self,id):
         gene_set_id = int(id)
 
@@ -872,6 +891,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def public_gene_set_gene_preview(self,id):
         gene_set_id = int(id)
 
@@ -887,6 +907,7 @@ class WorkbenchController(BaseController):
         return render('/workbench/gene_set_gene_preview.mako')
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def analysis_confirmation_message(self,id):
         job_id = int(id)
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
@@ -907,6 +928,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def help_gene_neighbourhood(self):
         c.message  = request.params.get('message')
         c.title = c.site_name+' Analyses  - View Gene Neighbourhood Help'
@@ -915,6 +937,7 @@ class WorkbenchController(BaseController):
         return render('workbench/help_gene_neighbourhood.mako')
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def help_gene_set_annotation(self):
         c.message  = request.params.get('message')
         c.title = c.site_name+' Analyses  - View Gene List Annotation Help'
@@ -923,6 +946,7 @@ class WorkbenchController(BaseController):
         return render('workbench/help_gene_set_annotation.mako')
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def help_hierarchical_cluster(self):
         c.message  = request.params.get('message')
         c.title = c.site_name+' Analyses  - View Hierarchical Cluster Help'
@@ -932,6 +956,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def help_comparative_marker_selection(self):
         c.message  = request.params.get('message')
         c.title = c.site_name+' Analyses  - View Comparative Marker Selection Help'
@@ -941,6 +966,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_wizard(self):  #CRITICAL-5
 
         analysis  = 4
@@ -1016,6 +1042,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_save(self,id): #CRITICAL-4
 
         job_id = int(id)
@@ -1173,6 +1200,7 @@ class WorkbenchController(BaseController):
 
     """
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_view(self,id): #CRITICAL-4
 
         job_id = int(id)
@@ -1456,6 +1484,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_export_pathways(self,id):
 
         job_id = int(id)
@@ -1481,6 +1510,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_export_tx(self,id): #CRITICAL-4
 
         job_id = int(id)
@@ -1617,6 +1647,7 @@ class WorkbenchController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def download_gct_file_for_gene_set_wizard(self): #CRITICAL-5
 
         c.analysis = 6
@@ -1715,6 +1746,7 @@ class WorkbenchController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def _get_inputs_for_gene_neighbour_graph(self):
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
         try:
@@ -1749,6 +1781,7 @@ class WorkbenchController(BaseController):
         self._temp.large = request.params.get('size') == "large"
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def _set_outputs_for_graph(self):
         c.choose_dataset_immediately = self._temp.choose_dataset_immediately
         c.allow_genePattern_analysis = Stemformatics_Dataset.allow_genePattern_analysis(db,self._temp.ds_id)
@@ -1775,6 +1808,7 @@ class WorkbenchController(BaseController):
         show_limited = True
         c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
 
+    #---------------------NOT MIGRATED--------------------------------
     def fold_change_viewer_wizard(self): #CRITICAL-5
 
         analysis  = 5
@@ -1896,6 +1930,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_neighbour_wizard(self): #CRITICAL-5
 
         analysis  = 2
@@ -2070,6 +2105,7 @@ class WorkbenchController(BaseController):
         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def user_defined_expression_profile(self):
         # CHoose a dataset
         ds_id = request.params.get('datasetID')
@@ -2166,6 +2202,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
+    #---------------------NOT MIGRATED--------------------------------
     def gene_expression_profile_wizard(self):
         c.analysis = 7
         c.title = c.site_name+' Analyses  - Gene Expression Profile Wizard'
@@ -2173,10 +2210,12 @@ class WorkbenchController(BaseController):
         return render('workbench/choose_gene_expression_profile.mako')
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def ucsc(self):
         return render('workbench/ucsc.mako')
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def download_multiple_datasets(self):
         search= request.params.get('filter')
         export= request.params.get('export')
@@ -2221,9 +2260,11 @@ class WorkbenchController(BaseController):
 
             return render('workbench/download_multiple_datasets.mako')
 
+    #---------------------NOT MIGRATED--------------------------------
     def rohart_msc_test(self):
         return render('workbench/rohart_msc_landing_page.mako')
 
+    #---------------------NOT MIGRATED--------------------------------
     def rohart_msc_graph(self):
         show_limited = False
         c.msc_values_access = config['msc_values_access']
