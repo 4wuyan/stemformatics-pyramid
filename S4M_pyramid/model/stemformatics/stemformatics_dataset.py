@@ -1196,9 +1196,9 @@ All functions have a try that will return None if errors are found
         for row in result:
             returnList.append({
                 'ds_id': row['ds_id'],
-                'chip_id': row['chip_id'].encode('utf-8'),
-                'md_name': row['md_name'].encode('utf-8'),
-                'md_value': row['md_value'].encode('utf-8')
+                'chip_id': row['chip_id'],
+                'md_name': row['md_name'],
+                'md_value': row['md_value']
             })
 
         return returnList
@@ -1242,15 +1242,15 @@ All functions have a try that will return None if errors are found
             handle = Stemformatics_Dataset.add_extra_to_handle(db,ds_result.handle,ds_result.private,ds_result.show_limited)
             returnList.append({
                 'ds_name': 'handle',
-                'ds_value': handle.encode('utf-8')
+                'ds_value': handle
             })
             returnList.append({
                 'ds_name': 's4m_dataset_id',
-                'ds_value': str(ds_result.id).encode('utf-8')
+                'ds_value': str(ds_result.id)
             })
             returnList.append({
                 'ds_name': 's4m_chip_type',
-                'ds_value': str(ds_result.chip_type).encode('utf-8')
+                'ds_value': str(ds_result.chip_type)
             })
 
         # Get ALL dataset metadata
@@ -1260,8 +1260,8 @@ All functions have a try that will return None if errors are found
 
         for tuple in ds_md_result:
             returnList.append({
-                'ds_name': tuple.ds_name.encode('utf-8'),
-                'ds_value': tuple.ds_value.encode('utf-8')
+                'ds_name': tuple.ds_name,
+                'ds_value': tuple.ds_value
             })
 
 

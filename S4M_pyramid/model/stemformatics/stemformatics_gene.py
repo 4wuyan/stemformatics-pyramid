@@ -187,8 +187,6 @@ class Stemformatics_Gene(object):
     @staticmethod
     def get_genes(db,species_dict,geneSearch,db_id,explicitSearch,maxNumber): #CRITICAL-2 #CRITICAL-4
 
-       # geneSearch = geneSearch.encode('utf-8') #the encode step is unnesssary in python3
-       # and it causes error when the encoded string is used in re
         geneSearchFinal = Stemformatics_Gene._preGeneSearch(geneSearch)
         if geneSearchFinal == None:
            return None

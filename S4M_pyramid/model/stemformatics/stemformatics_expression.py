@@ -531,8 +531,7 @@ class Stemformatics_Expression(object):
 
         result = {}
         for probe in probe_list:
-            redis_string = 'cumulative_values'+delimiter+str(ds_id)+delimiter+probe
-            temp_row = r_server.get(redis_string.encode('utf-8'))
+            temp_row = r_server.get('cumulative_values'+delimiter+str(ds_id)+delimiter+probe)
             if temp_row is not None:
                 row = temp_row.split(delimiter)
                 result[probe] = row
@@ -1224,7 +1223,6 @@ class Stemformatics_Expression(object):
         my_keys = []
         delimiter = config['redis_delimiter']
         for label_name in matching_pattern:
-            label_name = label_name.encode('utf-8')
             if exact_keys == False:
                 # get keys for each matching pattern
                 matching_keys_list = r_server.keys(pattern=label_name+"*")
