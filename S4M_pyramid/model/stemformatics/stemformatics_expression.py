@@ -495,7 +495,7 @@ class Stemformatics_Expression(object):
 
         label_name = 'cumulative_labels'+delimiter+str(ds_id)
         try:
-            label_names = r_server.get(label_name).decode('utf-8').split(delimiter)
+            label_names = r_server.get(label_name).split(delimiter)
             return label_names
         except:
             return None
@@ -507,7 +507,7 @@ class Stemformatics_Expression(object):
 
         label_name = 'gct_labels'+delimiter+str(ds_id)
         try:
-            label_names = r_server.get(label_name).decode("utf-8").split(delimiter)
+            label_names = r_server.get(label_name).split(delimiter)
             return label_names
         except:
             return None
@@ -520,7 +520,6 @@ class Stemformatics_Expression(object):
         for probe in probe_list:
             temp_row = r_server.get('gct_values'+delimiter+str(ds_id)+delimiter+probe)
             if temp_row is not None:
-                temp_row = temp_row.decode("utf-8")
                 row = temp_row.split(delimiter)
                 result[probe] = row
         return result
@@ -535,7 +534,6 @@ class Stemformatics_Expression(object):
             redis_string = 'cumulative_values'+delimiter+str(ds_id)+delimiter+probe
             temp_row = r_server.get(redis_string.encode('utf-8'))
             if temp_row is not None:
-                temp_row = temp_row.decode("utf-8")
                 row = temp_row.split(delimiter)
                 result[probe] = row
         return result
@@ -634,7 +632,7 @@ class Stemformatics_Expression(object):
             for chip_id in chip_id_table[ds_id]:
                 value = chip_id_table[ds_id][chip_id]
                 if value != tests_to_perform:
-                    output = output  + str(ds_id) + "|" + chip_id.decode('utf-8') + "|" + value + "\n "
+                    output = output  + str(ds_id) + "|" + chip_id + "|" + value + "\n "
                     issue = True
             if issue:
                 if ds_id not in problem_datasets_list:

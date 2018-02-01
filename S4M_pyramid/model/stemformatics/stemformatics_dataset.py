@@ -302,7 +302,6 @@ All functions have a try that will return None if errors are found
     def getChooseDatasetDetails(db,uid,show_limited=False,db_id=None):
         label_name = 'choose_dataset_details'
         result = r_server.get(label_name)
-        result = result.decode('utf-8')
         temp_datasets = json.loads(result)
         choose_datasets = {}
 
@@ -1111,8 +1110,7 @@ All functions have a try that will return None if errors are found
         delimiter = config['redis_delimiter']
         label_name = "user_dataset_availability"+delimiter+str(uid)
         try:
-            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
-            #.decode('utf-8') is added for python3
+            dict_uid = json.loads(r_server.get(label_name))
             status= dict_uid[str(ds_id)]
 
             if status in ("Annotate","Admin"):
@@ -1537,7 +1535,7 @@ All functions have a try that will return None if errors are found
             delimiter = config['redis_delimiter']
             label_name = "user_dataset_availability"+delimiter+str(uid)
             try:
-                dict_ds_ids = json.loads(r_server.get(label_name).decode('utf-8'))
+                dict_ds_ids = json.loads(r_server.get(label_name))
                 temp_list_of_ds_ids = []
                 for str_ds_id in dict_ds_ids:
                     ds_id = int(str_ds_id)

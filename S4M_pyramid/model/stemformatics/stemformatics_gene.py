@@ -1050,7 +1050,14 @@ class Stemformatics_Gene(object):
 
         feature_search_items = {}
         feature_annotation_file = config['feature_annotation_file']
-        output = subprocess.check_output("grep -i \""+feature_search_term+"\" "+feature_annotation_file+"; exit 0",shell=True).decode("utf-8")
+
+        # By default, this function will return the data as encoded bytes.
+        # The actual encoding of the output data may depend on the command being invoked,
+        # so the decoding to text will often need to be handled at the application level.
+        # This behaviour may be overridden by setting universal_newlines to True as described above in Frequently Used Arguments.
+        output = subprocess.check_output("grep -i \""+feature_search_term+"\" "+feature_annotation_file+"; exit 0",shell=True, universal_newlines=True)
+        # See https://docs.python.org/3/library/subprocess.html#subprocess.check_output
+
         if output == "":
             if use_json:
                 return json.dumps(["No features found. Please try again"])
