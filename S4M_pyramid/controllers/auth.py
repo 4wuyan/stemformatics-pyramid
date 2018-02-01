@@ -667,7 +667,7 @@ class AuthController(BaseController):
             sender  = config['from_email']
             recipient = email
             try:
-               email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
             except:
                 if publish is None:
                     return_message += "Successful sharing but error in sending email for email address: " + email +". "
@@ -846,7 +846,7 @@ class AuthController(BaseController):
             # send out an email
             sender  = config['from_email']
             recipient = email
-            try: 
+            try:
                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
             except:
                 return_message += "Error in sending email for email address: " + email +". "
