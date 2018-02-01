@@ -472,6 +472,8 @@ All functions have a try that will return None if errors are found
             # and then get the metadata
             label_name = 'choose_dataset_details'
             result = r_server.get(label_name)
+            if result is not None:
+                result = result.decode('utf-8')
             temp_datasets = json.loads(result)
 
             for ds_id in ds_ids:
@@ -1124,11 +1126,11 @@ All functions have a try that will return None if errors are found
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
         except:
             uid = 0 #default guest account
             label_name = "user_dataset_availability"+delimiter+str(uid)
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
 
         if role is None:
             role = 'view'
@@ -1152,11 +1154,11 @@ All functions have a try that will return None if errors are found
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
         except:
             uid = 0 #default guest account
             label_name = "user_dataset_availability"+delimiter+str(uid)
-            dict_uid = json.loads(r_server.get(label_name))
+            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
 
         return dict_uid
 
