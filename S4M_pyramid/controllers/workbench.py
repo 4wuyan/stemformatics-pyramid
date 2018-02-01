@@ -218,12 +218,12 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Dataset']
                 ]
             return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         if gene_set_id is None and select_probes is None:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -254,7 +254,7 @@ class WorkbenchController(BaseController):
             species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
             gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id)
 
-            db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            db_id = Stemformatics_Dataset.get_db_id(ds_id)
             result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
             probe_list = result[0]
 
@@ -286,7 +286,7 @@ class WorkbenchController(BaseController):
         if len(probe_expression_rows) < 2:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
