@@ -1,61 +1,24 @@
-# #TODO-1
 from pyramid_handlers import action
-# from pylons import request, response, session, url
-# from pylons.controllers.util import abort, redirect
-# from pylons import app_globals as g
-#
 from S4M_pyramid.lib.base import BaseController
-# from sqlalchemy import or_, and_, desc
-#
-# from sqlalchemy.exceptions import *
-#
-# from paste.deploy.converters import asbool
-#
-# import json
-# import csv
-# #for result data only
-# import math
-#
-# import logging
-# log = logging.getLogger(__name__)
-#
-#
-# # Live querying
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth
-# from datetime import datetime
-#
-# import re
-# from matricks import Matricks
-#
-# from pylons import config
-#
-# import os, subprocess
-#
-# connection = db.engine.connect()
-#
-#
-# from guide.model import statfunctions
-#
-# # for some reason it is not applied in guide/lib/base.py
-# import guide.lib.helpers as h
-#
-# from time import gmtime, strftime
-#
-#
-# import formencode.validators as fe
-# FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
-#
-#
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe, db_deprecated_pylons_orm as db
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+import json
+import formencode.validators as fe
+import re
+from pyramid.renderers import render_to_response
+from asbool import asbool
+import S4M_pyramid.lib.helpers as h
+
 class WorkbenchController(BaseController):
-#     __name__ = 'WorkbenchController'
-#
-#     # 'sca' is short for scatter.  Makes validity checking easier.
-#     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'scatter'}
 
-    #---------------------NOT MIGRATED--------------------------------
-    def __before__(self): #CRITICAL-3
+    # 'sca' is short for scatter.  Makes validity checking easier.
+    _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'scatter'}
 
-        super(WorkbenchController, self).__before__ ()
+
+    def __init__(self,request): #CRITICAL-3
+        super().__init__(request)
+        c = self.request.c
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         c.human_db = self.human_db
@@ -66,10 +29,10 @@ class WorkbenchController(BaseController):
         self.default_mouse_dataset = int(config['default_mouse_dataset'])
 
         # GenePattern modules
-        self.GPQueue = config['GPQueue']
-        self.StemformaticsQueue = config['StemformaticsQueue']
-        self.StemformaticsController = config['StemformaticsController']
-        self.FullJavaPath = config['FullJavaPath']
+        #self.GPQueue = config['GPQueue']
+        #self.StemformaticsQueue = config['StemformaticsQueue']
+        #self.StemformaticsController = config['StemformaticsController']
+        #self.FullJavaPath = config['FullJavaPath']
 
     @action(renderer = 'templates/workbench/index.mako')
     def index(self):
@@ -222,9 +185,10 @@ class WorkbenchController(BaseController):
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists'],[h.url('/workbench/gene_set_view/'+str(gene_set_id)),'Gene List View'],['','Choose Analysis for Gene List']]
         return render('workbench/choose_analysis.mako')
 
-    @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
+    @Stemformatics_Auth.authorise(db)
     def hierarchical_cluster_wizard(self): #CRITICAL-5
+        c = self.request.c
+        request = self.request
         delimiter = config['redis_delimiter']
         c.use_galaxy_server = use_galaxy = config['use_galaxy_server']
         probes_saved = 'saved'
@@ -253,7 +217,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/index'),'Analyses'],
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Dataset']
                 ]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
         chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
 
         if gene_set_id is None and select_probes is None:
@@ -271,7 +235,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Gene List']
                 ]
 
-            return render('workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         if gene_set_id is None:
             gene_set_id = 0
@@ -299,7 +263,7 @@ class WorkbenchController(BaseController):
             ref_type = 'probes'
             if select_probes is None:
                 select_probes = ""
-                probe_list == []
+                probe_list = [] #pretty sure probe_list == [] was a typo?
             elif select_probes != probes_saved:
 
                 temp_probe_list = re.sub('\s{1,}',delimiter,select_probes)
@@ -334,7 +298,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Gene List']
                 ]
             c.error_message = "The target dataset contains no expression data for this gene list. Please try again."
-            return render('workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
 
 
@@ -349,7 +313,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Cluster Type']
                 ]
 
-            return render('workbench/choose_cluster_type.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_cluster_type.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         cluster_size  = "None"
         colour_by  = request.params.get('colour_by')
@@ -362,7 +326,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard?datasetID='+str(ds_id)),'Hierarchical Cluster - Choose Gene List'],
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Colour By']
                 ]
-            return render('workbench/choose_colour_by.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_colour_by.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         remove_chip_ids  = request.params.get('remove_chip_ids')
 
@@ -380,7 +344,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Samples']
                 ]
 
-            return render('workbench/remove_samples.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/remove_samples.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
 
         remove_chip_ids = []

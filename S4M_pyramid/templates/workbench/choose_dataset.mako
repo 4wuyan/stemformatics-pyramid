@@ -139,7 +139,7 @@
                 <tbody>
                     % for dataset in c.datasets:
 
-                        % if not c.datasets[dataset].has_key('has_data') or c.datasets[dataset]['has_data'] == 'yes':
+                        % if not 'has_data' in c.datasets[dataset] or c.datasets[dataset]['has_data'] == 'yes':
                         <%
                             # HC (analysis 0) cannot be run on any dataset anymore T#2270
                             gene_pattern_analysis = [0,1,2,7]
