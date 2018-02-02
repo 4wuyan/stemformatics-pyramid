@@ -81,8 +81,8 @@ def setup_database_connection(settings):
     #-------------Redis---------------------------
     from .lib.deprecated_pylons_globals import config
     from .model import redis_interface_normal, redis_interface_for_pickle
-    redis_interface_normal.__init__(unix_socket_path = config['redis_server'], decode_responses = True)
-    redis_interface_for_pickle.__init__(unix_socket_path = config['redis_server'])
+    redis_interface_normal.lazy_init(unix_socket_path = config['redis_server'], decode_responses = True)
+    redis_interface_for_pickle.lazy_init(unix_socket_path = config['redis_server'])
     #---------------------------------------------
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
