@@ -6,7 +6,8 @@ from S4M_pyramid.lib.helpers import make_lazy_init_wrapper_class
     and then "re-init" it by directly calling r.__init__(), I still decide to switch to a wrapper
     class for the sake of safety.
 
-    __init__ is not designed to be called multiple times. Though it seems fine for now, there
+    __init__ is not designed to be called multiple times, and is not supposed to be explicitly
+    called from outside as its naming convention suggests. Though it seems fine for now, there
     is no guarentee. It's possible that future Redis versions won't work.
 
     Moreover, calling __init__ twice might not produce the exactly same result as just once.
