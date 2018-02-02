@@ -6,7 +6,7 @@ import sqlalchemy as SA
 from sqlalchemy import or_, and_, desc
 from datetime import datetime, timedelta
 from S4M_pyramid.model.stemformatics import *
-import psycopg2,psycopg2.extras,_pickle as cPickle
+import psycopg2,psycopg2.extras, pickle
 
 # Task #500 - wouldn't work otherwise
 from S4M_pyramid.model.stemformatics.stemformatics_probe import *
@@ -258,7 +258,7 @@ class Stemformatics_Expression(object):
     """
     @staticmethod
     def store_yugene_graph_values(data):
-        store_data = cPickle.dumps(data)
+        store_data = pickle.dumps(data)
         return store_data
 
     """
@@ -287,7 +287,10 @@ class Stemformatics_Expression(object):
     """
     @staticmethod
     def restore_yugene_graph_values(data):
-        restore_data = cPickle.loads(data)
+        if not isinstance(data, bytes):
+            data = data.encode('utf-8')
+        # pickle.loads requires a bytes string
+        restore_data = pickle.loads(data)
         return restore_data
 
 
@@ -1161,12 +1164,15 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def pickle_expression_data(data):
-        store_data = cPickle.dumps(data)
+        store_data = pickle.dumps(data)
         return store_data
 
     @staticmethod
     def unpickle_expression_data(data):
-        restore_data = cPickle.loads(data)
+        if not isinstance(data, bytes):
+            data = data.encode('utf-8')
+        # pickle.loads requires a bytes string
+        restore_data = pickle.loads(data)
         return restore_data
 
     @staticmethod
