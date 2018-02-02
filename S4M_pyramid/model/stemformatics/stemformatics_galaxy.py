@@ -13,7 +13,7 @@ import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.lib.deprecated_pylons_globals import config,url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
-from S4M_pyramid.model.stemformatics import Stemformatics_Job
+from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job
 
 from bioblend import galaxy
 from bioblend.galaxy.tools.inputs import inputs, dataset
