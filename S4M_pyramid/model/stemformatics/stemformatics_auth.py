@@ -37,7 +37,7 @@ from random import random
 import datetime
 
 import S4M_pyramid.lib.helpers as h
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_interface_normal as r_server
 
 
 

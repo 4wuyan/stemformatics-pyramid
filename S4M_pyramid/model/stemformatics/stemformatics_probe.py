@@ -2,7 +2,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_interface_normal as r_server
 
 import re , string , json , psycopg2 , psycopg2.extras
 

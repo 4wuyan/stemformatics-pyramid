@@ -1,5 +1,5 @@
 import re,string,json,numpy,os,logging
-from S4M_pyramid.model import redis_server as r_server, redis_interface_for_pickle
+from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
 import subprocess
 log = logging.getLogger(__name__)
 import sqlalchemy as SA

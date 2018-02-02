@@ -80,8 +80,8 @@ def setup_database_connection(settings):
 
     #-------------Redis---------------------------
     from .lib.deprecated_pylons_globals import config
-    from .model import redis_server as r_server, redis_interface_for_pickle
-    r_server.__init__(unix_socket_path = config['redis_server'], decode_responses = True)
+    from .model import redis_interface_normal, redis_interface_for_pickle
+    redis_interface_normal.__init__(unix_socket_path = config['redis_server'], decode_responses = True)
     redis_interface_for_pickle.__init__(unix_socket_path = config['redis_server'])
     #---------------------------------------------
 

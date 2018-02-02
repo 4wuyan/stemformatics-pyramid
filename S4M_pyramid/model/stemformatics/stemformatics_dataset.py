@@ -25,7 +25,7 @@ import formencode.validators as fe, time ,os , codecs , subprocess , re , string
 #from poster.encode import multipart_encode
 #from poster.streaminghttp import register_openers
 
-from S4M_pyramid.model import redis_server as r_server, redis_interface_for_pickle
+from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
 
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)

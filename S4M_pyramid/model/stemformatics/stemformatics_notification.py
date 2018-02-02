@@ -25,7 +25,7 @@ from email.utils import parseaddr, formataddr
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
 
 
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_interface_normal as r_server
 import json
 # HEADER_DATASETS = [{'name':'grandiose', 'datasetIDs':['5037', '6073', '6082', '6084', '6089', '6111']}]
 

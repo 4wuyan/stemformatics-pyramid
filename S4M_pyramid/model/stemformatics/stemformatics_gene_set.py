@@ -4,7 +4,7 @@ log = logging.getLogger(__name__)
 
 
 import re
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_interface_normal as r_server
 import datetime
 from datetime import timedelta
 
