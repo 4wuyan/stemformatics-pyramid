@@ -8,7 +8,6 @@ import json
 from datetime import datetime, timedelta
 
 
-__all__ = ['Stemformatics_Job']
 
 from S4M_pyramid.lib.deprecated_pylons_globals import config,url,magic_globals
 from S4M_pyramid.model.stemformatics import Stemformatics_Dataset,Stemformatics_Gene_Set

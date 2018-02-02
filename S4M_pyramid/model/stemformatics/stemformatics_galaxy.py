@@ -17,7 +17,6 @@ from S4M_pyramid.model.stemformatics import Stemformatics_Job
 
 from bioblend import galaxy
 from bioblend.galaxy.tools.inputs import inputs, dataset
-__all__ = ['Stemformatics_Galaxy']
 
 
 class Stemformatics_Galaxy(object):
