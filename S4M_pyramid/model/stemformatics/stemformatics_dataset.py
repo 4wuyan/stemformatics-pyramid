@@ -25,7 +25,7 @@ import formencode.validators as fe, time ,os , codecs , subprocess , re , string
 #from poster.encode import multipart_encode
 #from poster.streaminghttp import register_openers
 
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_server as r_server, redis_interface_for_pickle
 
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
@@ -3126,7 +3126,7 @@ All functions have a try that will return None if errors are found
         delimiter = config['redis_delimiter']
 
         label_name = "dataset_metadata"+ delimiter + str(ds_id)
-        result = r_server.get(label_name)
+        result = redis_interface_for_pickle.get(label_name)
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         if result is not None:
             result = Stemformatics_Expression.unpickle_expression_data(result)

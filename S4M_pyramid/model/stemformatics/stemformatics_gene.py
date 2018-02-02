@@ -8,7 +8,7 @@ from sqlalchemy import or_, and_, desc
 import re
 import string
 import json
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_server as r_server, redis_interface_for_pickle
 import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
@@ -1215,7 +1215,7 @@ class Stemformatics_Gene(object):
         unique_gene_list = set(gene_list)
 
         # get the mapping id for ds_id
-        result = r_server.get("dataset_mapping_data")
+        result = redis_interface_for_pickle.get("dataset_mapping_data")
         if not result:
             # get the mapping id from db if mapping id not available
             mapping_id = Stemformatics_Dataset.get_dataset_mapping_id(ds_id)
@@ -1239,7 +1239,7 @@ class Stemformatics_Gene(object):
         for gene in unique_gene_list:
             gene_mapping_redis[gene] = []
             label_name = "gene_mapping_data"+ delimiter + str(mapping_id[ds_id]) + delimiter + str(gene) + delimiter + str(ref_type) + delimiter + str(db_id)
-            result = r_server.get(label_name)
+            result = redis_interface_for_pickle.get(label_name)
             if result is not None:
                 unpickled_data = Stemformatics_Expression.unpickle_expression_data(result)
                 gene_mapping_redis[gene].extend(unpickled_data)
@@ -1289,7 +1289,7 @@ class Stemformatics_Gene(object):
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
 
         # get the mapping id for ds_id
-        result = r_server.get("dataset_mapping_data")
+        result = redis_interface_for_pickle.get("dataset_mapping_data")
         mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
 
         delimiter = config['redis_delimiter']
@@ -1319,7 +1319,7 @@ class Stemformatics_Gene(object):
         delimiter = config['redis_delimiter']
 
         # get the mapping id for ds_id
-        result = r_server.get("dataset_mapping_data")
+        result = redis_interface_for_pickle.get("dataset_mapping_data")
         if not result:
             resut = Stemformatics_Dataset.set_datasets_mapping_id_into_redis()
             mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
@@ -1336,7 +1336,7 @@ class Stemformatics_Gene(object):
         gene_set_not_in_redis = []
         for gene_set_id in ref_id:
             label_name = "gene_set_mapping_data"+ delimiter + str(mapping_id[ds_id]) + delimiter + str(gene_set_id) + delimiter + str(ref_type) + delimiter + str(db_id)
-            result = r_server.get(label_name)
+            result = redis_interface_for_pickle.get(label_name)
             if result is not None:
                 unpickled_data = Stemformatics_Expression.unpickle_expression_data(result)
                 gene_set_mapping_data_from_redis[gene_set_id] = (unpickled_data)

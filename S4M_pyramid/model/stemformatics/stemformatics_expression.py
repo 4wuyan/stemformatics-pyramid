@@ -1,5 +1,5 @@
 import re,string,json,numpy,os,logging
-from S4M_pyramid.model import redis_server as r_server
+from S4M_pyramid.model import redis_server as r_server, redis_interface_for_pickle
 import subprocess
 log = logging.getLogger(__name__)
 import sqlalchemy as SA
@@ -277,7 +277,7 @@ class Stemformatics_Expression(object):
         delimiter = config['redis_delimiter']
 
         label_name = 'full_data'+delimiter+str(uid)+delimiter+ensembl_id+delimiter+str(db_id)
-        result = r_server.get(label_name)
+        result = redis_interface_for_pickle.get(label_name)
         if result is not None:
             result = Stemformatics_Expression.restore_yugene_graph_values(result)
         return result
@@ -309,7 +309,7 @@ class Stemformatics_Expression(object):
         delimiter = config['redis_delimiter']
 
         label_name = 'sample_data'+delimiter+str(uid)+delimiter+ensembl_id+delimiter+str(db_id)
-        result = r_server.get(label_name)
+        result = redis_interface_for_pickle.get(label_name)
         if result is not None:
             result = Stemformatics_Expression.restore_yugene_graph_values(result)
         return result
@@ -829,7 +829,7 @@ class Stemformatics_Expression(object):
         delimiter = config['redis_delimiter']
 
         label_name = 'breakdown_data'+delimiter+str(uid)+delimiter+ensembl_id+delimiter+str(db_id)+delimiter+str(filter_value_start) + delimiter+ str(filter_value_end)
-        result = r_server.get(label_name)
+        result = redis_interface_for_pickle.get(label_name)
         if result is not None:
             result = Stemformatics_Expression.restore_yugene_graph_values(result)
         return result
@@ -1002,7 +1002,7 @@ class Stemformatics_Expression(object):
         miRNA_not_in_redis = []
 
         label_name = "miRNA_mapping_data"+ delimiter + str(ds_id) + delimiter + str(feature_id) + delimiter + str(ref_type) + delimiter + str(db_id)
-        result = r_server.get(label_name)
+        result = redis_interface_for_pickle.get(label_name)
         if result is not None:
             unpickled_data = Stemformatics_Expression.unpickle_expression_data(result)
             return unpickled_data
@@ -1050,7 +1050,7 @@ class Stemformatics_Expression(object):
         probe_data_redis = []
         for probe in unique_probe_list:
             label_name = "probe_graph_data"+ delimiter + str(ds_id) + delimiter + str(probe) + delimiter + str(ref_type) + delimiter + str(db_id)
-            result = r_server.get(label_name)
+            result = redis_interface_for_pickle.get(label_name)
             if result is not None:
                 unpickled_data = Stemformatics_Expression.unpickle_expression_data(result)
                 probe_data_redis.extend(unpickled_data)
@@ -1248,7 +1248,7 @@ class Stemformatics_Expression(object):
     def get_feature_mapping_stats(ds_id):
         delimiter = config['redis_delimiter']
         # get the mapping id for ds_id
-        result = r_server.get("dataset_mapping_data")
+        result = redis_interface_for_pickle.get("dataset_mapping_data")
         mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
 
         try:
@@ -1396,7 +1396,7 @@ class Stemformatics_Expression(object):
                         redis_keys_list[ds_id].append(redis_gene_mapping_key)
 
                         # get data for this key to get all mapped probes
-                        redis_data_for_gene_mapping = r_server.get(redis_gene_mapping_key)
+                        redis_data_for_gene_mapping = redis_interface_for_pickle.get(redis_gene_mapping_key)
                         if redis_data_for_gene_mapping is not None:
                             unpickled_gene_mapping_data[gene] = Stemformatics_Expression.unpickle_expression_data(redis_data_for_gene_mapping)
                             # create key for probe data
@@ -1424,7 +1424,7 @@ class Stemformatics_Expression(object):
                         redis_keys_list[ds_id].append(redis_gene_mapping_key)
 
                         # get data for this key to get all mapped probes
-                        redis_data_for_gene_mapping = r_server.get(redis_gene_mapping_key)
+                        redis_data_for_gene_mapping = redis_interface_for_pickle.get(redis_gene_mapping_key)
                         if redis_data_for_gene_mapping is not None:
                             unpickled_gene_mapping_data[gene] = Stemformatics_Expression.unpickle_expression_data(redis_data_for_gene_mapping)
                             # create key for probe data
