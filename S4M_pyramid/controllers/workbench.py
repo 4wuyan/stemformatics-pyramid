@@ -31,8 +31,10 @@ class WorkbenchController(BaseController):
         self.default_mouse_dataset = int(config['default_mouse_dataset'])
 
         # GenePattern modules
-        #self.GPQueue = config['GPQueue']
-        #self.StemformaticsQueue = config['StemformaticsQueue']
+        # I am hard coding this for some reason we can't those attributes from the DB
+        # for our pyramid server.
+        self.GPQueue = "/var/www/pylons-data/prod/jobs/GPQueue/"#config['GPQueue']
+        self.StemformaticsQueue ="/var/www/pylons-data/prod/jobs/StemformaticsQueue" #config['StemformaticsQueue']
         #self.StemformaticsController = config['StemformaticsController']
         #self.FullJavaPath = config['FullJavaPath']
 
@@ -1974,7 +1976,7 @@ class WorkbenchController(BaseController):
 
 
 
-        chip_type = Stemformatics_Dataset.getChipType(db,dataset_id)
+        chip_type = Stemformatics_Dataset.getChipType(dataset_id)
 
         result = Stemformatics_Gene.get_unique_gene_fast(db,gene_list,db_id,'all',select_all_ambiguous,get_description,chip_type)
 
@@ -2015,7 +2017,7 @@ class WorkbenchController(BaseController):
                 self._temp.ref_id = self._temp.ensemblID
                 self._temp.line_graph_available = False
                 gene_annotation_names_required = "no"
-                chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+                chip_type = Stemformatics_Dataset.getChipType(ds_id)
                 data = Stemformatics_Gene_Set.get_probes_from_genes(db_id,ds_id,[self._temp.ensemblID],gene_annotation_names_required)
                 probe_list = data[0]
 
