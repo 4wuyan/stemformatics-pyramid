@@ -1,2 +1,2 @@
 import redis
-r_server = redis.Redis()
+redis_server = redis.Redis()

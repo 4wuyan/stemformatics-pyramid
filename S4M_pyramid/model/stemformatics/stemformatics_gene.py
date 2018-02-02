@@ -8,7 +8,7 @@ from sqlalchemy import or_, and_, desc
 import re
 import string
 import json
-from S4M_pyramid.model import r_server
+from S4M_pyramid.model import redis_server as r_server
 import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2

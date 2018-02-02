@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 import sqlalchemy as SA
 from sqlalchemy import or_, and_, desc
 
-from S4M_pyramid.model import r_server
+from S4M_pyramid.model import redis_server as r_server
 
 import re
 import string

@@ -1,5 +1,5 @@
 import re,string,json,numpy,os,logging
-from S4M_pyramid.model import r_server
+from S4M_pyramid.model import redis_server as r_server
 import subprocess
 log = logging.getLogger(__name__)
 import sqlalchemy as SA

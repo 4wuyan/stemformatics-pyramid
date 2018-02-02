@@ -80,7 +80,7 @@ def setup_database_connection(settings):
 
     #-------------Redis---------------------------
     from .lib.deprecated_pylons_globals import config
-    from .model import r_server
+    from .model import redis_server as r_server
     r_server.__init__(unix_socket_path = config['redis_server'], decode_responses = True)
     #---------------------------------------------
 
