@@ -20,7 +20,7 @@ from S4M_pyramid.lib.helpers import make_lazy_init_wrapper_class
     1) d = Demo(); d.__init__('aha')
     2) d = Demo('aha')
     The 2 choices above produce different results. The risk it leads to is a potential bomb that
-    may explode anytime in the future, and it might kill the future developer, no I mean
+    may explode anytime in the future, and it might hurt the future developer, no I mean
     engineer, who tries to locate the bug it causes.
 '''
 RedisWrapper = make_lazy_init_wrapper_class(redis.Redis)
