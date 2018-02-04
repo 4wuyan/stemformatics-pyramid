@@ -1,5 +1,4 @@
 from pyramid_handlers import action
-from pyramid.response import Response
 from pyramid.renderers import render_to_response
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset

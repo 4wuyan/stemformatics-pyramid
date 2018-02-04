@@ -15,18 +15,16 @@ class tempData(object):
 
 class BaseController():
 
-    #this is invoked every time an action is called
+    # This is invoked every time an action is called
     def __init__(self, request):
         self.request = request
         self.request.c = self.request.tmpl_context
         c = self.request.c
+
         # set up url.environ
         url.set_environ(request)
-        #set up DB var for ORM
 
         self._setup_c_deprecated_pylons_global()
-        #set up the protocol
-        self.response=request.response
 
         self.deprecated_pylons_data_for_view = {'c': self.request.c, 'h': h, 'url':url, 'config':config}
 
