@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import hmac
 import S4M_pyramid.lib.helpers as h
 
-import psycopg2, _pickle as cPickle
+import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.lib.deprecated_pylons_globals import config
@@ -21,10 +21,11 @@ from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Aut
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , codecs , redis ,subprocess , re , string , json, datetime,glob#urllib2
+import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob#urllib2
 #from poster.encode import multipart_encode
 #from poster.streaminghttp import register_openers
 
+from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
 
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
@@ -299,10 +300,8 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def getChooseDatasetDetails(db,uid,show_limited=False,db_id=None):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         label_name = 'choose_dataset_details'
         result = r_server.get(label_name)
-        result = result.decode('utf-8')
         temp_datasets = json.loads(result)
         choose_datasets = {}
 
@@ -471,7 +470,6 @@ All functions have a try that will return None if errors are found
         if format_type == "choose_dataset":
             # Note we now have a list of ds_ids and we just want to check them for access
             # and then get the metadata
-            r_server = redis.Redis(unix_socket_path=config['redis_server'])
             label_name = 'choose_dataset_details'
             result = r_server.get(label_name)
             if result is not None:
@@ -665,7 +663,6 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def setup_redis_choose_dataset_details(db): #CRITICAL-2
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         choose_dataset_dict = {}
 
         db.schema = 'public'
@@ -1112,12 +1109,10 @@ All functions have a try that will return None if errors are found
     def check_dataset_with_limitations(db,ds_id,uid):
         if uid == "":
             uid = 0
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         label_name = "user_dataset_availability"+delimiter+str(uid)
         try:
-            dict_uid = json.loads(r_server.get(label_name).decode('utf-8'))
-            #.decode('utf-8') is added for python3
+            dict_uid = json.loads(r_server.get(label_name))
             status= dict_uid[str(ds_id)]
 
             if status in ("Annotate","Admin"):
@@ -1128,7 +1123,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def check_dataset_availability(db,uid,ds_id,role=None):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
@@ -1157,7 +1151,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def get_dataset_availability(db,uid):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         try:
             label_name = "user_dataset_availability"+delimiter+str(uid)
@@ -1203,9 +1196,9 @@ All functions have a try that will return None if errors are found
         for row in result:
             returnList.append({
                 'ds_id': row['ds_id'],
-                'chip_id': row['chip_id'].encode('utf-8'),
-                'md_name': row['md_name'].encode('utf-8'),
-                'md_value': row['md_value'].encode('utf-8')
+                'chip_id': row['chip_id'],
+                'md_name': row['md_name'],
+                'md_value': row['md_value']
             })
 
         return returnList
@@ -1249,15 +1242,15 @@ All functions have a try that will return None if errors are found
             handle = Stemformatics_Dataset.add_extra_to_handle(db,ds_result.handle,ds_result.private,ds_result.show_limited)
             returnList.append({
                 'ds_name': 'handle',
-                'ds_value': handle.encode('utf-8')
+                'ds_value': handle
             })
             returnList.append({
                 'ds_name': 's4m_dataset_id',
-                'ds_value': str(ds_result.id).encode('utf-8')
+                'ds_value': str(ds_result.id)
             })
             returnList.append({
                 'ds_name': 's4m_chip_type',
-                'ds_value': str(ds_result.chip_type).encode('utf-8')
+                'ds_value': str(ds_result.chip_type)
             })
 
         # Get ALL dataset metadata
@@ -1267,8 +1260,8 @@ All functions have a try that will return None if errors are found
 
         for tuple in ds_md_result:
             returnList.append({
-                'ds_name': tuple.ds_name.encode('utf-8'),
-                'ds_value': tuple.ds_value.encode('utf-8')
+                'ds_name': tuple.ds_name,
+                'ds_value': tuple.ds_value
             })
 
 
@@ -1541,11 +1534,10 @@ All functions have a try that will return None if errors are found
         if role == 'normal' or role == None:
             if uid == "":
                 uid = 0
-            r_server = redis.Redis(unix_socket_path=config['redis_server'])
             delimiter = config['redis_delimiter']
             label_name = "user_dataset_availability"+delimiter+str(uid)
             try:
-                dict_ds_ids = json.loads(r_server.get(label_name).decode('utf-8'))
+                dict_ds_ids = json.loads(r_server.get(label_name))
                 temp_list_of_ds_ids = []
                 for str_ds_id in dict_ds_ids:
                     ds_id = int(str_ds_id)
@@ -2789,7 +2781,6 @@ All functions have a try that will return None if errors are found
         cursor.close()
         conn.close()
 
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         expiry_time = config['expiry_time']
 
@@ -3113,7 +3104,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def set_expression_dataset_metadata_into_redis(ds_id,dataset_metadata):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         expiry_time = config['expiry_time']
@@ -3133,11 +3123,10 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def get_expression_dataset_metadata_from_redis(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         label_name = "dataset_metadata"+ delimiter + str(ds_id)
-        result = r_server.get(label_name)
+        result = redis_interface_for_pickle.get(label_name)
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         if result is not None:
             result = Stemformatics_Expression.unpickle_expression_data(result)
@@ -3351,7 +3340,6 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def delete_dataset_redis(ds_id):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         probe_file = config['DatasetGCTFiles']+ 'dataset' +str(ds_id)+ '.gct'
         probes = []

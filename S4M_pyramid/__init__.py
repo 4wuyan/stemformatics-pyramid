@@ -1,10 +1,10 @@
 from pyramid.config import Configurator
 from pyramid.httpexceptions import HTTPFound
-from S4M_pyramid.controllers.workbench import WorkbenchController
-from S4M_pyramid.controllers.contents import ContentsController
-from S4M_pyramid.controllers.expressions import ExpressionsController
-from S4M_pyramid.controllers.auth import AuthController
-from S4M_pyramid.controllers.genes import GenesController
+from .controllers.workbench import WorkbenchController
+from .controllers.contents import ContentsController
+from .controllers.expressions import ExpressionsController
+from .controllers.auth import AuthController
+from .controllers.genes import GenesController
 
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
@@ -53,8 +53,8 @@ def main(global_config, **settings):
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
-    from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g, config
-    from S4M_pyramid.model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
+    from .lib.deprecated_pylons_globals import app_globals as g, config
+    from .model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
 
     # update deprecated pylons "config" global
     config.update(settings)
@@ -64,7 +64,10 @@ def setup_deprecated_pylons_globals(settings):
     g.all_sample_metadata = Stemformatics_Expression.setup_all_sample_metadata()
 
 def setup_database_connection(settings):
-    from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm
+
+    #-------------PostgreSQL----------------------
+
+    from .model.stemformatics import db_deprecated_pylons_orm
     from sqlalchemy import engine_from_config
     engine = engine_from_config(settings, prefix='model.stemformatics.db.')
 
@@ -73,6 +76,14 @@ def setup_database_connection(settings):
     db_deprecated_pylons_orm.lazy_init(engine)
     # For more info, see the source code at model/stemformatics/__init__.py
 
+    #---------------------------------------------
+
+    #-------------Redis---------------------------
+    from .lib.deprecated_pylons_globals import config
+    from .model import redis_interface_normal, redis_interface_for_pickle
+    redis_interface_normal.lazy_init(unix_socket_path = config['redis_server'], decode_responses = True)
+    redis_interface_for_pickle.lazy_init(unix_socket_path = config['redis_server'])
+    #---------------------------------------------
 
 def redirect_shortcut(config, old_path_pattern, new_path_pattern):
     def redirect_view(request):
