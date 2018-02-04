@@ -213,50 +213,17 @@ In Pyramid, returning anything without specifying a renderer type will result in
 Therefore, if an action returns a mako page, the renderer should point to a mako file. If an action returns some data, it's best to specify
 the renderer type as `renderer='string'`. (This is because our code does the formatting already; returning them as a string will keep the format as we process.)
 
-String encoding and decoding
-=======================================
 
-There are two different types of string (`str`) in Python: Byte string and Unicode string,
-which can be represented explicitly as `b'...'` and `u'...'`, respectively.
-Unicode can be encoded into Bytes by `u'123'.encode('utf-8')`; Bytes can be decoded into Unicode by `b'123'.decode('utf-8')`.
-
-Python 2 and Python 3 use different formats for default `str` strings (Bytes vs Unicode).
-```
-# Python 2
->>> type('string')
-<type 'str'>
->>> type(b'string')
-<type 'str'>
->>> type(u'string')
-<type 'unicode'>
-
-# Python 3
->>> type('string')
-<class 'str'>
->>> type(b'string')
-<class 'bytes'>
->>> type(u'string')
-<class 'str'>
-```
-
-In our redis configuration, the data stored in redis are in `bytes` format.
-So in our Pylons server (Python 2), no encoding or decoding is needed.
-But this is an issue for our Pyramid server, as we need to encode the string when passing data
-into redis and decode string when getting data from redis.
-
-At the moment, we are doing this encoding/decoding process manually inside the code.
-Another option would be to change the redis configuration to suit Python3's requirement.
-But the migration process hasn't finished and our pylons server will break if we change the configuration for redis.
-Therefore we have to settle for this more complicated solution so that both servers are compatible.
-
-Database ORM
+Database Connection
 =====================
 
-We still use an `SQLSoup` object as the representation of the database in `model/stemformatics`.
+Wrapper Class for later initialisation
+---------------------------------------
 
-However, a simple `SQLSoup` wrapper is designed to defer the initialisation of `SQLSoup`. I couldn't find another way to setup an "empty" `SQLSoup` instance, and bind the db connection later after we get the db configuration info (i.e. in the `main` function).
+The database connection objects for both PostgreSQL and Redis are instantiated at the initial importing phase,
+which means the objects would have been initialised before `config` info is retrieved. To defer the actual initialisation, wrapper classes are used.
 ```python
-class _SQLSoupWrapper(sqlsoup.SQLSoup):
+class WrapperClassWithLazyInit(class_):
     def __init__(self):
         pass
 
@@ -264,28 +231,26 @@ class _SQLSoupWrapper(sqlsoup.SQLSoup):
         super().__init__(*args, **kwargs)
 ```
 
-We need to defer the _actual_ initialisation where the db connection is made, because the instantiation happens during the initial importing phase, **before** the `main` function of the application is run. That means you don't have the db url when db is initialised, and an exception is raised.
+PostgreSQL
+--------------------------------
 
-Defending the wrapper design
----------------
+The connection info for our PostgreSQL server is stored in the `ini` file you use with `pserve`.
 
-### Why does Pyramid's tutorial not use a wrapper
 
-Pyramid's tutorial doesn't use `sqlsoup`; that's why they can have an idle `DBSession`, then bind it to the url fetched from `ini` later in the `main` function.
+Redis
+--------------------------------
 
-### Why not stick with our original design in Pylons
+Redis connection info is retrieved from our PostgreSQL database. Note that there are two interfaces for Redis data retrieval.
 
-In our Pylons code, we made `db = None` first, then called a function that uses global variables to modify `db`.
-```python
-db = None
+1) `redis_interface_normal` is for general data retrieval. Normal text data are utf-8-encoded Bytes in Redis, and this interface has `decode_responses` on.
+2) `redis_interface_for_pickle` is for pickle info retrieval. Though pickle info is byte strings as well, it can't be utf-8-decoded. Hence this interface doesn't decode responses and returns bytes.
 
-def init_model(db_engine):
-    global db
-    db = blah blah....
-```
-The main disadvantages of this design are:
+### What happened in Python 2?
 
-* You __must__ make sure that you have called `init_model` absolutely before any other parts of the application that import `db`. This is very error-prone, especially when there are so many complicated dependencies of import on the top of your file. "Pain in the ass."
-* It reduces the readability. People who want to import a `NoneType` `db` will easily get confused by that the `db` imported is not `None` as stated in the source code, if they are unaware of the `init_model` executed before.
+Python 2 uses Bytes as its default string type, while Python 3 uses Unicode. Hence, Redis returning Bytes is fine and straightforward in Python 2, while it should be taken good care of in Python 3.
 
-The first thing you need to do in Pyramid if you adopt that design, is to put those `import SomeController` lines from the top of the file into the `main` function. Otherwise you will receive a `NoneType` error arising from `db`, because `BaseController` has imported a `db` of `NoneType` way ahead of `init_model`.
+Except for pickle data, the reason that Bytes should be decoded into Unicode immediately is according to [Unicode HOWTO](https://docs.python.org/3/howto/unicode.html#tips-for-writing-unicode-aware-programs):
+
+> Software should only work with Unicode strings internally, decoding the input data as soon as possible and encoding the output only at the end.
+
+You might want to google more about the string differences in Python 2 and 3.
