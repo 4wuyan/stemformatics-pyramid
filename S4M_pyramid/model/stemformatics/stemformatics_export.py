@@ -82,7 +82,7 @@ class Stemformatics_Export(object):
         #f.close()
         with io.open(temp_input_file,'r',encoding='utf8') as f:
             export_data = f.read()
-        
+
         # delete both files
 
 
