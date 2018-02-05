@@ -12,8 +12,8 @@ import S4M_pyramid.lib.helpers as h
 class MainController(BaseController):
     __name__ = 'MainController'
 
-    def __before__(self): #CRITICAL-3
-        super(MainController, self).__before__ ()
+    def __init__(self,request): #CRITICAL-3
+        super().__init__ (request)
 
     def health_check(self):
         result = Stemformatics_Admin.health_check(db)
