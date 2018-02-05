@@ -767,7 +767,7 @@ All functions have a try that will return None if errors are found
 
     # only for miRNA datasets
     @staticmethod
-    def get_all_datasets_of_a_data_type(uid,data_type):
+    def get_all_datasets_of_a_data_type(uid,data_type,db_id):
 
         resultList = {}
         if data_type != 'miRNA':
@@ -778,7 +778,7 @@ All functions have a try that will return None if errors are found
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("select * from datasets where data_type_id = %s ;",(data_type_id,))
+        cursor.execute("select * from datasets where data_type_id = %s and db_id = %s ;",(data_type_id,db_id))
         # retrieve the records from the database
         ds_metadata_result = cursor.fetchall()
         cursor.close()
