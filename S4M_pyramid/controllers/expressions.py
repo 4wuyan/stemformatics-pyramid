@@ -544,9 +544,13 @@ class ExpressionsController(BaseController):
         return data
 
 
-    """ This returns the dataset breakdown in the filtered data for generic sample type chosen """
-    """ This method seems never to get called
+    """ This returns the dataset breakdown in the filtered data for generic sample type chosen
+    """
+    @action(renderer='templates/expressions/show_yugene_filtered_dataset_breakdown.mako')
     def show_yugene_filtered_dataset_breakdown(self):
+        c = self.request.c
+        request = self.request
+
         c.generic_sample_type = generic_sample_type = request.params.get("generic_sample_type")
         uid = c.uid
         c.ensembl_id = ensembl_id = str(request.params.get("ensembl_id"))
@@ -564,8 +568,8 @@ class ExpressionsController(BaseController):
             breakdown_data = breakdown_data[metadata_list][generic_sample_type]
             data = Stemformatics_Expression.return_yugene_filtered_dataset_breakdown(breakdown_data)
             c.data = data['dataset_id']
-            return render ('/expressions/show_yugene_filtered_dataset_breakdown.mako')
-    """
+            return self.deprecated_pylons_data_for_view
+
 
     @action(renderer="/expressions/choose_dataset.mako")
     def choose_dataset(self):
