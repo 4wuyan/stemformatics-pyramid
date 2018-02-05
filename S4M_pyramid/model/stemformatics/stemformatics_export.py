@@ -1,5 +1,7 @@
 import psycopg2 , psycopg2.extras , time, os, subprocess
+import io
 from S4M_pyramid.lib.deprecated_pylons_globals import config
+
 
 
 __all__ = ['Stemformatics_Export']
@@ -43,7 +45,7 @@ class Stemformatics_Export(object):
 
         time_stamp = str(time.time())
         temp_input_file_base = base_dir+"/"+file_name+"_"+time_stamp
-        temp_input_file = temp_input_file_base+".svg"
+        temp_input_file = temp_input_file_base+"."
 
         """
         When converting using a combination of prince and pdftoppm, only need to change these two variables
@@ -65,17 +67,22 @@ class Stemformatics_Export(object):
         data = data.replace("(&quot;","(").replace("&quot;)",")").replace("url(#gradient) none","url(#gradient)")
 
         # write to temp input file
-        f = open(temp_input_file,'w')
-        f.write(data.encode('utf8'))
-        f.close()
+        #f = open(temp_input_file,'w')
+        #f.write(data)
+        #f.close()
+        with io.open(temp_input_file,'w',encoding='utf8') as f:
+            f.write(data)
 
         p = subprocess.Popen(command_line,shell=True)
         p.communicate() # this makes the python code wait for the subprocess to finish
 
         # read from output file
-        f = open(temp_output_file,'r')
-        export_data = f.read()
-        f.close()
+        #f = open(temp_output_file,'r')
+        #export_data = f.read()
+        #f.close()
+        with io.open(temp_input_file,'r',encoding='utf8') as f:
+            export_data = f.read()
+        
         # delete both files
 
 
