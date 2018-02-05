@@ -45,7 +45,7 @@ class Stemformatics_Export(object):
 
         time_stamp = str(time.time())
         temp_input_file_base = base_dir+"/"+file_name+"_"+time_stamp
-        temp_input_file = temp_input_file_base+"."
+        temp_input_file = temp_input_file_base+".svg"
 
         """
         When converting using a combination of prince and pdftoppm, only need to change these two variables
@@ -70,7 +70,7 @@ class Stemformatics_Export(object):
         #f = open(temp_input_file,'w')
         #f.write(data)
         #f.close()
-        with io.open(temp_input_file,'w',encoding='utf8') as f:
+        with io.open(temp_input_file,'w') as f:
             f.write(data)
 
         p = subprocess.Popen(command_line,shell=True)
@@ -80,7 +80,7 @@ class Stemformatics_Export(object):
         #f = open(temp_output_file,'r')
         #export_data = f.read()
         #f.close()
-        with io.open(temp_output_file,'r',encoding='utf8') as f:
+        with io.open(temp_output_file,'rb') as f:
             export_data = f.read()
 
         # delete both files
