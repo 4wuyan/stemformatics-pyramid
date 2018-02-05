@@ -29,8 +29,8 @@ class ContentsController(BaseController):
         except:
             c.tweets = []
 
-        c.number_of_public_samples = Stemformatics_Dataset.get_number_public_samples(db)
-        c.number_of_public_datasets = Stemformatics_Dataset.get_number_of_datasets(db)['Public']
+        c.number_of_public_samples = Stemformatics_Dataset.get_number_public_samples()
+        c.number_of_public_datasets = Stemformatics_Dataset.get_number_of_datasets()['Public']
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/about_us.mako")
