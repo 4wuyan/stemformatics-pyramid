@@ -57,8 +57,10 @@ class ExpressionsController(BaseController):
     '''This action(and its page) is longer in use
     @action(renderer="templates/expressions/probe_expression_graph.mako")
     def probe_expression_graph(self):
-        ds_id = 5012 is a valid entry for testing on the pyramid-1 VM
-        c.ds_id = int(self.request.params.get('ds_id'))
+        c = self.request.c
+        request = self.request
+        # ds_id = 5012 is a valid entry for testing on the pyramid-1 VM
+        c.ds_id = int(request.params.get('ds_id'))
         c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         c.handle = Stemformatics_Dataset.getHandle(db, c.ds_id)
@@ -72,9 +74,9 @@ class ExpressionsController(BaseController):
         c = self.request.c
         """ These three functions set what is needed in self._type to be
         used in the graph object orientated code  """
-        self._get_inputs_for_graph()  # This is in controllers/expressions.py
-        self._check_dataset_status()  # This is in lib/base.py
-        result = self._check_gene_status()  # This is in lib/base.py
+        self._get_inputs_for_graph() #This is in controllers/expressions.py
+        self._check_dataset_status() #This is in lib/base.py
+        result = self._check_gene_status() #This is in lib/base.py
 
 
         """ If not result, then there was an error and we want to render an option
@@ -100,7 +102,7 @@ class ExpressionsController(BaseController):
         c.dataset_status = self._temp.dataset_status
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         c.db_id = self._temp.db_id  # c.db_id is not set in the pylons code,this line is added in pyramid
-        # and it gives the error when calling for ucsc data in line 103.
+        # and it gives the error when calling for ucsc data
         # still try to work out why the pylons code can get away with not setting up c.db_id
 
         c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
@@ -223,7 +225,8 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
-    @action(renderer="templates/expressions/result.mako")
+    @action()
+    #----------Can't be fully tested because Pyramid VM doesn't seem to have the related data-----------
     def feature_result(self):
         c = self.request.c
         self._get_inputs_for_graph()
@@ -235,10 +238,15 @@ class ExpressionsController(BaseController):
         show_limited = True
         if self._temp.ref_type == 'miRNA':
             data_type = self._temp.ref_type
-            c.datasets = Stemformatics_Dataset.get_all_datasets_of_a_data_type(c.uid,data_type)
+            c.datasets = Stemformatics_Dataset.get_all_datasets_of_a_data_type(c.uid,data_type,c.db_id)
         else:
             c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
 
+        # if for some reason such as db_id None or incorrect or ref_type incorrect, no datasets are fetched, user will be redirected to error message
+        if c.datasets == {}:
+            c.title = "Invalid miRNA Search"
+            c.message = "You have not entered correct parameters. Please check the url if it has been entered manually"
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
 
@@ -249,7 +257,7 @@ class ExpressionsController(BaseController):
         audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return self.deprecated_pylons_data_for_view
+        return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def multi_dataset_result(self):
         c = self.request.c
@@ -574,10 +582,11 @@ class ExpressionsController(BaseController):
     @action(renderer="/expressions/choose_dataset.mako")
     def choose_dataset(self):
         c = self.request.c
-        graphType = self.request.params.get("graphType","")
-        gene = self.request.params.get("gene","")
-        db_id = self.request.params.get("db_id","")
-        gene_set_id = self.request.params.get("gene_set_id","")
+        request = self.request
+        graphType = request.params.get("graphType","")
+        gene = request.params.get("gene","")
+        db_id = request.params.get("db_id","")
+        gene_set_id = request.params.get("gene_set_id","")
         c.db_id = int(db_id)
 
         if gene_set_id is None:
