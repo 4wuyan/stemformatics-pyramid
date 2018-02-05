@@ -25,7 +25,7 @@ from email.utils import parseaddr, formataddr
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
 
 
-import redis
+from S4M_pyramid.model import redis_interface_normal as r_server
 import json
 # HEADER_DATASETS = [{'name':'grandiose', 'datasetIDs':['5037', '6073', '6082', '6084', '6089', '6111']}]
 
@@ -45,16 +45,19 @@ class Stemformatics_Notification(object):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def __init__ (self):
         pass
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def add_notification(db,notify_type,uid,subject,body):
 
 
         return "OK"
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def send_email(sender,recipient,subject,body):
 
         if not isinstance(recipient,list):
@@ -127,6 +130,7 @@ class Stemformatics_Notification(object):
 
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def send_basic_email(recipient, subject, message):
         magic_globals.fetch()
         c = magic_globals.c
@@ -136,6 +140,7 @@ class Stemformatics_Notification(object):
 
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def get_header(db, request, uid):
         datasetID = request.params.get('datasetID', request.params.get('ds_id', None))
 
@@ -153,8 +158,8 @@ class Stemformatics_Notification(object):
         return None
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def get_header_name_from_datasetId(datasetID):
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
         try:
             header = r_server.hget('project_headers',str(datasetID))
@@ -163,6 +168,7 @@ class Stemformatics_Notification(object):
             return None
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def set_project_headers(db):
         # Using dataset_metadata 'project' with ds_value of 3iii or grandiose
         conn_string = config['psycopg2_conn_string']
@@ -174,7 +180,6 @@ class Stemformatics_Notification(object):
         cursor.close()
         conn.close()
 
-        r_server = redis.Redis(unix_socket_path=config['redis_server'])
         delimiter = config['redis_delimiter']
 
         for row in result:
@@ -186,6 +191,7 @@ class Stemformatics_Notification(object):
 
 
     @staticmethod
+    #---------------------NOT MIGRATED--------------------------------
     def send_error_email(error_subject,error_body):
         magic_globals.fetch()
         c = magic_globals.c

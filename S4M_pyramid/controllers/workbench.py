@@ -2021,7 +2021,7 @@ class WorkbenchController(BaseController):
                 data = Stemformatics_Gene_Set.get_probes_from_genes(db_id,ds_id,[self._temp.ensemblID],gene_annotation_names_required)
                 probe_list = data[0]
 
-                c.probe_list = [probe.encode('UTF8') for probe in probe_list]
+                c.probe_list = [probe for probe in probe_list]
                 c.sorted_probe_list = sorted(c.probe_list)
                 # self._temp.this_view = self._setup_graphs(self._temp)
                 self._set_outputs_for_graph()

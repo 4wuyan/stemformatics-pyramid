@@ -3,7 +3,6 @@ from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import url, config
 from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Notification, Stemformatics_Help, Stemformatics_Gene, Stemformatics_Auth, Stemformatics_Dataset
 from S4M_pyramid.templates.external_db import externalDB, innateDB, stringDB
-from S4M_pyramid.model import init_model
 import json
 import socket
 import re
@@ -16,18 +15,16 @@ class tempData(object):
 
 class BaseController():
 
-    #this is invoked every time an action is called
+    # This is invoked every time an action is called
     def __init__(self, request):
         self.request = request
         self.request.c = self.request.tmpl_context
         c = self.request.c
+
         # set up url.environ
         url.set_environ(request)
-        #set up DB var for ORM
 
         self._setup_c_deprecated_pylons_global()
-        #set up the protocol
-        self.response=request.response
 
         self.deprecated_pylons_data_for_view = {'c': self.request.c, 'h': h, 'url':url, 'config':config}
 
