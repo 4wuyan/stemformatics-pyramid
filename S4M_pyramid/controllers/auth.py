@@ -1,7 +1,6 @@
-'''
-share_* and _email_template_* methods not tested.
-'''
-
+#--------------Last synchronised with Pylons repo--------------------#
+#-----------------------on 5 Feb 2018--------------------------------#
+#-------------------------By WU Yan----------------------------------#
 
 #TODO-1
 import logging
@@ -183,7 +182,6 @@ class AuthController(BaseController):
         c.user_datasets = Stemformatics_Auth.get_dict_users_private_datasets_metadata(user_dataset_list)
         return render_to_response('S4M_pyramid:templates/auth/show_private_datasets.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
-
     @action(renderer = 'templates/workbench/error_message.mako')
     def logout(self):
         c = self.request.c
@@ -206,7 +204,6 @@ class AuthController(BaseController):
         c.title = "Logged out"
         c.message = "You have been successfully signed out."
         return self.deprecated_pylons_data_for_view
-
 
     @action(renderer = 'templates/auth/register.mako')
     def register(self): #CRITICAL-4
@@ -332,8 +329,6 @@ class AuthController(BaseController):
         c.message += body
         return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view)
 
-
-
     @Stemformatics_Auth.authorise()
     @action(renderer = 'templates/auth/history.mako')
     def history(self):
@@ -374,7 +369,6 @@ class AuthController(BaseController):
         c.title = "Registration completed"
         c.username = confirmed_user.username
         return render_to_response('S4M_pyramid:templates/auth/signin.mako', self.deprecated_pylons_data_for_view, request=self.request)
-
 
     @action()
     def forgot_password(self):
@@ -436,8 +430,6 @@ class AuthController(BaseController):
 #######
         c.title = "Pass Phrase Reset Sent"
         return render_to_response('S4M_pyramid:templates/workbench/error_message.mako', self.deprecated_pylons_data_for_view, request=self.request)
-
-
 
     def confirm_new_password(self):
         c = self.request.c
@@ -547,7 +539,6 @@ class AuthController(BaseController):
 
 
         return render_to_response('S4M_pyramid:templates/auth/update_details.mako', self.deprecated_pylons_data_for_view, request=self.request)
-
 
     @action(renderer = 'S4M_pyramid:templates/workbench/error_message.mako')
     def unsubscribe_job_notification(self):
@@ -771,10 +762,6 @@ class AuthController(BaseController):
 
         return return_message
 
-
-
-
-
     @action(renderer="string")
     def share_gene_expression(self):
         c = self.request.c
@@ -847,7 +834,7 @@ class AuthController(BaseController):
             sender  = config['from_email']
             recipient = email
             try:
-               email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
+                email_result = Stemformatics_Notification.send_email(sender,recipient,subject,temp_body)
             except:
                 return_message += "Error in sending email for email address: " + email +". "
                 continue
@@ -855,4 +842,3 @@ class AuthController(BaseController):
             return_message += "Successful sharing for email address: " + email +". "
 
         return return_message
-
