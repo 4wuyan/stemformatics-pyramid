@@ -1,3 +1,7 @@
+#--------------Last synchronised with Pylons repo--------------------#
+#-----------------------on 5 Feb 2018--------------------------------#
+#-------------------------By WU Yan----------------------------------#
+
 #  This file is part of twitter-text-python.
 #
 #  twitter-text-python is free software: you can redistribute it and/or

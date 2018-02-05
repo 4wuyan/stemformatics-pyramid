@@ -1,3 +1,7 @@
+#--------------Last synchronised with Pylons repo--------------------#
+#-----------------------on 5 Feb 2018--------------------------------#
+#-------------------------By WU Yan----------------------------------#
+
 import logging, pickle
 log = logging.getLogger(__name__)
 from S4M_pyramid.model import redis_interface_for_pickle
