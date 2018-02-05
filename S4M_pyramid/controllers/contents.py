@@ -1,7 +1,15 @@
+#--------------Last synchronised with Pylons repo--------------------#
+#-----------------------on 5 Feb 2018--------------------------------#
+#-------------------------By WU Yan----------------------------------#
+
+import logging
+
+log = logging.getLogger(__name__)
+
 from pyramid_handlers import action
 from pyramid.renderers import render_to_response
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
+from S4M_pyramid.model.stemformatics import Stemformatics_Dataset, Stemformatics_Audit
 from S4M_pyramid.lib.deprecated_pylons_globals import url
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
 from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db
@@ -36,7 +44,6 @@ class ContentsController(BaseController):
     @action(renderer="templates/contents/about_us.mako")
     def about_us(self):
         c = self.request.c
-        # set up C
         c.title = c.site_name+" - About Us"
         return self.deprecated_pylons_data_for_view
 
@@ -48,7 +55,6 @@ class ContentsController(BaseController):
     @action(renderer="templates/contents/our_data.mako")
     def our_data(self):
         c = self.request.c
-        # set up C
         c.title = c.site_name+" - Our Data"
         return self.deprecated_pylons_data_for_view
 
@@ -62,7 +68,6 @@ class ContentsController(BaseController):
     @action(renderer="templates/contents/our_publications.mako")
     def our_publications(self):
         c = self.request.c
-        # set up C
         c.title = c.site_name+" - Our Publications"
         c.data_publications = Stemformatics_Dataset.get_data_publications()
         return self.deprecated_pylons_data_for_view
@@ -77,8 +82,11 @@ class ContentsController(BaseController):
     @action(renderer="templates/contents/faq.mako")
     def faq(self):
         c = self.request.c
-        # set up C
+        request = self.request
+
         c.title = c.site_name+" - FAQ"
+        audit_dict = {'ref_id':'faq','ref_type':'help_faq','uid':c.uid,'url':url,'request':request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
         return self.deprecated_pylons_data_for_view
 
     @action()
@@ -88,21 +96,18 @@ class ContentsController(BaseController):
     @action(renderer="templates/contents/contact_us.mako")
     def contact_us(self):
         c = self.request.c
-        # set up C
         c.title = c.site_name+" - Contact Us"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/privacy_policy.mako")
     def privacy_policy(self):
         c = self.request.c
-        # set up C
         c.title = c.site_name+" - Privacy Policy"
         return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/contents/disclaimer.mako")
     def disclaimer(self):
         c = self.request.c
-        # set up C
         c.title = c.site_name+" - Disclaimer"
         return self.deprecated_pylons_data_for_view
 
