@@ -1,3 +1,8 @@
+
+ #TODO-1
+import logging
+log = logging.getLogger(__name__)
+
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set, db_deprecated_pylons_orm as db
@@ -49,15 +54,16 @@ class ExpressionsController(BaseController):
     def multi_gene_graph(self):
         return self.deprecated_pylons_data_for_view
 
-    '''This action(and its page) is longer in use'''
-    #@action(renderer="templates/expressions/probe_expression_graph.mako")
-    #def probe_expression_graph(self):
-        # ds_id = 5012 is a valid entry for testing on the pyramid-1 VM
-    #    c.ds_id = int(self.request.params.get('ds_id'))
-    #    c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
-    #    c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-    #    c.handle = Stemformatics_Dataset.getHandle(db, c.ds_id)
-    #    return self.deprecated_pylons_data_for_view
+    '''This action(and its page) is longer in use
+    @action(renderer="templates/expressions/probe_expression_graph.mako")
+    def probe_expression_graph(self):
+        ds_id = 5012 is a valid entry for testing on the pyramid-1 VM
+        c.ds_id = int(self.request.params.get('ds_id'))
+        c.db_id = Stemformatics_Dataset.get_db_id(c.ds_id)
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
+        c.handle = Stemformatics_Dataset.getHandle(db, c.ds_id)
+        return self.deprecated_pylons_data_for_view
+    '''
 
     '''Note that this function doesn't use action decorator. because it has more than one possible
     renderer, therefore, render_to_response is used inside the function to respond using different
@@ -177,6 +183,7 @@ class ExpressionsController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
+
     @action(renderer="string")
     def dataset_metadata(self):
         c = self.request.c
@@ -191,6 +198,395 @@ class ExpressionsController(BaseController):
 
         json_dataset_metadata = json.dumps(dataset_metadata)
         return json.dumps({"error":error_data,"data":json_dataset_metadata})
+
+    def probe_result(self):
+        c = self.request.c
+        self._get_inputs_for_graph()
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
+        self._check_dataset_status()
+        c.dataset_status = self._temp.dataset_status
+        c.ref_type = self._temp.ref_type = 'probeID'
+        show_limited = True
+        if self._temp.ref_type == 'miRNA':
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+        c.symbol = c.ref_id = self._temp.ref_id = self._temp.probeSearch
+        if self._temp.select_probes is None:
+            self._temp.select_probes = self._temp.probeSearch
+
+        c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
+
+        # self._temp.this_view = self._setup_graphs(self._temp)
+        # self._set_outputs_for_graph()
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
+
+    @action(renderer="templates/expressions/result.mako")
+    def feature_result(self):
+        c = self.request.c
+        self._get_inputs_for_graph()
+        self._check_dataset_status()
+        c.dataset_status = self._temp.dataset_status
+        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
+        c.ref_type = self._temp.ref_type = self._temp.feature_type
+        c.symbol = c.ref_id = self._temp.ref_id = self._temp.feature_id
+        show_limited = True
+        if self._temp.ref_type == 'miRNA':
+            data_type = self._temp.ref_type
+            c.datasets = Stemformatics_Dataset.get_all_datasets_of_a_data_type(c.uid,data_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+
+
+        c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
+
+        # self._temp.this_view = self._setup_graphs(self._temp)
+        # self._set_outputs_for_graph()
+        audit_dict = {'ref_type':'feature_id','ref_id':self._temp.feature_id,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return self.deprecated_pylons_data_for_view
+
+    def multi_dataset_result(self):
+        c = self.request.c
+        if c.uid == 0 or c.uid == "":
+            c.message = "You do not have access to this page. Please check you are logged in."
+            c.title = c.site_name+" Multiview - No access"
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+        self._temp._multiple = True
+        self._get_inputs_for_graph()
+        result = self._check_gene_status()
+        if result != "1":
+            return self._temp.render
+
+        result = self._check_multiple_datasets_status()
+        if not result:
+            return self._temp.render
+        c.ref_type= self._temp.ref_type = 'ensemblID'
+        c.ref_id = self._temp.ref_id = self._temp.ensemblID
+        c.ds_id = self._temp.ds_id
+        c.db_id = self._temp.db_id
+        c.multi_view_datasets = self._temp.datasets
+        self._get_multiple_dataset_results()
+
+        if self._temp.ref_type == 'ensemblID':
+            c.ensemblID = self._temp.ensemblID
+            c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db,c.uid,c.db_id)
+            c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db,c.db_id,c.ensemblID)
+            c.data = Stemformatics_Gene.get_genes(db,c.species_dict,self._temp.geneSearch,c.db_id,True,None)
+            c.symbol = self._temp.symbol
+
+        try:
+            if self._temp._multiple:
+                c.view_data = {}
+                c.chip_type = {}
+                for ds_id in self._temp.datasets:
+                    c.view_data[ds_id] = self._temp.view_data[ds_id]
+                    # get chip_type for all selected datasets
+                    c.chip_type[ds_id] = Stemformatics_Dataset.getChipType(ds_id)
+            else:
+                c.view_data = self._temp.view_data[ds_id]
+        except:
+            c.view_data = self._temp.view_data[ds_id]
+
+
+        # self._set_outputs_for_graph()
+        c.url = self._temp.url
+        c.dataset_status = self._temp.dataset_status
+        show_limited = True
+
+        if self._temp.ref_type == 'miRNA':
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+
+        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+
+        for ds_id in self._temp.datasets:
+            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
+            result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+    def _get_multiple_dataset_results(self):
+        c = self.request.c
+        ensemblID = self._temp.ensemblID
+        datasets = self._temp.datasets
+        result = {}
+        dataset_status = {}
+        self._temp.view_data = {}
+        for ds_id in datasets:
+
+            # check user has access first
+            dataset_status[ds_id] = Stemformatics_Dataset.check_dataset_with_limitations(db, ds_id, c.uid)
+
+            if dataset_status[ds_id] == "Unavailable":
+                if c.uid == '' or c.uid == 0:
+                    # got this code from decorator in model/stemformatics/stemformatics_auth.py
+                    c.user = None
+                    session = self.request.session
+                    session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
+                    session.save()
+                    raise redirect(h.url('/auth/login'))
+                else:
+                    raise redirect(self.request.url + '&force_choose=yes')
+
+            # should be the same for all datasets
+            self._temp.ref_type = 'ensemblID'
+            self._temp.ref_id = ensemblID
+            self._temp.ds_id = ds_id
+            self._temp.view_data[ds_id] = {}
+            self._temp.view_data[ds_id]['ensemblID'] = ensemblID
+            self._temp.view_data[ds_id]['ref_type'] = 'ensemblID'
+            self._temp.view_data[ds_id]['ds_id'] = ds_id
+            self._temp.view_data[ds_id]['probeName'] = Stemformatics_Dataset.get_probe_name(ds_id)
+            # self._temp.view_graph_dict[ds_id] = self._setup_graphs(self._temp)
+
+        self._temp.dataset_status = dataset_status
+
+    ''' Not migrated. This function seems not to be used anywhere.
+    def _set_outputs_for_graph(self):
+        c.choose_dataset_immediately = self._temp.choose_dataset_immediately
+        c.allow_genePattern_analysis = Stemformatics_Dataset.allow_genePattern_analysis(db,self._temp.ds_id)
+        c.geneSearch = self._temp.geneSearch
+        c.ds_id = self._temp.ds_id
+        c.db_id = self._temp.db_id
+        c.ref_type = self._temp.ref_type
+        c.ref_id = self._temp.ref_id
+        if self._temp.ref_type == 'ensemblID':
+            c.ensemblID = self._temp.ensemblID
+            c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db,c.uid,c.db_id)
+            c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db,c.db_id,c.ensemblID)
+            c.data = Stemformatics_Gene.get_genes(db,c.species_dict,self._temp.geneSearch,c.db_id,True,None)
+            c.symbol = self._temp.symbol
+        c.large = self._temp.large
+        c.human_db = config['human_db']
+        c.mouse_db = config['mouse_db']
+
+        # only set multiple in multiple dataset result
+        try:
+            if self._temp._multiple:
+                c.json_view_data = {}
+                c.view_data = {}
+                c.multi_view_datasets = json.dumps(self._temp.datasets)
+                for ds_id in self._temp.datasets:
+                    c.json_view_data[ds_id] = self._temp.view_graph_dict[ds_id].get_json_data()
+                    c.view_data[ds_id] = self._temp.view_graph_dict[ds_id].view_data
+            else:
+                c.json_view_data = self._temp.this_view.get_json_data()
+                c.view_data = self._temp.this_view.view_data
+        except:
+            c.json_view_data = self._temp.this_view.get_json_data()
+            c.view_data = self._temp.this_view.view_data
+        c.species = Stemformatics_Dataset.returnSpecies(c.db_id)
+        c.url = self._temp.url
+        c.dataset_status = self._temp.dataset_status
+        show_limited = True
+
+        if self._temp.ref_type == 'miRNA':
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
+        else:
+            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+    '''
+
+    def _check_multiple_datasets_status(self):
+        c = self.request.c
+        graphType = self._temp.graphType
+        db_id = self._temp.db_id
+        original_temp_datasets = self._temp.original_temp_datasets
+        ensemblID = self._temp.ensemblID
+        force_choose = self._temp.force_choose
+        sortBy = self._temp.sortBy
+        symbol = self._temp.symbol
+
+        if original_temp_datasets is not None:
+            temp_datasets = original_temp_datasets.split(',')
+            datasets = [int(i) for i in temp_datasets]
+
+            # Will have to save this now
+            Stemformatics_Auth.save_multi_datasets(db, c.uid, db_id, datasets)
+        else:
+            datasets = Stemformatics_Auth.get_multi_datasets(db, c.uid, db_id)
+            # datasets = []
+
+        c.base_url = h.url(
+            '/expressions/multi_dataset_result?gene=' + str(ensemblID) + '&db_id=' + str(db_id) + '&graphType=' + str(
+                graphType))
+
+        if len(datasets) < 2 or force_choose == 'yes':
+            c.species = Stemformatics_Gene.get_species_from_db_id(db, db_id)
+            show_limited = True
+            c.all_datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, db_id)
+            c.loaded_datasets = json.dumps(datasets)
+            c.analysis = 1
+            c.purple_title = "Multi Dataset Graph Selection"
+            c.help_text = "Please choose the four datasets you would like to see in your multi-dataset graph."
+            c.breadcrumbs = [[h.url('/genes/search'), 'Gene Search'],
+                             [h.url('/genes/search?gene=' + str(symbol)), symbol],
+                             [h.url('/genes/summary?gene=' + str(ensemblID) + '&db_id=' + str(db_id)),
+                              symbol + ' Summary'], ['', 'Choose multiple datasets']]
+            c.title = c.site_name + " - Choose Datasets for Multiview - Choose multiple datasets to view concurrently for gene " + symbol
+            self._temp.render = render_to_response('S4M_pyramid:templates/expressions/choose_multi_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return False
+
+        # this is always false for multiview graphs
+        self._temp.choose_dataset_immediately = False
+
+        self._temp.datasets = datasets
+
+        return True
+
+    """
+    metadata_list is a comma separated list of values from the biosamples metadata md_name. default to tissue
+    eg. 'Cell Type,Tissue'
+    'Cell Type,Tissue,Sample Type,Organism Part,Disease State'
+
+    Expects a json string for filter and gene and db_id.
+    filters documentation is in Stemformatics_Expression.filter_yugene_graph
+    format_type tsv, csv and json
+    returns TSV  by default
+    """
+    @action(renderer="string")
+    def return_breakdown_of_yugene_filtered_data(self):
+        c = self.request.c
+        uid = c.uid
+        request = self.request
+        c.filters = filters = str( request.params.get("filters",None))
+        ensembl_id = str( request.params.get("gene"))
+        db_id = int(request.params.get("db_id"))
+        format_type = request.params.get("format_type","tsv")
+
+
+
+        metadata_list = request.params.get("metadata_list",'Tissue')
+
+        if filters is None:
+            return "{}"
+
+        filters = json.loads(filters)
+
+        all_sample_metadata = g.all_sample_metadata
+        #configuration items?
+        max_length = None
+        max_length_action = 'truncate'
+
+        metadata_list = metadata_list.split(",")
+
+        # get the full data from redis
+        full_data = Stemformatics_Expression.get_yugene_full_data_graph_values(uid,ensembl_id,db_id)
+        # iterate over full data and create breakdown dict and full_data dict, store breakdown dict in redis
+        final_data = Stemformatics_Expression.filter_yugene_graph(filters, db_id, full_data, metadata_list, all_sample_metadata, max_length,uid,ensembl_id,max_length_action)
+
+        if format_type == 'tsv' or format_type == 'csv':
+            data = Stemformatics_Expression.convert_yugene_breakdown_data_to_tsv_csv(final_data,format_type)
+        else: # everything else should be json as a default
+            data = json.dumps(final_data)
+
+        return data
+
+    """
+    Expects a json string for filters and gene and db_id.
+
+    filters documentation is in Stemformatics_Expression.filter_yugene_graph
+    used in large YuGene graph
+
+    returns JSON/TSV/CSV
+    """
+    @action(renderer="string")
+    def return_yugene_filtered_graph_data(self):
+        c = self.request.c
+        uid = c.uid
+        request = self.request
+        filters = str( request.params.get("filters",None))
+        ensembl_id = str( request.params.get("gene",""))
+        db_id = int(request.params.get("db_id",""))
+
+        # Choose between json and tsv (tab separated values)
+        format_type = request.params.get("format_type","json")
+
+        if filters is None:
+            return "{}"
+
+        try:
+            filters = json.loads(filters)
+        except:
+            filters = None
+
+        all_sample_metadata = g.all_sample_metadata
+
+        #configuration items?
+        max_length = None
+        max_length_action = 'truncate'
+
+        # retrieve data - if it's already in redis, it will return True, but very quickly
+        # if not in redis, it will do the calculation, store it in redis and then return True
+        result = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensembl_id,g.all_sample_metadata,c.role)
+        if not result:
+            return "Error in returning data"
+
+        # get the sampled data
+        sample_values = Stemformatics_Expression.get_yugene_sample_data_graph_values(uid,ensembl_id,db_id)
+        # need to be able to merge them together and remove any duplicates
+        merge = True
+        filtered_result= []
+        final_data = Stemformatics_Expression.calculate_yugene_data_for_display(sample_values,filtered_result,merge)
+        if format_type == 'tsv' or format_type == 'csv':
+            data = Stemformatics_Expression.convert_yugene_data_to_tsv_csv(final_data,format_type)
+        else: # everything else should be json as a default
+            data = json.dumps(final_data)
+        return data
+
+
+    """ This returns the dataset breakdown in the filtered data for generic sample type chosen """
+    """ This method seems never to get called
+    def show_yugene_filtered_dataset_breakdown(self):
+        c.generic_sample_type = generic_sample_type = request.params.get("generic_sample_type")
+        uid = c.uid
+        c.ensembl_id = ensembl_id = str(request.params.get("ensembl_id"))
+        c.symbol = symbol = str(request.params.get("symbol"))
+        c.db_id = db_id = int(request.params.get("db_id"))
+        filter_start = request.params.get("filter_start")
+        filter_end = request.params.get("filter_end")
+        c.all_sample_metadata = g.all_sample_metadata
+        metadata_list = 'Generic sample type'
+        # get the breakdown data from redis
+        breakdown_data = Stemformatics_Expression.get_breakdown_dict_from_redis(uid,ensembl_id,db_id,filter_start,filter_end)
+        if breakdown_data is None:
+            redirect(url(controller='contents', action='index'), code=404)
+        else:
+            breakdown_data = breakdown_data[metadata_list][generic_sample_type]
+            data = Stemformatics_Expression.return_yugene_filtered_dataset_breakdown(breakdown_data)
+            c.data = data['dataset_id']
+            return render ('/expressions/show_yugene_filtered_dataset_breakdown.mako')
+    """
+
+    @action(renderer="/expressions/choose_dataset.mako")
+    def choose_dataset(self):
+        c = self.request.c
+        graphType = self.request.params.get("graphType","")
+        gene = self.request.params.get("gene","")
+        db_id = self.request.params.get("db_id","")
+        gene_set_id = self.request.params.get("gene_set_id","")
+        c.db_id = int(db_id)
+
+        if gene_set_id is None:
+            c.url = h.url('/expressions/result?graphType='+str(graphType)+'&gene='+str(gene)+'&db_id='+str(db_id))
+            show_limited = True
+
+        else:
+            c.url = h.url('/workbench/histogram_wizard?gene_set_id='+str(gene_set_id)+'&gene='+str(gene)+'&db_id='+str(db_id))
+        c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
+
+        c.species = Stemformatics_Dataset.returnSpecies(c.db_id)
+
+        return self.deprecated_pylons_data_for_view
 
     def _get_inputs_for_graph(self):
         c = self.request.c
@@ -260,52 +656,6 @@ class ExpressionsController(BaseController):
         self._temp.large = self.request.params.get('size') == "large"
 
         c.url = self._temp.url
-
-    def probe_result(self):
-        c = self.request.c
-        self._get_inputs_for_graph()
-        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-        self._check_dataset_status()
-        c.dataset_status = self._temp.dataset_status
-        c.ref_type = self._temp.ref_type = 'probeID'
-        show_limited = True
-        if self._temp.ref_type == 'miRNA':
-            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
-        else:
-            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
-        c.symbol = c.ref_id = self._temp.ref_id = self._temp.probeSearch
-        if self._temp.select_probes is None:
-            self._temp.select_probes = self._temp.probeSearch
-
-        c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
-
-        # self._temp.this_view = self._setup_graphs(self._temp)
-        # self._set_outputs_for_graph()
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-        return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
-
-
-    @action(renderer="/expressions/choose_dataset.mako")
-    def choose_dataset(self):
-        c = self.request.c
-        graphType = self.request.params.get("graphType","")
-        gene = self.request.params.get("gene","")
-        db_id = self.request.params.get("db_id","")
-        gene_set_id = self.request.params.get("gene_set_id","")
-        c.db_id = int(db_id)
-
-        if gene_set_id is None:
-            c.url = h.url('/expressions/result?graphType='+str(graphType)+'&gene='+str(gene)+'&db_id='+str(db_id))
-            show_limited = True
-
-        else:
-            c.url = h.url('/workbench/histogram_wizard?gene_set_id='+str(gene_set_id)+'&gene='+str(gene)+'&db_id='+str(db_id))
-        c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
-
-        c.species = Stemformatics_Dataset.returnSpecies(c.db_id)
-
-        return self.deprecated_pylons_data_for_view
 
     def histogram_wizard(self):  # CRITICAL-4
         c = self.request.c
@@ -477,154 +827,6 @@ class ExpressionsController(BaseController):
 
         return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
-    def multi_dataset_result(self):
-        c = self.request.c
-        if c.uid == 0 or c.uid == "":
-            c.message = "You do not have access to this page. Please check you are logged in."
-            c.title = c.site_name+" Multiview - No access"
-            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
-
-        self._temp._multiple = True
-        self._get_inputs_for_graph()
-        result = self._check_gene_status()
-        if result != "1":
-            return self._temp.render
-
-        result = self._check_multiple_datasets_status()
-        if not result:
-            return self._temp.render
-        c.ref_type= self._temp.ref_type = 'ensemblID'
-        c.ref_id = self._temp.ref_id = self._temp.ensemblID
-        c.ds_id = self._temp.ds_id
-        c.db_id = self._temp.db_id
-        c.multi_view_datasets = self._temp.datasets
-        self._get_multiple_dataset_results()
-
-        if self._temp.ref_type == 'ensemblID':
-            c.ensemblID = self._temp.ensemblID
-            c.ucsc_links = Stemformatics_Auth.get_ucsc_links_for_uid(db,c.uid,c.db_id)
-            c.ucsc_data = Stemformatics_Gene.get_ucsc_data_for_a_gene(db,c.db_id,c.ensemblID)
-            c.data = Stemformatics_Gene.get_genes(db,c.species_dict,self._temp.geneSearch,c.db_id,True,None)
-            c.symbol = self._temp.symbol
-
-        try:
-            if self._temp._multiple:
-                c.view_data = {}
-                c.chip_type = {}
-                for ds_id in self._temp.datasets:
-                    c.view_data[ds_id] = self._temp.view_data[ds_id]
-                    # get chip_type for all selected datasets
-                    c.chip_type[ds_id] = Stemformatics_Dataset.getChipType(ds_id)
-            else:
-                c.view_data = self._temp.view_data[ds_id]
-        except:
-            c.view_data = self._temp.view_data[ds_id]
-
-
-        # self._set_outputs_for_graph()
-        c.url = self._temp.url
-        c.dataset_status = self._temp.dataset_status
-        show_limited = True
-
-        if self._temp.ref_type == 'miRNA':
-            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db,c.uid,show_limited,self._temp.ref_type)
-        else:
-            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
-
-        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-
-
-        for ds_id in self._temp.datasets:
-            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
-            result = Stemformatics_Audit.add_audit_log(audit_dict)
-
-        return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.deprecated_pylons_data_for_view,request=self.request)
-
-    def _check_multiple_datasets_status(self):
-        c = self.request.c
-        graphType = self._temp.graphType
-        db_id = self._temp.db_id
-        original_temp_datasets = self._temp.original_temp_datasets
-        ensemblID = self._temp.ensemblID
-        force_choose = self._temp.force_choose
-        sortBy = self._temp.sortBy
-        symbol = self._temp.symbol
-
-        if original_temp_datasets is not None:
-            temp_datasets = original_temp_datasets.split(',')
-            datasets = [int(i) for i in temp_datasets]
-
-            # Will have to save this now
-            Stemformatics_Auth.save_multi_datasets(db, c.uid, db_id, datasets)
-        else:
-            datasets = Stemformatics_Auth.get_multi_datasets(db, c.uid, db_id)
-            # datasets = []
-
-        c.base_url = h.url(
-            '/expressions/multi_dataset_result?gene=' + str(ensemblID) + '&db_id=' + str(db_id) + '&graphType=' + str(
-                graphType))
-
-        if len(datasets) < 2 or force_choose == 'yes':
-            c.species = Stemformatics_Gene.get_species_from_db_id(db, db_id)
-            show_limited = True
-            c.all_datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, db_id)
-            c.loaded_datasets = json.dumps(datasets)
-            c.analysis = 1
-            c.purple_title = "Multi Dataset Graph Selection"
-            c.help_text = "Please choose the four datasets you would like to see in your multi-dataset graph."
-            c.breadcrumbs = [[h.url('/genes/search'), 'Gene Search'],
-                             [h.url('/genes/search?gene=' + str(symbol)), symbol],
-                             [h.url('/genes/summary?gene=' + str(ensemblID) + '&db_id=' + str(db_id)),
-                              symbol + ' Summary'], ['', 'Choose multiple datasets']]
-            c.title = c.site_name + " - Choose Datasets for Multiview - Choose multiple datasets to view concurrently for gene " + symbol
-            self._temp.render = render_to_response('S4M_pyramid:templates/expressions/choose_multi_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
-            return False
-
-        # this is always false for multiview graphs
-        self._temp.choose_dataset_immediately = False
-
-        self._temp.datasets = datasets
-
-        return True
-
-    def _get_multiple_dataset_results(self):
-        c = self.request.c
-        ensemblID = self._temp.ensemblID
-        datasets = self._temp.datasets
-        result = {}
-        dataset_status = {}
-        self._temp.view_data = {}
-        for ds_id in datasets:
-
-            # check user has access first
-            dataset_status[ds_id] = Stemformatics_Dataset.check_dataset_with_limitations(db, ds_id, c.uid)
-
-            if dataset_status[ds_id] == "Unavailable":
-                if c.uid == '' or c.uid == 0:
-                    # got this code from decorator in model/stemformatics/stemformatics_auth.py
-                    c.user = None
-                    session = self.request.session
-                    session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
-                    session.save()
-                    raise redirect(h.url('/auth/login'))
-                else:
-                    raise redirect(self.request.url + '&force_choose=yes')
-
-            # should be the same for all datasets
-            self._temp.ref_type = 'ensemblID'
-            self._temp.ref_id = ensemblID
-            self._temp.ds_id = ds_id
-            self._temp.view_data[ds_id] = {}
-            self._temp.view_data[ds_id]['ensemblID'] = ensemblID
-            self._temp.view_data[ds_id]['ref_type'] = 'ensemblID'
-            self._temp.view_data[ds_id]['ds_id'] = ds_id
-            self._temp.view_data[ds_id]['probeName'] = Stemformatics_Dataset.get_probe_name(ds_id)
-            # self._temp.view_graph_dict[ds_id] = self._setup_graphs(self._temp)
-
-        self._temp.dataset_status = dataset_status
-
-
     def yugene_graph(self):
         c = self.request.c
         result = self._summary_get_inputs()
@@ -641,7 +843,6 @@ class ExpressionsController(BaseController):
         audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response('S4M_pyramid:templates/genes/summary.mako',self.deprecated_pylons_data_for_view,request=self.request)
-
 
     def _summary_get_inputs(self):
         c = self.request.c
@@ -665,7 +866,6 @@ class ExpressionsController(BaseController):
             return False
 
         return True
-
 
     def _summary_get_gene_details(self):
         c = self.request.c
@@ -747,136 +947,3 @@ class ExpressionsController(BaseController):
         param_show_lower = self._temp.param_show_lower
         yugene_granularity_for_gene_search ='auto'
         self._temp.yugene_graph_data = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensemblID,g.all_sample_metadata,c.role)
-
-
-    """
-    Expects a json string for filters and gene and db_id.
-
-    filters documentation is in Stemformatics_Expression.filter_yugene_graph
-    used in large YuGene graph
-
-    returns JSON/TSV/CSV
-    """
-    @action(renderer="string")
-    def return_yugene_filtered_graph_data(self):
-        c = self.request.c
-        uid = c.uid
-        request = self.request
-        filters = str( request.params.get("filters",None))
-        ensembl_id = str( request.params.get("gene",""))
-        db_id = int(request.params.get("db_id",""))
-
-        # Choose between json and tsv (tab separated values)
-        format_type = request.params.get("format_type","json")
-
-        if filters is None:
-            return "{}"
-
-        try:
-            filters = json.loads(filters)
-        except:
-            filters = None
-
-        all_sample_metadata = g.all_sample_metadata
-
-        #configuration items?
-        max_length = None
-        max_length_action = 'truncate'
-
-        # retrieve data - if it's already in redis, it will return True, but very quickly
-        # if not in redis, it will do the calculation, store it in redis and then return True
-        result = Stemformatics_Expression.return_yugene_graph_data(db_id,c.uid,ensembl_id,g.all_sample_metadata,c.role)
-        if not result:
-            return "Error in returning data"
-
-        # get the sampled data
-        sample_values = Stemformatics_Expression.get_yugene_sample_data_graph_values(uid,ensembl_id,db_id)
-        # need to be able to merge them together and remove any duplicates
-        merge = True
-        filtered_result= []
-        final_data = Stemformatics_Expression.calculate_yugene_data_for_display(sample_values,filtered_result,merge)
-        if format_type == 'tsv' or format_type == 'csv':
-            data = Stemformatics_Expression.convert_yugene_data_to_tsv_csv(final_data,format_type)
-        else: # everything else should be json as a default
-            data = json.dumps(final_data)
-        return data
-
-    """
-
-
-
-    metadata_list is a comma separated list of values from the biosamples metadata md_name. default to tissue
-    eg. 'Cell Type,Tissue'
-    'Cell Type,Tissue,Sample Type,Organism Part,Disease State'
-
-
-    Expects a json string for filter and gene and db_id.
-    filters documentation is in Stemformatics_Expression.filter_yugene_graph
-    format_type tsv, csv and json
-    returns TSV  by default
-    """
-    @action(renderer="string")
-    def return_breakdown_of_yugene_filtered_data(self):
-        c = self.request.c
-        uid = c.uid
-        request = self.request
-        c.filters = filters = str( request.params.get("filters",None))
-        ensembl_id = str( request.params.get("gene"))
-        db_id = int(request.params.get("db_id"))
-        format_type = request.params.get("format_type","tsv")
-
-
-
-        metadata_list = request.params.get("metadata_list",'Tissue')
-
-        if filters is None:
-            return "{}"
-
-        filters = json.loads(filters)
-
-        all_sample_metadata = g.all_sample_metadata
-        #configuration items?
-        max_length = None
-        max_length_action = 'truncate'
-
-        metadata_list = metadata_list.split(",")
-
-        # get the full data from redis
-        full_data = Stemformatics_Expression.get_yugene_full_data_graph_values(uid,ensembl_id,db_id)
-        # iterate over full data and create breakdown dict and full_data dict, store breakdown dict in redis
-        final_data = Stemformatics_Expression.filter_yugene_graph(filters, db_id, full_data, metadata_list, all_sample_metadata, max_length,uid,ensembl_id,max_length_action)
-
-        if format_type == 'tsv' or format_type == 'csv':
-            data = Stemformatics_Expression.convert_yugene_breakdown_data_to_tsv_csv(final_data,format_type)
-        else: # everything else should be json as a default
-            data = json.dumps(final_data)
-
-        return data
-
-    @action(renderer="templates/expressions/result.mako")
-    def feature_result(self):
-        c = self.request.c
-        self._get_inputs_for_graph()
-        self._check_dataset_status()
-        c.dataset_status = self._temp.dataset_status
-        c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-        c.ref_type = self._temp.ref_type = self._temp.feature_type
-        c.symbol = c.ref_id = self._temp.ref_id = self._temp.feature_id
-        show_limited = True
-        if self._temp.ref_type == 'miRNA':
-            data_type = self._temp.ref_type
-            c.datasets = Stemformatics_Dataset.get_all_datasets_of_a_data_type(c.uid,data_type)
-        else:
-            c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
-
-
-        c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
-
-        # self._temp.this_view = self._setup_graphs(self._temp)
-        # self._set_outputs_for_graph()
-        audit_dict = {'ref_type':'feature_id','ref_id':self._temp.feature_id,'uid':c.uid,'url':url,'request':self.request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-
-        return self.deprecated_pylons_data_for_view
