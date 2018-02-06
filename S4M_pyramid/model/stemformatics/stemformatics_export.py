@@ -53,14 +53,13 @@ class Stemformatics_Export(object):
         if output_format == "pdf":
             temp_output_file = temp_input_file_base+".pdf"
             temp_data.content_type = 'application/x-pdf'
-            command_line = "prince -v "+temp_input_file + " -o "+temp_output_file
+            command_line = "rsvg-convert -f pdf -o "+temp_input_file + " "+temp_output_file
 
 
         if output_format == "png":
-            staging_pdf_file = temp_input_file_base+".pdf"
             temp_output_file = temp_input_file_base+".png"
             temp_data.content_type = 'image/png'
-            command_line = "prince -v "+temp_input_file + " -o "+staging_pdf_file+"; pdftoppm " + staging_pdf_file + " -png -r 400 > "+ temp_output_file
+            command_line = "rsvg-convert -f png -o "+temp_output_file + " "+temp_input_file
 
 
         # This was a problem with FF across all OS - especially FF36 24/03/15
@@ -68,7 +67,7 @@ class Stemformatics_Export(object):
 
         # write to temp input file
         f = open(temp_input_file,'w')
-        f.write(data)
+        f.write(data)#In python3 we don't need to encode the data
         f.close()
         #with io.open(temp_input_file) as f:
         #    f.write(data)
@@ -77,7 +76,7 @@ class Stemformatics_Export(object):
         p.communicate() # this makes the python code wait for the subprocess to finish
 
         # read from output file
-        f = open(temp_output_file,'rb')
+        f = open(temp_output_file,'rb')#need read the file as binary
         export_data = f.read()
         f.close()
         #with io.open(temp_output_file,'rb') as f:
@@ -90,9 +89,9 @@ class Stemformatics_Export(object):
         p = subprocess.Popen(command_line,shell=True)
 
 
-        if output_format =="png":
-            command_line = "rm "+staging_pdf_file
-            p = subprocess.Popen(command_line,shell=True)
+        #if output_format =="png":
+        #    command_line = "rm "+staging_pdf_file
+        #    p = subprocess.Popen(command_line,shell=True)
 
         temp_data.data = export_data
 
