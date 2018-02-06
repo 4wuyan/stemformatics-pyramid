@@ -196,6 +196,7 @@ class BaseController():
             self._temp.render = render_to_response("S4M_pyramid:templates/workbench/error_message.mako",self.deprecated_pylons_data_for_view,request=self.request)
             return "0"
 
+        c.db_id = db_id
         if len(result) == 1 :
             temp_gene = next(iter(result.values()))
             ensemblID = temp_gene['EnsemblID']
@@ -210,7 +211,6 @@ class BaseController():
         else:
             # get a list together with some more details
             # and then choose
-            c.db_id = db_id
             c.analysis = None
             c.show_probes_in_dataset = False
             c.multiple_genes = result
