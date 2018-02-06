@@ -101,9 +101,6 @@ class ExpressionsController(BaseController):
         c.symbol = self._temp.symbol
         c.dataset_status = self._temp.dataset_status
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-        c.db_id = self._temp.db_id  # c.db_id is not set in the pylons code,this line is added in pyramid
-        # and it gives the error when calling for ucsc data
-        # still try to work out why the pylons code can get away with not setting up c.db_id
 
         c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
 
