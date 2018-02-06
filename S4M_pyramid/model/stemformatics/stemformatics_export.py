@@ -67,21 +67,21 @@ class Stemformatics_Export(object):
         data = data.replace("(&quot;","(").replace("&quot;)",")").replace("url(#gradient) none","url(#gradient)")
 
         # write to temp input file
-        #f = open(temp_input_file,'w')
-        #f.write(data)
-        #f.close()
-        with io.open(temp_input_file,'w') as f:
-            f.write(data)
+        f = open(temp_input_file,'w')
+        f.write(data)
+        f.close()
+        #with io.open(temp_input_file) as f:
+        #    f.write(data)
 
         p = subprocess.Popen(command_line,shell=True)
         p.communicate() # this makes the python code wait for the subprocess to finish
 
         # read from output file
-        #f = open(temp_output_file,'r')
-        #export_data = f.read()
-        #f.close()
-        with io.open(temp_output_file,'rb') as f:
-            export_data = f.read()
+        f = open(temp_output_file,'rb')
+        export_data = f.read()
+        f.close()
+        #with io.open(temp_output_file,'rb') as f:
+        #    export_data = f.read()
 
         # delete both files
 

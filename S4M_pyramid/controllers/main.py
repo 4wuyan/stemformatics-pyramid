@@ -63,7 +63,6 @@ class MainController(BaseController):
         NOTE: not sure about allowing download if you are registered only
     """
     #@Stemformatics_Auth.authorise(db)
-    @action(renderer="string")
     def export_d3(self):
         request = self.request
         """
@@ -82,8 +81,8 @@ class MainController(BaseController):
         #del response.headers['Cache-Control']
         #del response.headers['Pragma']
         response = Response(export_data.data)
-        response.content_type = export_data.content_type
-        response.content_disposition = 'attachment;filename='+export_data.file_name
+        response.headers['Content-type'] = export_data.content_type
+        response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
         response.charset= "utf8"
 
         return response
