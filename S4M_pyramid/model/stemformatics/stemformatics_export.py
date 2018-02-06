@@ -53,7 +53,7 @@ class Stemformatics_Export(object):
         if output_format == "pdf":
             temp_output_file = temp_input_file_base+".pdf"
             temp_data.content_type = 'application/x-pdf'
-            command_line = "rsvg-convert -f pdf -o "+temp_input_file + " "+temp_output_file
+            command_line = "rsvg-convert -f pdf -o "+temp_output_file + " "+temp_input_file
 
 
         if output_format == "png":
