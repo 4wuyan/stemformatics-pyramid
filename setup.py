@@ -20,6 +20,7 @@ requires = [
     'formencode',
     'routes',
     'sqlsoup',
+    'twython',
     'pyramid_beaker',
     'webhelpers2',
     'paginate',
