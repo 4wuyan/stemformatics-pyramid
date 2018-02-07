@@ -203,15 +203,49 @@ Raising `HTTPException` simply breaks the calling function(s), throws the except
 Otherwise you'll need to do a type check using `isinstance` in each calling function(s) above in the call stack,
 which is tedious, annoying and error-prone, and also reduces readability.
 
-Choose an action renderer type
+Specify a renderer
 =======================================
 
-In Pyramid, every action needs to return a response, and the response needs to be associated with a renderer.
-The renderer type needs to be explicitly specified, and this is different in Pylons.
-In Pylons, an action can just return a piece of String in JSON format without specifying anything.
-In Pyramid, returning anything without specifying a renderer type will result in an error.
-Therefore, if an action returns a mako page, the renderer should point to a mako file. If an action returns some data, it's best to specify
-the renderer type as `renderer='string'`. (This is because our code does the formatting already; returning them as a string will keep the format as we process.)
+In Pyramid, every action needs to return a `Response` object, unless it is explicitly associated with a renderer which can transform the returned value into a `Response` object.
+
+While in Pylons, controller actions return strings. Those strings are the contents of the responses, and Pylons middlewares will wrap them into real `Response` objects. Please note `render('something.mako')` returns a string as well.
+
+Nuances of returning JSON
+--------------------------
+
+As a result, when we want to return JSON:
+```python
+# In Pylons, it is:
+def foo(self):
+    return json.dumps({'1': None})
+
+# In Pyramid, Option 1:
+@action(renderer = 'string')
+def foo1(self):
+    return json.dumps({'1': None})
+
+# Or Option 2:
+@action(renderer = 'json')
+def foo2(self):
+    return {'1': None}
+```
+
+The two options in Pyramid return the same Response object. But there are some differences you should be aware of.
+
+Let's have a look at this architecture:
+
+1. **Action Method** returns an _object of any type_ to **Framework Middleware**
+2. **Framework Middleware** will transform the received object into a _Response_ object, if the received object is not a _Response_ object.
+3. **Framework Middleware** finally passes a _Response_ object to **Your Browser**.
+
+Though the final _Response_ objects you get in **Your Browser** are the same in those 2 actions, what `foo1` and `foo2` directly return are different: `foo1` returns `str`, while `foo2` returns `dict` (Try testing it yourself!). Hence if other parts of the code want to call the action method, `foo1` and `foo2` provide different results, since we are still beneath **Pyramid Middleware**.
+
+Thus `foo1` in Pyramid is more similar to the behaviour of `foo` in Pylons; both of them have `json.dumps` finalised inside the action method and give the middleware a string to wrap, while `foo2` returns a dictionary, and `json.dumps` is finalised in the middleware. This may explain why we use string renderer more often in our implementation.
+
+### If you're still interested
+
+Wait! What about the `action` decorator? It specifies a renderer! You can check that it actually doesn't change what the function returns. Then how does **Pyramid Middleware** kick in later? Remember functions in Python are objects as well! They are just _callable_ objects. So `@action` is merely a wrapper that doesn't change the `__call__` attribute, but it sets other attributes in the function object so that the renderer info can be picked up later in Pyramid Middleware (You can check `view_config` class in Pyramid's [source code](https://github.com/Pylons/pyramid/blob/master/pyramid/view.py); note `venusian.attach` in it).
+
 
 
 Database Connection
