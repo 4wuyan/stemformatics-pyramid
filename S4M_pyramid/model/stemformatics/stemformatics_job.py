@@ -254,9 +254,8 @@ class Stemformatics_Job(object):
             gs = db.gene_sets
 
             initial_result = db.jobs.filter(db.jobs.job_id == job_id).one()
-            return initial_result
             if initial_result.dataset_id != 0:
-                join1 = db.join(db.jobs,gs,gs.id==db.jobs.gene_set_id,True)
+                join1 = db.join(db.jobs,gs,gs.id==db.jobs.gene_set_id,db.jobs.uid==gs.uid,True)
 
                 join2 = db.join(join1,ds,ds.id==db.jobs.dataset_id)
 
