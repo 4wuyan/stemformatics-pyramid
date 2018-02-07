@@ -24,7 +24,6 @@ class ExpressionsController(BaseController):
     def __init__(self,request):
         super().__init__(request)
         c = self.request.c
-        c.debug = "True"#turned on debug for result.mako
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         self.default_human_dataset = config['default_human_dataset']
@@ -72,6 +71,7 @@ class ExpressionsController(BaseController):
     renderer'''
     def result(self):
         c = self.request.c
+        request = self.request
         """ These three functions set what is needed in self._type to be
         used in the graph object orientated code  """
         self._get_inputs_for_graph() #This is in controllers/expressions.py
@@ -101,9 +101,6 @@ class ExpressionsController(BaseController):
         c.symbol = self._temp.symbol
         c.dataset_status = self._temp.dataset_status
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
-        c.db_id = self._temp.db_id  # c.db_id is not set in the pylons code,this line is added in pyramid
-        # and it gives the error when calling for ucsc data
-        # still try to work out why the pylons code can get away with not setting up c.db_id
 
         c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
 
@@ -114,36 +111,34 @@ class ExpressionsController(BaseController):
 
         show_limited = True
         if self._temp.ref_type == 'miRNA':
-            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited,
-                                                                                 self._temp.ref_type)
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited, self._temp.ref_type)
         else:
             c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, c.db_id)
         """ This simply get the output of the graph oo code ready for the mako templates """
         # self._set_outputs_for_graph()
 
-        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': url,
-                      'request': self.request}
+        audit_dict = {'ref_type': 'gene_id', 'ref_id': self._temp.ensemblID, 'uid': c.uid, 'url': url, 'request': request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
-                      'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': self._temp.ds_id, 'uid': c.uid, 'url': url, 'request': request, 'extra_ref_type': 'gene_id', 'extra_ref_id': self._temp.ensemblID}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
     @action(renderer="string")
     def graph_data(self):
         c = self.request.c
+        request = self.request
         # check the gene/ dataset validity
         # than get the data
-        self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
-        self._temp.geneSearch = ref_id = str(self.request.params.get("ref_id"))
-        ref_type = str(self.request.params.get("ref_type"))
-        self._temp.db_id = db_id = int(self.request.params.get("db_id"))
-        format_type = str(self.request.params.get("format_type"))
-        graphType = str(self.request.params.get("graphType"))
-        select_probes = str(self.request.params.get("select_probes"))
-        self._temp.url = self.request.environ.get('PATH_INFO')
-        if self.request.environ.get('QUERY_STRING'):
-            self._temp.url += '?' + self.request.environ['QUERY_STRING']
+        self._temp.ds_id = ds_id = int(request.params.get("ds_id"))
+        self._temp.geneSearch = ref_id = str(request.params.get("ref_id"))
+        ref_type = str(request.params.get("ref_type"))
+        self._temp.db_id = db_id = int(request.params.get("db_id"))
+        format_type = str(request.params.get("format_type"))
+        graphType = str(request.params.get("graphType"))
+        select_probes = str(request.params.get("select_probes"))
+        self._temp.url = request.environ.get('PATH_INFO')
+        if request.environ.get('QUERY_STRING'):
+            self._temp.url += '?' + request.environ['QUERY_STRING']
         self._check_dataset_status()
         error_data = ""
 
@@ -179,9 +174,9 @@ class ExpressionsController(BaseController):
             # everything else could be gene_id , even if miRNA because the level would be gene_id anyway and it need to be broken into probe level data. But for gene_Set_id level is one higher than gene_id and we wantto distinguish
         else:
             ref_type = 'gene_id'
-        audit_dict = {'ref_type':ref_type,'ref_id':self._temp.geneSearch,'uid':c.uid,'url':url,'request': self.request}
+        audit_dict = {'ref_type':ref_type,'ref_id':self._temp.geneSearch,'uid':c.uid,'url':url,'request': request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request': self.request, 'extra_ref_type':ref_type, 'extra_ref_id':self._temp.geneSearch}
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request': request, 'extra_ref_type':ref_type, 'extra_ref_id':self._temp.geneSearch}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json.dumps({"data":self._temp.formatted_data, "error": error_data})
@@ -189,7 +184,8 @@ class ExpressionsController(BaseController):
     @action(renderer="string")
     def dataset_metadata(self):
         c = self.request.c
-        self._temp.ds_id = ds_id = int(self.request.params.get("ds_id"))
+        request = self.request
+        self._temp.ds_id = ds_id = int(request.params.get("ds_id"))
         error_data =""
         self._check_dataset_status()
         # now check the dataset status
@@ -199,10 +195,11 @@ class ExpressionsController(BaseController):
         dataset_metadata = Stemformatics_Dataset.get_expression_dataset_metadata(ds_id)
 
         json_dataset_metadata = json.dumps(dataset_metadata)
-        return json.dumps({"error":error_data,"data":json_dataset_metadata})
+        return json.dumps({"data":json_dataset_metadata,"error":error_data})
 
     def probe_result(self):
         c = self.request.c
+        request = self.request
         self._get_inputs_for_graph()
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         self._check_dataset_status()
@@ -221,7 +218,7 @@ class ExpressionsController(BaseController):
 
         # self._temp.this_view = self._setup_graphs(self._temp)
         # self._set_outputs_for_graph()
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response("S4M_pyramid:templates/expressions/result.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
@@ -229,6 +226,7 @@ class ExpressionsController(BaseController):
     #----------Can't be fully tested because Pyramid VM doesn't seem to have the related data-----------
     def feature_result(self):
         c = self.request.c
+        request = self.request
         self._get_inputs_for_graph()
         self._check_dataset_status()
         c.dataset_status = self._temp.dataset_status
@@ -246,25 +244,26 @@ class ExpressionsController(BaseController):
         if c.datasets == {}:
             c.title = "Invalid miRNA Search"
             c.message = "You have not entered correct parameters. Please check the url if it has been entered manually"
-            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=request)
 
         c.probe_name = Stemformatics_Dataset.get_probe_name(c.ds_id)
 
         # self._temp.this_view = self._setup_graphs(self._temp)
         # self._set_outputs_for_graph()
-        audit_dict = {'ref_type':'feature_id','ref_id':self._temp.feature_id,'uid':c.uid,'url':url,'request':self.request}
+        audit_dict = {'ref_type':'feature_id','ref_id':self._temp.feature_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':self.request}
+        audit_dict = {'ref_type':'ds_id','ref_id':self._temp.ds_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def multi_dataset_result(self):
         c = self.request.c
+        request = self.request
         if c.uid == 0 or c.uid == "":
             c.message = "You do not have access to this page. Please check you are logged in."
             c.title = c.site_name+" Multiview - No access"
-            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',self.deprecated_pylons_data_for_view,request=request)
 
         self._temp._multiple = True
         self._get_inputs_for_graph()
@@ -313,18 +312,19 @@ class ExpressionsController(BaseController):
         else:
             c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
 
-        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
+        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
 
         for ds_id in self._temp.datasets:
-            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
+            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
             result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return render_to_response('S4M_pyramid:templates/expressions/multi_dataset_result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def _get_multiple_dataset_results(self):
         c = self.request.c
+        request = self.request
         ensemblID = self._temp.ensemblID
         datasets = self._temp.datasets
         result = {}
@@ -340,11 +340,11 @@ class ExpressionsController(BaseController):
                     # got this code from decorator in model/stemformatics/stemformatics_auth.py
                     c.user = None
                     session = self.request.session
-                    session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
+                    session['path_before_login'] = request.path_info + '?' + request.query_string
                     session.save()
                     raise redirect(h.url('/auth/login'))
                 else:
-                    raise redirect(self.request.url + '&force_choose=yes')
+                    raise redirect(request.url + '&force_choose=yes')
 
             # should be the same for all datasets
             self._temp.ref_type = 'ensemblID'
@@ -424,9 +424,7 @@ class ExpressionsController(BaseController):
             datasets = Stemformatics_Auth.get_multi_datasets(db, c.uid, db_id)
             # datasets = []
 
-        c.base_url = h.url(
-            '/expressions/multi_dataset_result?gene=' + str(ensemblID) + '&db_id=' + str(db_id) + '&graphType=' + str(
-                graphType))
+        c.base_url = h.url('/expressions/multi_dataset_result?gene=' + str(ensemblID) + '&db_id=' + str(db_id) + '&graphType=' + str(graphType))
 
         if len(datasets) < 2 or force_choose == 'yes':
             c.species = Stemformatics_Gene.get_species_from_db_id(db, db_id)
@@ -436,10 +434,7 @@ class ExpressionsController(BaseController):
             c.analysis = 1
             c.purple_title = "Multi Dataset Graph Selection"
             c.help_text = "Please choose the four datasets you would like to see in your multi-dataset graph."
-            c.breadcrumbs = [[h.url('/genes/search'), 'Gene Search'],
-                             [h.url('/genes/search?gene=' + str(symbol)), symbol],
-                             [h.url('/genes/summary?gene=' + str(ensemblID) + '&db_id=' + str(db_id)),
-                              symbol + ' Summary'], ['', 'Choose multiple datasets']]
+            c.breadcrumbs = [[h.url('/genes/search'), 'Gene Search'], [h.url('/genes/search?gene=' + str(symbol)), symbol], [h.url('/genes/summary?gene=' + str(ensemblID) + '&db_id=' + str(db_id)), symbol + ' Summary'], ['', 'Choose multiple datasets']]
             c.title = c.site_name + " - Choose Datasets for Multiview - Choose multiple datasets to view concurrently for gene " + symbol
             self._temp.render = render_to_response('S4M_pyramid:templates/expressions/choose_multi_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
             return False
@@ -603,25 +598,26 @@ class ExpressionsController(BaseController):
 
     def _get_inputs_for_graph(self):
         c = self.request.c
+        request = self.request
         choose_dataset_immediately = False
-        probeSearch = self.request.params.get('probe')
+        probeSearch = request.params.get('probe')
         #sets the variable to "" instead of None,if parameter is not provided.
-        c.select_probes = select_probes = self.request.params.get('select_probes','')
-        geneSearch = FTS_SEARCH_EXPRESSION.to_python(self.request.params.get('gene'))
-        feature_type = self.request.params.get('feature_type')
-        feature_id = self.request.params.get('feature_id')
-        original_temp_datasets = self.request.params.get('datasets')
-        force_choose = self.request.params.get('force_choose')
-        c.graphType = str(self.request.params.get("graphType"))
+        c.select_probes = select_probes = request.params.get('select_probes','')
+        geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
+        feature_type = request.params.get('feature_type')
+        feature_id = request.params.get('feature_id')
+        original_temp_datasets = request.params.get('datasets')
+        force_choose = request.params.get('force_choose')
+        c.graphType = str(request.params.get("graphType"))
 
         try:
-            db_id = int(self.request.params.get('db_id'))
+            db_id = int(request.params.get('db_id'))
         except:
             db_id = None
 
         try:
-            first_check = self.request.params.get('ds_id')
-            second_check = self.request.params.get('datasetID')
+            first_check = request.params.get('ds_id')
+            second_check = request.params.get('datasetID')
             if first_check is not None:
                 ds_id = int(first_check)
             else:
@@ -639,9 +635,8 @@ class ExpressionsController(BaseController):
 
         c.list_of_valid_graphs = Stemformatics_Dataset.list_of_valid_graphs_for_dataset(ds_id)
 
-        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, self.request.params.get('graphType'),
-                                                                      c.list_of_valid_graphs)
-        sortBy = self.request.params.get('sortBy','')
+        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, request.params.get('graphType'), c.list_of_valid_graphs)
+        sortBy = request.params.get('sortBy','')
 
         # This was an error with T#2079 where the graphType was originally line, but was changed to box
         # but the sortBy was still LineGraphGroup and that caused an error later on
@@ -659,19 +654,20 @@ class ExpressionsController(BaseController):
         c.ds_id = self._temp.ds_id = ds_id
         c.choose_dataset_immediately = self._temp.choose_dataset_immediately = choose_dataset_immediately
         c.allow_genePattern_analysis = Stemformatics_Dataset.allow_genePattern_analysis(db, self._temp.ds_id)
-        self._temp.url = self.request.environ.get('PATH_INFO')
+        self._temp.url = request.environ.get('PATH_INFO')
 
         self._temp.original_temp_datasets = original_temp_datasets
         self._temp.force_choose = force_choose
 
-        if self.request.environ.get('QUERY_STRING'):
-            self._temp.url += '?' + self.request.environ['QUERY_STRING']
-        self._temp.large = self.request.params.get('size') == "large"
+        if request.environ.get('QUERY_STRING'):
+            self._temp.url += '?' + request.environ['QUERY_STRING']
+        self._temp.large = request.params.get('size') == "large"
 
         c.url = self._temp.url
 
     def histogram_wizard(self):  # CRITICAL-4
         c = self.request.c
+        request = self.request
         c.analysis = 3
         c.title = c.site_name + ' Analyses  - MultiGene Expression Graph Wizard'
         #try: #this block is not in use
@@ -679,12 +675,12 @@ class ExpressionsController(BaseController):
         #except:
         #    db_id = None
         try:
-            ds_id = datasetID = int(self.request.params.get('datasetID'),'')
+            ds_id = datasetID = int(request.params.get('datasetID'),'')
         except:
             ds_id = datasetID = None
 
         try:
-            gene_set_id = int(self.request.params.get('gene_set_id'))
+            gene_set_id = int(request.params.get('gene_set_id'))
         except:
             gene_set_id = None
 
@@ -701,8 +697,7 @@ class ExpressionsController(BaseController):
                 c.filter_by_db_id = Stemformatics_Dataset.get_db_id(db, ds_id)
                 c.url += '?datasetID=' + str(ds_id) + '&graphType=default'
 
-            c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
-                             ['', 'MultiGene Expression Graph - Choose Gene List (Step 1 of 2)']]
+            c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], ['', 'MultiGene Expression Graph - Choose Gene List (Step 1 of 2)']]
             return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         else:
@@ -723,10 +718,7 @@ class ExpressionsController(BaseController):
             c.breadcrumb_title = 'Choose Dataset for MultiGene Expression Graph'
             c.url = h.url('/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(
                 gene_set_id))
-            c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
-                             [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [
-                                 h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(
-                                     gene_set_id)), 'MultiGene Expression Graph - Choose Dataset (Step 2 of 2)']]
+            c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)), 'MultiGene Expression Graph - Choose Dataset (Step 2 of 2)']]
 
             return render_to_response('S4M_Pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
@@ -736,7 +728,7 @@ class ExpressionsController(BaseController):
             return redirect(url(controller='contents', action='index'), code=404)
 
         # want to check if dataset_id has more than a sample type "limit_sort_by" option
-        comparison_type = self.request.params.get('sortBy')
+        comparison_type = request.params.get('sortBy')
 
         datasetMetadataResult = Stemformatics_Dataset.getExpressionDatasetMetadata(db, datasetID, c.uid)
         c.comparison_type = datasetMetadataResult['limit_sort_by'].split(',')
@@ -758,15 +750,9 @@ class ExpressionsController(BaseController):
                 for comparison_type in c.comparison_type:
                     c.options[comparison_type] = comparison_type
 
-                c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'),
-                                                                           'MultiGene Expression Graph - Choose Gene List'],
-                                 [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(
-                                     gene_set_id)), 'MultiGene Expression Graph - Choose Dataset'],
-                                 ['#', 'MultiGene Expression Graph - Choose Comparion Type (Step 3 of 3)']]
+                c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)), 'MultiGene Expression Graph - Choose Dataset'], ['#', 'MultiGene Expression Graph - Choose Comparion Type (Step 3 of 3)']]
 
-                c.url = h.url(
-                    '/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(
-                        gene_set_id) + '&datasetID=' + str(datasetID)) + '&sortBy='
+                c.url = h.url('/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id) + '&datasetID=' + str(datasetID)) + '&sortBy='
                 return render_to_response('S4M_pyramid:templates/workbench/generic_choose.mako',self.deprecated_pylons_data_for_view,request=self.request)
             else:
                 comparison_type = c.comparison_type[0]
@@ -787,10 +773,10 @@ class ExpressionsController(BaseController):
         c.symbol = c.ref_id = self._temp.ref_id = gene_set_id
         self._temp.probeSearch = ""
         self._temp.geneSearch = ""
-        c.select_probes = self._temp.select_probes = self.request.params.get('select_probes')
+        c.select_probes = self._temp.select_probes = request.params.get('select_probes')
         c.db_id = self._temp.db_id = db_id
         c.list_of_valid_graphs = Stemformatics_Dataset.list_of_valid_graphs_for_dataset(ds_id)
-        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, self.request.params.get('graphType'),
+        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, request.params.get('graphType'),
                                                                       c.list_of_valid_graphs)
         c.graphType = self._temp.graphType = graphType
         c.sortBy = self._temp.sortBy = comparison_type
@@ -798,14 +784,14 @@ class ExpressionsController(BaseController):
         c.choose_dataset_immediately = self._temp.choose_dataset_immediately = False
         c.chip_type = Stemformatics_Dataset.getChipType(c.ds_id)
         gene_set_items = Stemformatics_Gene_Set.getGeneSetData_without_genome_annotations(db, c.uid, gene_set_id)
-        self._temp.url = self.request.environ.get('PATH_INFO')
+        self._temp.url = request.environ.get('PATH_INFO')
 
         self._temp.original_temp_datasets = None
         self._temp.force_choose = None
 
-        if self.request.environ.get('QUERY_STRING'):
-            self._temp.url += '?' + self.request.environ['QUERY_STRING']
-        self._temp.large = self.request.params.get('size') == "large"
+        if request.environ.get('QUERY_STRING'):
+            self._temp.url += '?' + request.environ['QUERY_STRING']
+        self._temp.large = request.params.get('size') == "large"
 
         c.url = self._temp.url
         self._check_dataset_status()
@@ -813,35 +799,30 @@ class ExpressionsController(BaseController):
 
         show_limited = True
         if self._temp.ref_type == 'miRNA':
-            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited,
-                                                                                 self._temp.ref_type)
+            c.datasets = Stemformatics_Dataset.getAllDatasetDetailsOfOneChipType(db, c.uid, show_limited, self._temp.ref_type)
         else:
             c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, c.db_id)
         # self._check_gene_status()
 
         # self._temp.this_view = self._setup_graphs(self._temp)
         # self._set_outputs_for_graph()
-        c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'],
-                         [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'],
-                         [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)),
-                          'MultiGene Expression Graph - Choose Dataset'], ['#', 'Show MultiGene Expression Graph']]
-        audit_dict = {'ref_type': 'gene_set_id', 'ref_id': gene_set_id, 'uid': c.uid, 'url': url, 'request': self.request}
+        c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)), 'MultiGene Expression Graph - Choose Dataset'], ['#', 'Show MultiGene Expression Graph']]
+        audit_dict = {'ref_type': 'gene_set_id', 'ref_id': gene_set_id, 'uid': c.uid, 'url': url, 'request': request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        audit_dict = {'ref_type': 'ds_id', 'ref_id': ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
-                      'extra_ref_type': 'gene_set_id', 'extra_ref_id': str(gene_set_id)}
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': ds_id, 'uid': c.uid, 'url': url, 'request': request, 'extra_ref_type': 'gene_set_id', 'extra_ref_id': str(gene_set_id)}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         # now add entry for gene set items for gene_set_id so that this can be used in building redis keys
         gene_names = []
         for gene in gene_set_items[1]:
             gene_names.append(gene.gene_id)
-        audit_dict = {'ref_type': 'ds_id', 'ref_id': ds_id, 'uid': c.uid, 'url': url, 'request': self.request,
-                      'extra_ref_type': 'gene_set_items', 'extra_ref_id': json.dumps(gene_names)}
+        audit_dict = {'ref_type': 'ds_id', 'ref_id': ds_id, 'uid': c.uid, 'url': url, 'request': request, 'extra_ref_type': 'gene_set_items', 'extra_ref_id': json.dumps(gene_names)}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return render_to_response('S4M_pyramid:templates/expressions/result.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     def yugene_graph(self):
         c = self.request.c
+        request = self.request
         result = self._summary_get_inputs()
         if not result:
             return self._temp.render
@@ -853,7 +834,7 @@ class ExpressionsController(BaseController):
         self._summary_get_yugene_data()
         self._summary_set_outputs()
 
-        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':self.request}
+        audit_dict = {'ref_type':'gene_id','ref_id':self._temp.ensemblID,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         return render_to_response('S4M_pyramid:templates/genes/summary.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
