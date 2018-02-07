@@ -1,3 +1,6 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------7 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
 
  #TODO-1
 import logging
@@ -601,7 +604,6 @@ class ExpressionsController(BaseController):
         request = self.request
         choose_dataset_immediately = False
         probeSearch = request.params.get('probe')
-        #sets the variable to "" instead of None,if parameter is not provided.
         c.select_probes = select_probes = request.params.get('select_probes')
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
         feature_type = request.params.get('feature_type')
