@@ -254,7 +254,7 @@ class Stemformatics_Job(object):
             gs = db.gene_sets
 
             initial_result = db.jobs.filter(db.jobs.job_id == job_id).one()
-
+            return initial_result
             if initial_result.dataset_id != 0:
                 join1 = db.join(db.jobs,gs,gs.id==db.jobs.gene_set_id,True)
 
@@ -266,7 +266,8 @@ class Stemformatics_Job(object):
                 result = join1.filter(db.jobs.job_id == job_id).one()
 
             return result
-        except:
+        except Exception as e:
+            print(e)
             return None
 
     # changed to psycopg2
