@@ -230,6 +230,10 @@ class WrapperClassWithLazyInit(class_):
     def lazy_init(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 ```
+Export PDF(STILL NEED TO BE FIXED)
+--------------------------------
+In the pylons code, a tool called "prince" is used to convert the svg format graphs to PDF for the users to download. As of now, prince produces serveral major visual errors when converting svg with our pyramid server.
+The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors. This still needs to be investigated further.
 
 PostgreSQL
 --------------------------------
