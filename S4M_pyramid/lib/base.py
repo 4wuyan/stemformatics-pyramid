@@ -200,6 +200,7 @@ class BaseController():
             temp_gene = next(iter(result.values()))
             ensemblID = temp_gene['EnsemblID']
             self._temp.db_id = db_id = temp_gene['db_id']
+            c.db_id = db_id
 
             # check if gene is an ensembl id or not
             if ensemblID not in this_url:

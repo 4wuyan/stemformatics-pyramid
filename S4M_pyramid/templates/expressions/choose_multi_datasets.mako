@@ -79,7 +79,7 @@
                     </thead>
                     <tbody>
                         % for dataset in c.all_datasets:
-                            % if not 'has_data' in c.all_datasets[dataset] or c.all_datasets[dataset]['has_data'] == 'yes':
+                            % if not ('has_data' in c.all_datasets[dataset]) or c.all_datasets[dataset]['has_data'] == 'yes':
                                 <%
                                     organism = c.all_datasets[dataset]['organism']
                                     datasetID = dataset
