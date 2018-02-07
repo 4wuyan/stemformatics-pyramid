@@ -18,7 +18,6 @@ from .stemformatics_probe import Stemformatics_Probe
 from .stemformatics_gene_set import Stemformatics_Gene_Set
 from .stemformatics_notification import Stemformatics_Notification
 from .stemformatics_help import Stemformatics_Help
-from .stemformatics_galaxy import Stemformatics_Galaxy
 from .stemformatics_job import Stemformatics_Job
 from .stemformatics_export import Stemformatics_Export
 # from .stemformatics_export import *
