@@ -99,18 +99,18 @@ class Stemformatics_Notification(object):
 
         # We must always pass Unicode strings to Header, otherwise it will
         # use RFC 2047 encoding even on plain ASCII strings.
-        sender_name = str(Header(unicode(sender_name), header_charset))
-        recipient_name = str(Header(unicode(recipient_name), header_charset))
+        sender_name = str(Header(str(sender_name), header_charset))
+        recipient_name = str(Header(str(recipient_name), header_charset))
 
         # Make sure email addresses do not contain non-ASCII characters
-        sender_addr = sender_addr.encode('ascii')
-        recipient_addr = recipient_addr.encode('ascii')
+        sender_addr = sender_addr#.encode('ascii')
+        recipient_addr = recipient_addr#.encode('ascii')
 
         # Create the message ('plain' stands for Content-Type: text/plain)
         msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
         msg['From'] = formataddr((sender_name, sender_addr))
         msg['To'] = 'Undisclosed recipients'
-        msg['Subject'] = Header(unicode(subject), header_charset)
+        msg['Subject'] = Header(str(subject), header_charset)
 
         try:
             s = smtplib.SMTP(config['smtp_server'],config['smtp_port'])
