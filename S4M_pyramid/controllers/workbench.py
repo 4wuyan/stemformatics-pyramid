@@ -666,9 +666,9 @@ class WorkbenchController(BaseController):
         return text
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
-    def job_delete(self,id):
-        job_id = int(id)
+    def job_delete(self):
+        job_id = self.request.matchdict['id']
+        c = self.request.c
         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
 
