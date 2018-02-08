@@ -453,8 +453,9 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="/workbench/jobs_index.mako")
     def jobs_index(self):
+        c = self.request.c
         c.status = Stemformatics_Job.return_all_status()
         c.analysis = Stemformatics_Job.return_all_analysis()
         c.jobs = Stemformatics_Job.get_jobs_for_user(db,c.uid)
@@ -469,7 +470,7 @@ class WorkbenchController(BaseController):
         c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],['','Manage Analysis Jobs']]
         c.title = c.site_name+' Analyses  - Jobs index'
         # raise Error
-        return render('workbench/jobs_index.mako')
+        return self.deprecated_pylons_data_for_view
 
 
     @Stemformatics_Auth.authorise()
