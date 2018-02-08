@@ -23,7 +23,6 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 
 #CRITICAL-6
-from S4M_pyramid.model.stemformatics.stemformatics_gene import * #wouldn't work with Stemformatics_Gene
 from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin
 
 # check strong password
@@ -274,6 +273,7 @@ class Stemformatics_Gene_Set(object):
 
     @staticmethod
     def add_gene_to_set(db,uid,gene_set_id,db_id,gene): #CRITICAL-2
+        from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
         try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
