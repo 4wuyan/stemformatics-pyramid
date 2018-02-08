@@ -288,6 +288,44 @@ class GenesController(BaseController):
         c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         return self.deprecated_pylons_data_for_view
 
+    #---------------------NOT MIGRATED--------------------------------
+    def gene_set_view(self,id):
+        gene_set_id = int(id)
+
+        updated_gene_set_description  = request.params.get('description')
+
+        # update gene description if appropriate
+        if updated_gene_set_description is not None:
+            result = Stemformatics_Gene_Set.update_gene_set_description(db,c.uid,gene_set_id,updated_gene_set_description)
+
+        updated_gene_set_name = request.params.get('gene_set_name')
+        # update gene name if appropriate
+        if updated_gene_set_name is not None:
+            result = Stemformatics_Gene_Set.update_gene_set_name(db,c.uid,gene_set_id,updated_gene_set_name)
+
+        c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
+
+        result = Stemformatics_Gene_Set.getGeneSetData(db,c.uid,gene_set_id)
+        resultGeneSet = result[0]
+        resultGeneSetData = result[1]
+
+        if resultGeneSet.uid == 0:
+            c.public = True
+            c.title = c.site_name+' Analyses  - View Public Gene List - ' + resultGeneSet.gene_set_name
+            c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/public_gene_set_index'),'View Public Gene Lists'],[h.url('/workbench/gene_set_view'+str(gene_set_id)),'Public Gene List View']]
+        else:
+            c.public = False
+            c.title = c.site_name+' Analyses  - View Gene List - ' + resultGeneSet.gene_set_name
+            c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists'],[h.url('/workbench/gene_set_view'+str(gene_set_id)),'Gene List View']]
+
+
+        c.result = resultGeneSetData
+        c.gene_set = resultGeneSet
+        c.db_id = resultGeneSet.db_id
+        c.message = request.params.get('message')
+        Stemformatics_Auth.set_smart_redirect(h.url('/workbench/gene_set_view/'+str(gene_set_id)))
+        return render('workbench/gene_set_view.mako')
+
     @Stemformatics_Auth.authorise(db)
     def gene_set_bulk_import_manager(self): #CRITICAL-4
         request = self.request
@@ -419,6 +457,91 @@ class GenesController(BaseController):
         #if revalidateGeneSet == 'Validate':
         #    raise Error
         return render_to_response('S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+    #---------------------NOT MIGRATED--------------------------------
+    def merge_gene_sets(self): #CRITICAL-4
+
+        c.analysis = 8
+
+        position  = request.params.get('position')
+        gene_set_id  = request.params.get('gene_set_id')
+        gene_set_id1  = request.params.get('gene_set_id1')
+        gene_set_id2  = request.params.get('gene_set_id2')
+
+        if gene_set_id1 is None and position == '1':
+            gene_set_id1 = gene_set_id
+        if gene_set_id2 is None and position == '2':
+            gene_set_id2 = gene_set_id
+
+        c.title = c.site_name+' Analyses - Merge Gene Lists'
+        if gene_set_id1 is None:
+            # call a gene list chooser for
+            result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
+
+            c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
+
+            c.result = result
+            c.url = h.url('/workbench/merge_gene_sets?position=1')
+            c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/merge_gene_sets'),'Merge Gene Lists - Choose first gene list (Step 1 of 3)']]
+            return render('workbench/choose_gene_set.mako')
+
+        else:
+            gene_set_id1 = int(gene_set_id1)
+            species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id1)
+            gene_set_name1 = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id1)
+            c.filter_out_gene_sets = [gene_set_id1]
+            db_id = Stemformatics_Gene_Set.get_db_id(db,c.uid,gene_set_id1)
+
+        if gene_set_id2 is None:
+            # call a gene list chooser for
+            result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
+
+            c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
+            c.filter_by_db_id = db_id
+            c.result = result
+            c.url = h.url('/workbench/merge_gene_sets?gene_set_id1='+str(gene_set_id1)+'&position=2')
+            c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/merge_gene_sets'),'Merge Gene Lists - Choose second gene list (Step 2 of 3)']]
+            return render('workbench/choose_gene_set.mako')
+
+        else:
+            gene_set_id2 = int(gene_set_id2)
+            gene_set_name2 = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id2)
+
+        save = request.params.get('save')
+        c.gene_set_name = request.params.get('gene_set_name')
+        c.description = request.params.get('description')
+
+        if c.gene_set_name is None:
+            # get the list of ensemblIDs and then save this against the user
+            c.gene_set_name = "Merge Gene Lists "+strftime("%Y-%m-%d %H:%M", gmtime())
+            c.description = "From gene lists " + gene_set_name1 + " and " + gene_set_name2 + " Created:"+strftime("%Y-%m-%d %H:%M", gmtime())
+
+
+        c.url = h.url('/workbench/merge_gene_sets?gene_set_id1='+str(gene_set_id1)+'&gene_set_id2='+str(gene_set_id2))
+        if save is None:
+            c.db_id = db_id
+            c.message = ""
+            return render('workbench/choose_gene_set_name.mako')
+
+        result1 = Stemformatics_Gene_Set.getGeneSetData_without_genome_annotations(db,c.uid,gene_set_id1)
+        result2 = Stemformatics_Gene_Set.getGeneSetData_without_genome_annotations(db,c.uid,gene_set_id2)
+        gene_set_items_raw1 = result1[1]
+        gene_set_items_raw2 = result2[1]
+        merged_list = []
+        for row in gene_set_items_raw1:
+            merged_list.append(row.gene_id)
+        for row in gene_set_items_raw2:
+            merged_list.append(row.gene_id)
+        merged_list = list(set(merged_list))
+
+        result = Stemformatics_Gene_Set.addGeneSet(db,c.uid,c.gene_set_name,c.description,db_id,merged_list)
+        if result is None:
+            c.message = "Could not save Gene List. Please check the Gene List name is unique."
+            c.title = c.site_name+" Analyses - Error merging Gene List"
+            return render('workbench/error_message.mako')
+        else:
+            # result should be the gene list id
+            redirect(url('/workbench/gene_set_view/'+str(result)))
 
     @action(renderer="string")
     def search_and_choose_genes_ajax(self):
