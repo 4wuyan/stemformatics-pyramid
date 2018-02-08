@@ -46,7 +46,8 @@ def main(global_config, **settings):
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
     config.add_handler("auth with id", "/auth/{action}/{id}", handler=AuthController)
-    config.add_handler("workbench","/workbench/{action}/{id}",handler=WorkbenchController)
+    config.add_handler("workbench","/workbench/{action}",handler=WorkbenchController)
+    config.add_handler("workbench_withID","/workbench/{action}/{id}",handler=WorkbenchController)
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)

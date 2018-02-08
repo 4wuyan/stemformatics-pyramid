@@ -877,9 +877,9 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise(db)
     @action(renderer='templates/workbench/analysis_confirmation_message.mako')
-    def analysis_confirmation_message(self,id):
+    def analysis_confirmation_message(self):
         c = self.request.c
-        job_id = id
+        job_id = self.request.matchdict['id']
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
         if result is None:
