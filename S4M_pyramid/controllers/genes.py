@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------8 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set, db_deprecated_pylons_orm as db
@@ -127,7 +131,7 @@ class GenesController(BaseController):
 
         return csv_text
 
-    action(renderer="string")#This might need to change as download may need to be a .tsv file
+    @action(renderer="string") # This might need to change as download may need to be a .tsv file
     def download_yugene(self):
         request = self.request
         c = self.request.c
@@ -171,6 +175,7 @@ class GenesController(BaseController):
         return data
 
     @action(renderer="string")
+    # This is for the autocomplete function if we decide to use it
     def get_autocomplete(self):
         c = self.request.c
         request = self.request
@@ -226,9 +231,8 @@ class GenesController(BaseController):
             species = None
 
         c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
-        if request.params.get("raise_error") == "true":
-            #raise Error
-            pass
+        # if request.params.get("raise_error") == "true":
+        #    raise Error
 
         return c.data
 
