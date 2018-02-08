@@ -443,7 +443,7 @@ class WorkbenchController(BaseController):
         audit_dict = {'ref_type':'ds_id','ref_id':dataset_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return redirect(h.url('/workbench/analysis_confirmation_message?job_id='+str(job_id)))
+        return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
     @Stemformatics_Auth.authorise()
@@ -877,9 +877,9 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise(db)
     @action(renderer='templates/workbench/analysis_confirmation_message.mako')
-    def analysis_confirmation_message(self):
+    def analysis_confirmation_message(self,id):
         c = self.request.c
-        job_id = self.request.params.get('job_id')
+        job_id = id
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
         if result is None:
@@ -2074,7 +2074,7 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         audit_dict = {'ref_type':'ds_id','ref_id':dataset_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-        return redirect(h.url('/workbench/analysis_confirmation_message?job_id='+str(job_id)))
+        return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
     #---------------------NOT MIGRATED--------------------------------
@@ -2170,7 +2170,7 @@ class WorkbenchController(BaseController):
         audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-        return redirect(h.url('/workbench/analysis_confirmation_message?job_id'+str(job_id)))
+        return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
     @Stemformatics_Auth.authorise(db)
