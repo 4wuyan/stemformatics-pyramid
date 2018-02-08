@@ -669,7 +669,7 @@ class WorkbenchController(BaseController):
     def job_delete(self):
         job_id = self.request.matchdict['id']
         c = self.request.c
-            result = Stemformatics_Job.delete_job(db,job_id,c.uid)
+        result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
 
     @Stemformatics_Auth.authorise()
