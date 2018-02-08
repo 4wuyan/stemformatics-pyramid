@@ -37,6 +37,8 @@ class GenesController(BaseController):
         c.searchQuery = request.params.get("gene", None)
         if c.searchQuery is None:
             c.searchQuery = request.params.get("filter", None)
+        if c.searchQuery is not None:
+            c.searchQuery = c.searchQuery.replace('<script>','').replace('</script>','')
 
         db_id = request.params.get("db_id")
         selected_gene_id = request.params.get("ensembl_id",None)
