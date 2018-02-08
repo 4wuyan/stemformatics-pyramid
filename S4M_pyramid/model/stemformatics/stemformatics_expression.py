@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------8 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 import re,string,json,numpy,os,logging
 from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
 import subprocess
@@ -663,8 +667,12 @@ class Stemformatics_Expression(object):
             if group not in group_members:
                 group_members[group] = 0
             group_members[group] = group_members[group] + 1
+        counter = 0
         for group in group_members:
-            start_colour = newColourArray[group]
+            if counter >= len(newColourArray):
+                counter = 0
+            start_colour = newColourArray[counter]
+            counter = counter + 1
             end_colour = '#000000'
             list_of_start_end_colours = [[start_colour,end_colour]]
             number_of_steps = group_members[group]
@@ -694,7 +702,7 @@ class Stemformatics_Expression(object):
                     gct_header +="\t"+replicate_group_id
             gct_header +="\n"
         else:
-            gct_header +="\tIssue with finding chip_ids. Please contact the "+  c.site_name+" team.\n"
+            gct_header +="\tIssue with finding chip_ids. Please contact the "+c.site_name+" team.\n"
         return gct_header
 
 
@@ -735,6 +743,7 @@ class Stemformatics_Expression(object):
 
         # graph_values has two keys, full_data and sample_data returned
         graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db_id,datasets_dict,ensembl_id,all_sample_metadata)
+
         # set both full_data and sample_data
         result = Stemformatics_Expression.set_yugene_graph_values(uid,ensembl_id,db_id,graph_values)
         return result
@@ -1167,9 +1176,6 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def unpickle_expression_data(data):
-        if not isinstance(data, bytes):
-            data = data.encode('utf-8')
-        # pickle.loads requires a bytes string
         restore_data = pickle.loads(data)
         return restore_data
 
