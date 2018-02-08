@@ -30,6 +30,7 @@ POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
 IDENTIFIER = fe.PlainText(not_empty=True)
 URL = fe.URL(not_empty=True)
+
 class tempData(object):
     pass
 
@@ -287,9 +288,6 @@ class Stemformatics_Expression(object):
     """
     @staticmethod
     def restore_yugene_graph_values(data):
-        if not isinstance(data, bytes):
-            data = data.encode('utf-8')
-        # pickle.loads requires a bytes string
         restore_data = pickle.loads(data)
         return restore_data
 
