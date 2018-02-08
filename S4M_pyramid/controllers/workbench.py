@@ -2077,9 +2077,10 @@ class WorkbenchController(BaseController):
         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def user_defined_expression_profile(self):
         # CHoose a dataset
+        c = self.request.c
+        request = self.request
         ds_id = request.params.get('datasetID')
         c.analysis=7
         c.species = None
@@ -2090,7 +2091,7 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/user_defined_expression_profile')
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/user_defined_expression_profile'),'User Defined Expression Profile - Choose Dataset  (Step 1 of 2)']]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
         if c.dataset_status != "Available":
@@ -2112,7 +2113,8 @@ class WorkbenchController(BaseController):
             #might move the values from jobs into the stemformatics.jobs_metadata table from now on.
             # fix remove samples help
             c.url = h.url('/workbench/user_defined_expression_profile?datasetID='+str(ds_id))
-            return render('workbench/user_defined_expression_profile.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/workbench/user_defined_expression_profile.mako',
+                               self.deprecated_pylons_data_for_view, request=self.request)
 
         options = {}
         options['galaxy_server_url'] = config['galaxy_server_url']
@@ -2144,7 +2146,7 @@ class WorkbenchController(BaseController):
         if not os.path.exists(base_path+str(job_id)):
             os.mkdir(base_path+str(job_id))
 
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
         # create gct_file_path
         gct_file_path = self.StemformaticsQueue + str(job_id) + '/' +'job.gct'
 
@@ -2161,7 +2163,7 @@ class WorkbenchController(BaseController):
             return redirect(url(controller='contents', action='index'), code=404)
 
         # connect to galaxy
-        from guide.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
+        from S4M_pyramid.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
         galaxyInstance = Stemformatics_Galaxy.connect_to_galaxy()
 
         # run tool
