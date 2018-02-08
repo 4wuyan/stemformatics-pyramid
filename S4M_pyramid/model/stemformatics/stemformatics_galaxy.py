@@ -99,15 +99,15 @@ class Stemformatics_Galaxy(object):
             tool_inputs = inputs().set('infile', dataset(dataset_id['outputs'][0]["id"])).set('rowId',row)
             result = toolClient.run_tool(history_id= history['id'], tool_id='gene_neighbourhood', tool_inputs= tool_inputs)
             return history['id']
-        except:
+        except Exception as e:
+            #print(e)
             # now update job with status 2 this will also send email
             status = '2'
             reference_id = 'None'
             reference_type = "Galaxy GN/UDEP"
             Stemformatics_Job.update_job_status(db,job_id,status, reference_id, reference_type)
-
             # redirect to 404 as something went wrong and job is not submiteed to galaxy
-            redirect(url(controller='contents', action='index'), code=404)
+            raise redirect(url(controller='contents', action='index'), code=404)
 
 
     @staticmethod
