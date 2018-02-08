@@ -33,8 +33,8 @@ class WorkbenchController(BaseController):
         # GenePattern modules
         # I am hard coding this for some reason we can't those attributes from the DB
         # for our pyramid server.
-        self.GPQueue = "/var/www/pylons-data/prod/jobs/GPQueue/"#config['GPQueue']
-        self.StemformaticsQueue ="/var/www/pylons-data/prod/jobs/StemformaticsQueue" #config['StemformaticsQueue']
+        self.GPQueue = config['GPQueue']
+        self.StemformaticsQueue = config['StemformaticsQueue']
         #self.StemformaticsController = config['StemformaticsController']
         #self.FullJavaPath = config['FullJavaPath']
 
@@ -453,7 +453,7 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    @action(renderer="/workbench/jobs_index.mako")
+    @action(renderer="templates/workbench/jobs_index.mako")
     def jobs_index(self):
         c = self.request.c
         c.status = Stemformatics_Job.return_all_status()
@@ -669,7 +669,7 @@ class WorkbenchController(BaseController):
     def job_delete(self):
         job_id = self.request.matchdict['id']
         c = self.request.c
-        result = Stemformatics_Job.delete_job(db,job_id,c.uid)
+            result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
 
     @Stemformatics_Auth.authorise()
