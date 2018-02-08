@@ -31,8 +31,6 @@ class WorkbenchController(BaseController):
         self.default_mouse_dataset = int(config['default_mouse_dataset'])
 
         # GenePattern modules
-        # I am hard coding this for some reason we can't those attributes from the DB
-        # for our pyramid server.
         self.GPQueue = config['GPQueue']
         self.StemformaticsQueue = config['StemformaticsQueue']
         #self.StemformaticsController = config['StemformaticsController']
