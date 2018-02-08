@@ -251,10 +251,11 @@ class Stemformatics_Job(object):
             ds = db.datasets
 
             db.schema = 'stemformatics'
+            # wrap the db so that column with the same name can be distinguished
             gs = db.with_labels(db.gene_sets)
-            print(gs.all())
             initial_result = db.jobs.filter(db.jobs.job_id == job_id).one()
-            if initial_result.dataset_id != 0:               
+            if initial_result.dataset_id != 0:
+                #note that gs.id now needs to be gs.stemformatics_gene_sets_id,because of the prefix
                 join1 = db.join(db.jobs,gs,gs.stemformatics_gene_sets_id==db.jobs.gene_set_id,True)
 
                 join2 = db.join(join1,ds,ds.id==db.jobs.dataset_id)
@@ -266,7 +267,7 @@ class Stemformatics_Job(object):
 
             return result
         except Exception as e:
-            print(e)
+            #print(e)
             return None
 
     # changed to psycopg2
