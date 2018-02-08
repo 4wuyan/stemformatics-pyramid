@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------8 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
@@ -246,12 +250,12 @@ class Stemformatics_Gene_Set(object):
             result = join1.filter(gsi.id==gene_set_item_id).one()
 
             if result is None:
-                raise ValueError
+                raise Error
                 return None
 
             # check that this user owns this gene_set record
             if result.uid != uid:
-                raise ValueError
+                raise Error
                 return None
 
             # save gene_set_id
