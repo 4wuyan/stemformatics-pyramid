@@ -251,12 +251,11 @@ class Stemformatics_Job(object):
             ds = db.datasets
 
             db.schema = 'stemformatics'
-            gs = db.gene_sets
-
+            gs = db.with_labels(db.gene_sets)
+            print(gs.all())
             initial_result = db.jobs.filter(db.jobs.job_id == job_id).one()
-            if initial_result.dataset_id != 0:
-                
-                join1 = db.join(db.jobs,gs,gs.id==db.jobs.gene_set_id,True)
+            if initial_result.dataset_id != 0:               
+                join1 = db.join(db.jobs,gs,gs.stemformatics_gene_sets_id==db.jobs.gene_set_id,True)
 
                 join2 = db.join(join1,ds,ds.id==db.jobs.dataset_id)
 

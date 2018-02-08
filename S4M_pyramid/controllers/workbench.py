@@ -888,6 +888,7 @@ class WorkbenchController(BaseController):
             return redirect(url(controller='contents', action='index'), code=404)
 
         c.job = result
+        c.job.gene_set_name = c.job.stemformatics_gene_sets_gene_set_name#map the name that got labeled to the original
         c.status = Stemformatics_Job.return_all_status()
         c.analysis = Stemformatics_Job.return_all_analysis()
 
