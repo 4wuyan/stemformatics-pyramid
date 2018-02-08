@@ -234,9 +234,9 @@ The two options in Pyramid return the same Response object. But there are some d
 
 Let's have a look at this architecture:
 
-1. **Action Method** returns an _object of any type_ to **Framework Middleware**
-2. **Framework Middleware** will transform the received object into a _Response_ object, if the received object is not a _Response_ object.
-3. **Framework Middleware** finally passes a _Response_ object to **Your Browser**.
+1. **Action Method** returns an _object of any type_ to **Pyramid Middleware**
+2. **Pyramid Middleware** will transform the received object into a _Response_ object, if the received object is not a _Response_ object.
+3. **Pyramid Middleware** finally passes a _Response_ object to **Your Browser**.
 
 Though the final _Response_ objects you get in **Your Browser** are the same in those 2 actions, what `foo1` and `foo2` directly return are different: `foo1` returns `str`, while `foo2` returns `dict` (Try testing it yourself!). Hence if other parts of the code want to call the action method, `foo1` and `foo2` provide different results, since we are still beneath **Pyramid Middleware**.
 
@@ -264,10 +264,6 @@ class WrapperClassWithLazyInit(class_):
     def lazy_init(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 ```
-Export PDF(STILL NEED TO BE FIXED)
---------------------------------
-In the pylons code, a tool called "prince" is used to convert the svg format graphs to PDF for the users to download. As of now, prince produces serveral major visual errors when converting svg with our pyramid server.
-The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors. This still needs to be investigated further.
 
 PostgreSQL
 --------------------------------
@@ -292,3 +288,9 @@ Except for pickle data, the reason that Bytes should be decoded into Unicode imm
 > Software should only work with Unicode strings internally, decoding the input data as soon as possible and encoding the output only at the end.
 
 You might want to google more about the string differences in Python 2 and 3.
+
+Export PDF (STILL NEED TO BE FIXED)
+======================================
+
+In the pylons code, a tool called "prince" is used to convert the svg format graphs to PDF for the users to download. As of now, prince produces serveral major visual errors when converting svg with our pyramid server.
+The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors. This still needs to be investigated further.
