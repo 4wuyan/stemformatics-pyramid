@@ -113,95 +113,15 @@ class GenesController(BaseController):
             data = self._convert_genes_dict_to_csv(selected_gene_id,genes_dict)
             return render_to_response('string',data,request=self.request)
 
-    @action(renderer="string")
-    def get_autocomplete(self):
-        c = self.request.c
-        request = self.request
-        geneSearch = request.params.get("term")
-        try:
-            geneSearch = str(geneSearch).strip()
-        except:
-            return json.dumps([])
-
-        db_id = request.params.get("db_id")
-
-        max_number = 20
-        returnData = Stemformatics_Gene.getAutoComplete(db, c.species_dict, geneSearch, db_id, True, max_number)
-
-        return json.dumps(returnData)
-
-    @action(renderer="string")
-    def search_and_choose_genes_ajax(self):
-        request = self.request
-        c = self.request.c
-        temp_data = {}
-        search_query = request.params.get("filter", None)
-        db_id = request.params.get("db_id")
-
-        max_number = 20
-        temp_data = Stemformatics_Gene.search_and_choose_genes(db,c.species_dict,search_query,db_id,max_number)
-
-        json_data = json.dumps(temp_data)
-
-        audit_dict = {'ref_type':'search_term','ref_id':search_query,'uid':c.uid,'url':url,'request':request}
-        result = Stemformatics_Audit.add_audit_log(audit_dict)
-
-        return json_data
-
-    @action(renderer="templates/genes/feature_search.mako")
-    def feature_search(self):
-        request = self.request
-        c = self.request.c
-
-        c.title = c.site_name+" - Feature Search - Search for your feature of interest"
-        c.db_id = db_id = request.params.get("db_id")
-        c.feature_type = feature_type = request.params.get("feature_type")
-        c.feature_search_term = feature_search_term = request.params.get("feature_search_term")
-        use_json = False
-        c.extra_message = ""
-        if feature_search_term is None or len(feature_search_term) == 0:
-            feature_search_term = ""
-            c.data = None
-        else:
-            c.data = Stemformatics_Gene.find_feature_search_items(feature_search_term,db_id,feature_type,use_json)
-            if c.data == [] or c.data is None:
-                c.data == []
-                c.extra_message = "No features found. Please change your search term."
-            elif len(c.data) > 100:
-                c.data = c.data[0:100]
-                c.extra_message = "Too many features found, showing first 100. Please add to your search term."
-        return self.deprecated_pylons_data_for_view
-
-    @action(renderer="string")
-    def get_feature_search_autocomplete(self):
-
-        request = self.request
-        c = self.request.c
-
-        c.feature_search_term = feature_search_term = request.params.get("term")
-        c.db_id = db_id = request.params.get("db_id")
-        c.feature_type = feature_type = request.params.get("feature_type")
-        try:
-            species = c.species_dict[int(c.db_id)]['sci_name']
-        except:
-            species = None
-
-        c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
-        if request.params.get("raise_error") == "true":
-            #raise Error
-            pass
-
-        return c.data
-
     def _convert_genes_dict_to_csv(self,ensembl_id,genes_dict):
-        csv_text = "Symbol	Aliases	Description	Species	Ensembl ID	Entrez ID	Chromosome Location\n"
+        csv_text = "Symbol  Aliases Description Species Ensembl ID  Entrez ID   Chromosome Location\n"
         for gene in genes_dict:
             if ensembl_id is not None and ensembl_id != gene:
                continue
             temp = genes_dict[gene]
             direction ='+' if temp['Location']['direction'] != -1 else '-'
             location = 'chr'+str(temp['Location']['chr'])+':'+str(temp['Location']['start'])+'-'+str(temp['Location']['end'])+','+direction
-            csv_text += temp['symbol']+"	"+temp['aliases']+"	"+temp['description'].replace('<br />','')+"	"+temp['species']+"	"+temp['EnsemblID']+"	"+temp['EntrezID']+"	"+location+"\n"
+            csv_text += temp['symbol']+"    "+temp['aliases']+" "+temp['description'].replace('<br />','')+"    "+temp['species']+" "+temp['EnsemblID']+"   "+temp['EntrezID']+"    "+location+"\n"
 
         return csv_text
 
@@ -248,6 +168,68 @@ class GenesController(BaseController):
 
         return data
 
+    @action(renderer="string")
+    def get_autocomplete(self):
+        c = self.request.c
+        request = self.request
+        geneSearch = request.params.get("term")
+        try:
+            geneSearch = str(geneSearch).strip()
+        except:
+            return json.dumps([])
+
+        db_id = request.params.get("db_id")
+
+        max_number = 20
+        returnData = Stemformatics_Gene.getAutoComplete(db, c.species_dict, geneSearch, db_id, True, max_number)
+
+        return json.dumps(returnData)
+
+    @action(renderer="templates/genes/feature_search.mako")
+    def feature_search(self):
+        request = self.request
+        c = self.request.c
+
+        c.title = c.site_name+" - Feature Search - Search for your feature of interest"
+        c.db_id = db_id = request.params.get("db_id")
+        c.feature_type = feature_type = request.params.get("feature_type")
+        c.feature_search_term = feature_search_term = request.params.get("feature_search_term")
+        use_json = False
+        c.extra_message = ""
+        if feature_search_term is None or len(feature_search_term) == 0:
+            feature_search_term = ""
+            c.data = None
+        else:
+            c.data = Stemformatics_Gene.find_feature_search_items(feature_search_term,db_id,feature_type,use_json)
+            if c.data == [] or c.data is None:
+                c.data == []
+                c.extra_message = "No features found. Please change your search term."
+            elif len(c.data) > 100:
+                c.data = c.data[0:100]
+                c.extra_message = "Too many features found, showing first 100. Please add to your search term."
+        return self.deprecated_pylons_data_for_view
+
+    @action(renderer="string")
+    def get_feature_search_autocomplete(self):
+
+        request = self.request
+        c = self.request.c
+
+        c.feature_search_term = feature_search_term = request.params.get("term")
+        c.db_id = db_id = request.params.get("db_id")
+        c.feature_type = feature_type = request.params.get("feature_type")
+        try:
+            species = c.species_dict[int(c.db_id)]['sci_name']
+        except:
+            species = None
+
+        c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
+        if request.params.get("raise_error") == "true":
+            #raise Error
+            pass
+
+        return c.data
+
     @action(renderer="templates/workbench/gene_set_index.mako")
     def public_gene_set_index(self):
         request = self.request
@@ -276,7 +258,6 @@ class GenesController(BaseController):
         c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'View Public Gene Lists']]
         return self.deprecated_pylons_data_for_view
-
 
     @action(renderer="templates/workbench/gene_set_index.mako")
     @Stemformatics_Auth.authorise(db)
@@ -438,3 +419,21 @@ class GenesController(BaseController):
         #if revalidateGeneSet == 'Validate':
         #    raise Error
         return render_to_response('S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
+    @action(renderer="string")
+    def search_and_choose_genes_ajax(self):
+        request = self.request
+        c = self.request.c
+        temp_data = {}
+        search_query = request.params.get("filter", None)
+        db_id = request.params.get("db_id")
+
+        max_number = 20
+        temp_data = Stemformatics_Gene.search_and_choose_genes(db,c.species_dict,search_query,db_id,max_number)
+
+        json_data = json.dumps(temp_data)
+
+        audit_dict = {'ref_type':'search_term','ref_id':search_query,'uid':c.uid,'url':url,'request':request}
+        result = Stemformatics_Audit.add_audit_log(audit_dict)
+
+        return json_data
