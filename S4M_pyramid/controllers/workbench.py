@@ -874,7 +874,7 @@ class WorkbenchController(BaseController):
         # return render('workbench/gene_set_view.mako')
         return render('/workbench/gene_set_gene_preview.mako')
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     @action(renderer='templates/workbench/analysis_confirmation_message.mako')
     def analysis_confirmation_message(self):
         c = self.request.c
@@ -1900,7 +1900,7 @@ class WorkbenchController(BaseController):
 
 
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     def gene_neighbour_wizard(self): #CRITICAL-5
         c = self.request.c
         request = self.request
@@ -2175,7 +2175,7 @@ class WorkbenchController(BaseController):
         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     @action(renderer="templates/workbench/choose_gene_expression_profile.mako")
     def gene_expression_profile_wizard(self):
         c = self.request.c
