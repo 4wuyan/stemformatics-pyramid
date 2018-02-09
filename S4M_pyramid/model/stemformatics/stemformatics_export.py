@@ -69,8 +69,7 @@ class Stemformatics_Export(object):
         f = open(temp_input_file,'w')
         f.write(data)#In python3 we don't need to encode the data
         f.close()
-        #with io.open(temp_input_file) as f:
-        #    f.write(data)
+
 
         p = subprocess.Popen(command_line,shell=True)
         p.communicate() # this makes the python code wait for the subprocess to finish
@@ -79,8 +78,7 @@ class Stemformatics_Export(object):
         f = open(temp_output_file,'rb')#need read the file as binary
         export_data = f.read()
         f.close()
-        #with io.open(temp_output_file,'rb') as f:
-        #    export_data = f.read()
+
 
         # delete both files
 
@@ -88,6 +86,7 @@ class Stemformatics_Export(object):
         command_line = "rm "+temp_input_file+" "+temp_output_file
         p = subprocess.Popen(command_line,shell=True)
 
+        # when using rsvg-convert, we don't have the staging file.
 
         #if output_format =="png":
         #    command_line = "rm "+staging_pdf_file

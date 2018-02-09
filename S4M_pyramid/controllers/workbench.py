@@ -265,7 +265,7 @@ class WorkbenchController(BaseController):
             ref_type = 'probes'
             if select_probes is None:
                 select_probes = ""
-                probe_list = [] #pretty sure probe_list == [] was a typo?
+                probe_list = []
             elif select_probes != probes_saved:
 
                 temp_probe_list = re.sub('\s{1,}',delimiter,select_probes)
