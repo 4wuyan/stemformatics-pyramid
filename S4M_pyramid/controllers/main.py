@@ -21,8 +21,9 @@ class MainController(BaseController):
         result = Stemformatics_Admin.health_check(db)
         return result
 
-    #def tests(self):
-    #    return render('tests.mako')
+    #---------------------NOT MIGRATED--------------------------------
+    def tests(self):
+        return render('tests.mako')
 
     def suggest_dataset(self):
         redirect(config['agile_org_base_url']+'datasets/external_add')
@@ -62,9 +63,11 @@ class MainController(BaseController):
 
         NOTE: not sure about allowing download if you are registered only
     """
+    @action(renderer='string')
     #@Stemformatics_Auth.authorise(db)
     def export_d3(self):
         request = self.request
+        response = self.request.response
         """
         available = Stemformatics_Auth.check_real_user(c.uid)
         if not available:
@@ -80,12 +83,12 @@ class MainController(BaseController):
 
         response.headers.pop('Cache-Control', None)
         response.headers.pop('Pragma', None)
-        response = Response(export_data.data)
+
         response.headers['Content-type'] = export_data.content_type
         response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
         response.charset= "utf8"
 
-        return response
+        return export_data.data
 
 
     def send_email(self):
