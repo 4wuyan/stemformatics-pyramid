@@ -31,8 +31,8 @@ class MainController(BaseController):
         request = self.request
         response = self.request.response
         # Task #396 - error with ie8 downloading with these on SSL
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
 
         response.headers['Content-type'] = 'text/csv'
         stemformatics_version = config['stemformatics_version']
@@ -78,8 +78,8 @@ class MainController(BaseController):
 
         export_data = Stemformatics_Export.get_export_data_for_d3(data,file_name,output_format)
 
-        #del response.headers['Cache-Control']
-        #del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         response = Response(export_data.data)
         response.headers['Content-type'] = export_data.content_type
         response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
