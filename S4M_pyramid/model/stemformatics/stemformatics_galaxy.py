@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import hmac
 import S4M_pyramid.lib.helpers as h
 
-import psycopg2, _pickle as cPickle
+import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.lib.deprecated_pylons_globals import config,url
@@ -99,8 +99,7 @@ class Stemformatics_Galaxy(object):
             tool_inputs = inputs().set('infile', dataset(dataset_id['outputs'][0]["id"])).set('rowId',row)
             result = toolClient.run_tool(history_id= history['id'], tool_id='gene_neighbourhood', tool_inputs= tool_inputs)
             return history['id']
-        except Exception as e:
-            #print(e)
+        except:
             # now update job with status 2 this will also send email
             status = '2'
             reference_id = 'None'
