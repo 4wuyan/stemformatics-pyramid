@@ -187,7 +187,7 @@ class WorkbenchController(BaseController):
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_index'),'Manage Gene Lists'],[h.url('/workbench/gene_set_view/'+str(gene_set_id)),'Gene List View'],['','Choose Analysis for Gene List']]
         return render('workbench/choose_analysis.mako')
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     def hierarchical_cluster_wizard(self): #CRITICAL-5
         c = self.request.c
         request = self.request
