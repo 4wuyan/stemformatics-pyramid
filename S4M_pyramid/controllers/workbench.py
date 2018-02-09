@@ -2111,7 +2111,7 @@ class WorkbenchController(BaseController):
             #might move the values from jobs into the stemformatics.jobs_metadata table from now on.
             # fix remove samples help
             c.url = h.url('/workbench/user_defined_expression_profile?datasetID='+str(ds_id))
-            return render_to_response('S4M_pyramid:templates/workbench/workbench/user_defined_expression_profile.mako',
+            return render_to_response('S4M_pyramid:templates/workbench/user_defined_expression_profile.mako',
                                self.deprecated_pylons_data_for_view, request=self.request)
 
         options = {}
