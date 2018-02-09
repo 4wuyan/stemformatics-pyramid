@@ -103,8 +103,8 @@ class Stemformatics_Notification(object):
         recipient_name = str(Header(str(recipient_name), header_charset))
 
         # Make sure email addresses do not contain non-ASCII characters
-        sender_addr = sender_addr#.encode('ascii')
-        recipient_addr = recipient_addr#.encode('ascii')
+        sender_addr.encode('ascii')
+        recipient_addr.encode('ascii')
 
         # Create the message ('plain' stands for Content-Type: text/plain)
         msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
