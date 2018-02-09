@@ -33,8 +33,8 @@ class WorkbenchController(BaseController):
         # GenePattern modules
         self.GPQueue = config['GPQueue']
         self.StemformaticsQueue = config['StemformaticsQueue']
-        self.StemformaticsController = config['StemformaticsController']
-        self.FullJavaPath = config['FullJavaPath']
+        #self.StemformaticsController = config['StemformaticsController']
+        #self.FullJavaPath = config['FullJavaPath']
 
     @action(renderer = 'templates/workbench/index.mako')
     def index(self):

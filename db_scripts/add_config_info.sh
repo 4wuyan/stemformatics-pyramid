@@ -10,9 +10,6 @@ psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('twitter_oauth_token','456310432-JTqWAijgvpuJuFIxcIGJ5mStek78bCRjXlvSzSMV');"
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('twitter_oauth_token_secret','0Rftaoi6uPb9A5x9vNVcfdwLTUMa196LELBPpoZz1w');"
 
-psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('FullJavaPath','/usr/bin/java');"
-psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('StemformaticsController','/home/yan/repos/s4m_pyramid/S4M_pyramid/controllers/StemformaticsController.jar');"
-
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('GPQueue','/var/www/pylons-data/prod/jobs/GPQueue/');"
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('StemformaticsQueue','/var/www/pylons-data/prod/jobs/StemformaticsQueue');"
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('DatasetGCTFiles','/var/www/prod/pylons-data/GCTFiles');"
