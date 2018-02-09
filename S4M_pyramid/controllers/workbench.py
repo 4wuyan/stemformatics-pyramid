@@ -2211,8 +2211,8 @@ class WorkbenchController(BaseController):
 
 
         if export is not None and c.datasets is not None:
-            del response.headers['Cache-Control']
-            del response.headers['Pragma']
+            response.headers.pop('Cache-Control', None)
+            response.headers.pop('Pragma', None)
             stemformatics_version = config['stemformatics_version']
             if export == 'download_script':
                 response.headers['Content-type'] = 'text/plain'

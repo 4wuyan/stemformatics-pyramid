@@ -115,8 +115,8 @@ class MainController(BaseController):
 
     # Trying to fix issues with ie9 and downloading canvas2image files
     def save_image(self):
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
 
         response.headers['Content-type'] = 'image/png'
         response.headers['Content-Disposition'] = 'attachment;filename=download_image.png'

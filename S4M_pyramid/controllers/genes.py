@@ -99,8 +99,8 @@ class GenesController(BaseController):
             return render_to_response('S4M_pyramid:templates/genes/search.mako',self.deprecated_pylons_data_for_view,request=self.request)
         else:
             # Task #396 - error with ie8 downloading with these on SSL
-            del response.headers['Cache-Control']
-            del response.headers['Pragma']
+            response.headers.pop('Cache-Control', None)
+            response.headers.pop('Pragma', None)
 
 
             genes_dict = Stemformatics_Gene.get_genes(db,c.species_dict, c.searchQuery, db_id, False, None)
@@ -235,8 +235,8 @@ class GenesController(BaseController):
         c.platform_title =  'None'
         yugene_granularity_for_gene_search = 'full'
         graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db,db_id,datasets_dict,c.ensemblID,choose_to_view_by,show_lower,g.all_sample_metadata,yugene_granularity_for_gene_search)
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         response.headers['Content-type'] = 'text/tab-separated-values'
         stemformatics_version = config['stemformatics_version']
         response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.tsv'
