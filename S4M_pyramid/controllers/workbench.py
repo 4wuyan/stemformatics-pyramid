@@ -665,7 +665,8 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise()
     def job_delete(self):
-        job_id = self.request.matchdict['id']
+        id = self.request.matchdict['id']
+        job_id = int(id)
         c = self.request.c
         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
@@ -877,7 +878,8 @@ class WorkbenchController(BaseController):
     @action(renderer='templates/workbench/analysis_confirmation_message.mako')
     def analysis_confirmation_message(self):
         c = self.request.c
-        job_id = self.request.matchdict['id']
+        id = self.request.matchdict['id']
+        job_id = int(id)
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
         if result is None:
