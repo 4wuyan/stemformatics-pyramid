@@ -1,61 +1,26 @@
-# #TODO-1
 from pyramid_handlers import action
-# from pylons import request, response, session, url
-# from pylons.controllers.util import abort, redirect
-# from pylons import app_globals as g
-#
 from S4M_pyramid.lib.base import BaseController
-# from sqlalchemy import or_, and_, desc
-#
-# from sqlalchemy.exceptions import *
-#
-# from paste.deploy.converters import asbool
-#
-# import json
-# import csv
-# #for result data only
-# import math
-#
-# import logging
-# log = logging.getLogger(__name__)
-#
-#
-# # Live querying
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth
-# from datetime import datetime
-#
-# import re
-# from matricks import Matricks
-#
-# from pylons import config
-#
-# import os, subprocess
-#
-# connection = db.engine.connect()
-#
-#
-# from guide.model import statfunctions
-#
-# # for some reason it is not applied in guide/lib/base.py
-# import guide.lib.helpers as h
-#
-# from time import gmtime, strftime
-#
-#
-# import formencode.validators as fe
-# FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
-#
-#
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+import json
+import formencode.validators as fe
+import re
+from pyramid.renderers import render_to_response
+from asbool import asbool
+import S4M_pyramid.lib.helpers as h
+import os
+import subprocess
+
 class WorkbenchController(BaseController):
-#     __name__ = 'WorkbenchController'
-#
-#     # 'sca' is short for scatter.  Makes validity checking easier.
-#     _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'scatter'}
 
-    #---------------------NOT MIGRATED--------------------------------
-    def __before__(self): #CRITICAL-3
+    # 'sca' is short for scatter.  Makes validity checking easier.
+    _graphTypes = {'sca': 'scatter', 'bar': 'bar', 'box': 'box', 'default': 'scatter'}
 
-        super(WorkbenchController, self).__before__ ()
+
+    def __init__(self,request): #CRITICAL-3
+        super().__init__(request)
+        c = self.request.c
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         c.human_db = self.human_db
@@ -68,8 +33,8 @@ class WorkbenchController(BaseController):
         # GenePattern modules
         self.GPQueue = config['GPQueue']
         self.StemformaticsQueue = config['StemformaticsQueue']
-        self.StemformaticsController = config['StemformaticsController']
-        self.FullJavaPath = config['FullJavaPath']
+        #self.StemformaticsController = config['StemformaticsController']
+        #self.FullJavaPath = config['FullJavaPath']
 
     @action(renderer = 'templates/workbench/index.mako')
     def index(self):
@@ -223,8 +188,9 @@ class WorkbenchController(BaseController):
         return render('workbench/choose_analysis.mako')
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def hierarchical_cluster_wizard(self): #CRITICAL-5
+        c = self.request.c
+        request = self.request
         delimiter = config['redis_delimiter']
         c.use_galaxy_server = use_galaxy = config['use_galaxy_server']
         probes_saved = 'saved'
@@ -253,13 +219,13 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/index'),'Analyses'],
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Dataset']
                 ]
-            return render('workbench/choose_dataset.mako')
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         if gene_set_id is None and select_probes is None:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -271,7 +237,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Gene List']
                 ]
 
-            return render('workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         if gene_set_id is None:
             gene_set_id = 0
@@ -290,7 +256,7 @@ class WorkbenchController(BaseController):
             species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
             gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id)
 
-            db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            db_id = Stemformatics_Dataset.get_db_id(ds_id)
             result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
             probe_list = result[0]
 
@@ -299,7 +265,7 @@ class WorkbenchController(BaseController):
             ref_type = 'probes'
             if select_probes is None:
                 select_probes = ""
-                probe_list == []
+                probe_list = []
             elif select_probes != probes_saved:
 
                 temp_probe_list = re.sub('\s{1,}',delimiter,select_probes)
@@ -322,7 +288,7 @@ class WorkbenchController(BaseController):
         if len(probe_expression_rows) < 2:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -334,7 +300,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Gene List']
                 ]
             c.error_message = "The target dataset contains no expression data for this gene list. Please try again."
-            return render('workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
 
 
@@ -349,7 +315,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Cluster Type']
                 ]
 
-            return render('workbench/choose_cluster_type.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_cluster_type.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         cluster_size  = "None"
         colour_by  = request.params.get('colour_by')
@@ -362,7 +328,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard?datasetID='+str(ds_id)),'Hierarchical Cluster - Choose Gene List'],
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Colour By']
                 ]
-            return render('workbench/choose_colour_by.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_colour_by.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         remove_chip_ids  = request.params.get('remove_chip_ids')
 
@@ -380,7 +346,7 @@ class WorkbenchController(BaseController):
                 [h.url('/workbench/hierarchical_cluster_wizard'),'Hierarchical Cluster - Choose Samples']
                 ]
 
-            return render('workbench/remove_samples.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/remove_samples.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
 
         remove_chip_ids = []
@@ -485,8 +451,9 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/workbench/jobs_index.mako")
     def jobs_index(self):
+        c = self.request.c
         c.status = Stemformatics_Job.return_all_status()
         c.analysis = Stemformatics_Job.return_all_analysis()
         c.jobs = Stemformatics_Job.get_jobs_for_user(db,c.uid)
@@ -501,7 +468,7 @@ class WorkbenchController(BaseController):
         c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],['','Manage Analysis Jobs']]
         c.title = c.site_name+' Analyses  - Jobs index'
         # raise Error
-        return render('workbench/jobs_index.mako')
+        return self.deprecated_pylons_data_for_view
 
 
     @Stemformatics_Auth.authorise()
@@ -697,9 +664,10 @@ class WorkbenchController(BaseController):
         return text
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
-    def job_delete(self,id):
+    def job_delete(self):
+        id = self.request.matchdict['id']
         job_id = int(id)
+        c = self.request.c
         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
 
@@ -907,8 +875,10 @@ class WorkbenchController(BaseController):
         return render('/workbench/gene_set_gene_preview.mako')
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
-    def analysis_confirmation_message(self,id):
+    @action(renderer='templates/workbench/analysis_confirmation_message.mako')
+    def analysis_confirmation_message(self):
+        c = self.request.c
+        id = self.request.matchdict['id']
         job_id = int(id)
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
@@ -919,12 +889,13 @@ class WorkbenchController(BaseController):
             return redirect(url(controller='contents', action='index'), code=404)
 
         c.job = result
+        c.job.gene_set_name = c.job.stemformatics_gene_sets_gene_set_name#map the name that got labeled to the original
         c.status = Stemformatics_Job.return_all_status()
         c.analysis = Stemformatics_Job.return_all_analysis()
 
         c.message = "This analysis was submitted to the analysis server as job #"+str(job_id)+". "+c.site_name+" will send a notification email (if selected) when your results are able to be viewed in \"My Analysis Jobs\"."
         c.title = c.site_name+" Analyses - Analysis Submitted"
-        return render('workbench/analysis_confirmation_message.mako')
+        return self.deprecated_pylons_data_for_view
 
 
     @Stemformatics_Auth.authorise()
@@ -1930,9 +1901,9 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def gene_neighbour_wizard(self): #CRITICAL-5
-
+        c = self.request.c
+        request = self.request
         analysis  = 2
         c.analysis = analysis
 
@@ -1956,7 +1927,7 @@ class WorkbenchController(BaseController):
             c.message = request.params.get('message')
             c.breadcrumb_title = 'Choose Gene for Gene Neighbourhood - please enter in a HGNC gene symbol, Ensembl ID, Entrez ID or RefSeq ID in the search provided'
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/gene_neighbour_wizard'),'Gene Neighbour - Choose Gene (Step 1 of 2)']]
-            return render('workbench/choose_gene.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
 
         select_all_ambiguous = True
@@ -1968,7 +1939,7 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Gene.get_genes(db, c.species_dict, gene, db_id, False, None)
 
         if len(result) ==1 :
-            temp_gene = result.itervalues().next()
+            temp_gene = next(iter(result.values()))
             ensemblID = gene = temp_gene['EnsemblID']
             c.db_id = db_id = temp_gene['db_id']
 
@@ -1985,7 +1956,7 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/gene_neighbour_wizard?use=')
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
-            return render('workbench/choose_from_multiple_genes.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
 
 
@@ -1999,14 +1970,15 @@ class WorkbenchController(BaseController):
             c.breadcrumb_title = 'Choose Dataset for Gene Neighbourhood'
             c.url = h.url('/workbench/gene_neighbour_wizard?gene='+str(gene)+'&db_id='+str(db_id))
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/gene_neighbour_wizard'),'Gene Neighbour - Choose Gene '],[h.url('/workbench/gene_neighbour_wizard'),'Gene Neighbour - Choose Dataset (Step 2 of 2)']]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
         if c.dataset_status != "Available":
             return redirect(url(controller='contents', action='index'), code=404)
 
 
 
-        chip_type = Stemformatics_Dataset.getChipType(db,dataset_id)
+        chip_type = Stemformatics_Dataset.getChipType(dataset_id)
 
         result = Stemformatics_Gene.get_unique_gene_fast(db,gene_list,db_id,'all',select_all_ambiguous,get_description,chip_type)
 
@@ -2030,7 +2002,8 @@ class WorkbenchController(BaseController):
                 c.breadcrumb_title = 'Choose Dataset for Gene Neighbourhood'
                 c.url = h.url('/workbench/gene_neighbour_wizard?gene='+str(gene)+'&db_id='+str(db_id))
                 c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/gene_neighbour_wizard'),'Gene Neighbour - Choose Gene '],[h.url('/workbench/gene_neighbour_wizard'),'Gene Neighbour - Choose Dataset (Step 2 of 2)']]
-                return render('workbench/choose_dataset.mako')
+                return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',
+                                          self.deprecated_pylons_data_for_view, request=self.request)
 
             if len_probes == 1:
                 # now go to the next one
@@ -2046,7 +2019,7 @@ class WorkbenchController(BaseController):
                 self._temp.ref_id = self._temp.ensemblID
                 self._temp.line_graph_available = False
                 gene_annotation_names_required = "no"
-                chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+                chip_type = Stemformatics_Dataset.getChipType(ds_id)
                 data = Stemformatics_Gene_Set.get_probes_from_genes(db_id,ds_id,[self._temp.ensemblID],gene_annotation_names_required)
                 probe_list = data[0]
 
@@ -2055,8 +2028,8 @@ class WorkbenchController(BaseController):
                 # self._temp.this_view = self._setup_graphs(self._temp)
                 self._set_outputs_for_graph()
 
-
-                return render('workbench/choose_probe_new.mako')
+                return render_to_response('S4M_pyramid:templates/workbench/choose_probe_new.mako',
+                                          self.deprecated_pylons_data_for_view, request=self.request)
 
 
 
@@ -2091,7 +2064,7 @@ class WorkbenchController(BaseController):
         p = subprocess.call(command,shell=True)
 
         # connect to galaxy
-        from guide.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
+        from S4M_pyramid.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
         galaxyInstance = Stemformatics_Galaxy.connect_to_galaxy()
 
         # run tool
@@ -2101,13 +2074,13 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
         audit_dict = {'ref_type':'ds_id','ref_id':dataset_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-
         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def user_defined_expression_profile(self):
         # CHoose a dataset
+        c = self.request.c
+        request = self.request
         ds_id = request.params.get('datasetID')
         c.analysis=7
         c.species = None
@@ -2118,7 +2091,7 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/user_defined_expression_profile')
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/user_defined_expression_profile'),'User Defined Expression Profile - Choose Dataset  (Step 1 of 2)']]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
         if c.dataset_status != "Available":
@@ -2140,7 +2113,8 @@ class WorkbenchController(BaseController):
             #might move the values from jobs into the stemformatics.jobs_metadata table from now on.
             # fix remove samples help
             c.url = h.url('/workbench/user_defined_expression_profile?datasetID='+str(ds_id))
-            return render('workbench/user_defined_expression_profile.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/user_defined_expression_profile.mako',
+                               self.deprecated_pylons_data_for_view, request=self.request)
 
         options = {}
         options['galaxy_server_url'] = config['galaxy_server_url']
@@ -2172,7 +2146,7 @@ class WorkbenchController(BaseController):
         if not os.path.exists(base_path+str(job_id)):
             os.mkdir(base_path+str(job_id))
 
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
         # create gct_file_path
         gct_file_path = self.StemformaticsQueue + str(job_id) + '/' +'job.gct'
 
@@ -2189,7 +2163,7 @@ class WorkbenchController(BaseController):
             return redirect(url(controller='contents', action='index'), code=404)
 
         # connect to galaxy
-        from guide.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
+        from S4M_pyramid.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
         galaxyInstance = Stemformatics_Galaxy.connect_to_galaxy()
 
         # run tool
@@ -2202,12 +2176,13 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/workbench/choose_gene_expression_profile.mako")
     def gene_expression_profile_wizard(self):
+        c = self.request.c
         c.analysis = 7
         c.title = c.site_name+' Analyses  - Gene Expression Profile Wizard'
         c.url = h.url('/workbench/gene_expression_profile_wizard')
-        return render('workbench/choose_gene_expression_profile.mako')
+        return self.deprecated_pylons_data_for_view
 
 
     #---------------------NOT MIGRATED--------------------------------
@@ -2238,8 +2213,8 @@ class WorkbenchController(BaseController):
 
 
         if export is not None and c.datasets is not None:
-            del response.headers['Cache-Control']
-            del response.headers['Pragma']
+            response.headers.pop('Cache-Control', None)
+            response.headers.pop('Pragma', None)
             stemformatics_version = config['stemformatics_version']
             if export == 'download_script':
                 response.headers['Content-type'] = 'text/plain'

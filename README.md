@@ -184,6 +184,26 @@ Defending the design of _magic_ globals and _real_ globals
 
 However, `request`, `resposne`, `session` and `c` are on the contrary. I want everyone to tell what `c` is in _every_ function in advance (if `c` exists of course), namely `c = self.request.c` in controllers or `magic_globals.fetch(); c = magic_globals.c` in models. The same applies to `request`, `resposne` and `session`.  The rationale behind it is that they are **request-local**; they are "fake globals." That's why all 4 of them sit in the `MagicGlobalsFromRequest` object, and where _magic_ comes from.
 
+
+Setting cache headers
+================================
+
+Replace
+```python
+del response.headers['Cache-Control']
+del response.headers['Pragma']
+```
+with
+```python
+response.headers.pop('Cache-Control', None)
+response.headers.pop('Pragma', None)
+```
+if you see them.
+
+[Pylons documentation](https://docs.pylonsproject.org/projects/pylons-webframework/en/latest/caching.html#cache-headers) explains what happened with those headers.
+In Pyramid, those keys might not exist in the response header dictionary, and the preferred more Pythonic solution is as above.
+(Refer to [this](https://stackoverflow.com/questions/11277432/how-to-remove-a-key-from-a-python-dictionary).)
+
 Redirect
 ======================================
 

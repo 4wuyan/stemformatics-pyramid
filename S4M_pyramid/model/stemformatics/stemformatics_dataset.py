@@ -1037,45 +1037,45 @@ All functions have a try that will return None if errors are found
 
             returnList = {}
             try:
-                if lineGraphOrdering != None:
+                if lineGraphOrdering is not None:
                     returnList['lineGraphOrdering'] = lineGraphOrdering.ds_value
                 else:
                     returnList['lineGraphOrdering'] = None
             except:
                 returnList['lineGraphOrdering'] = None
 
-            if detectionThreshold != None:
+            if detectionThreshold is not None:
                 returnList['detection_threshold'] = detectionThreshold.ds_value
             else:
                 returnList['detection_threshold'] = 0
 
-            if medianDatasetExpression != None:
+            if medianDatasetExpression is not None:
                 returnList['median_dataset_expression'] = medianDatasetExpression.ds_value
             else:
                 returnList['median_dataset_expression'] = 0
 
-            if limitSortBy != None:
+            if limitSortBy is not None:
                 returnList['limit_sort_by'] = limitSortBy.ds_value
             else:
                 returnList['limit_sort_by'] = 'Sample Type'
 
-            if speciesResult != None:
+            if speciesResult is not None:
                 returnList['species'] = speciesResult.ds_value
             else:
                 return None
 
-            if sampleTypeDisplayOrderResult != None:
+            if sampleTypeDisplayOrderResult is not None:
                 returnList['sampleTypeDisplayOrder'] = sampleTypeDisplayOrderResult.ds_value
             else:
                 return None
 
-            if sampleTypeDisplayGroupsResult != None:
+            if sampleTypeDisplayGroupsResult is not None:
                 returnList['sampleTypeDisplayGroups'] = sampleTypeDisplayGroupsResult.ds_value
             else:
                 returnList['sampleTypeDisplayGroups'] = None
 
             try:
-                if maxGraphValue != None:
+                if maxGraphValue is not None:
                     returnList['maxGraphValue'] = maxGraphValue.ds_value
                 else:
                     returnList['maxGraphValue'] = 30

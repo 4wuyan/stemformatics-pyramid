@@ -5,6 +5,7 @@ from .controllers.contents import ContentsController
 from .controllers.expressions import ExpressionsController
 from .controllers.auth import AuthController
 from .controllers.genes import GenesController
+from .controllers.main import MainController
 
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
@@ -46,10 +47,12 @@ def main(global_config, **settings):
     # You can't choose a view class via a routing variable in Pyramid.
     config.add_handler("auth with id", "/auth/{action}/{id}", handler=AuthController)
     config.add_handler("workbench","/workbench/{action}",handler=WorkbenchController)
+    config.add_handler("workbench_withID","/workbench/{action}/{id}",handler=WorkbenchController)
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
     config.add_handler("genes","/genes/{action}",handler=GenesController)
+    config.add_handler("main","/main/{action}",handler=MainController)
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):

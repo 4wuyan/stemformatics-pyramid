@@ -497,8 +497,8 @@ class ApiController(BaseController):
 
         mapping_for_metastore = Stemformatics_Dataset.get_metastore_mappings()
 
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         response.headers['Content-type'] = 'text/plain'
         response.headers['Content-Disposition'] = 'filename=METASTORE'+str(ds_id)+'_'+handle
         response.charset= "utf8"
@@ -526,8 +526,8 @@ class ApiController(BaseController):
         chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
         handle = Stemformatics_Dataset.getHandle(db,ds_id)
 
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         response.headers['Content-type'] = 'text/tab-separated-values'
         response.headers['Content-Disposition'] = 'filename=biosamples_metadata_'+str(ds_id)+'_'+handle+'.txt.tsv'
         response.charset= "utf8"
@@ -551,8 +551,8 @@ class ApiController(BaseController):
 
         handle = Stemformatics_Dataset.getHandle(db,ds_id)
 
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         response.headers['Content-type'] = 'text/tab-separated-values'
         response.headers['Content-Disposition'] = 'filename=biosamples_annotation_summary_'+str(ds_id)+'_'+handle+'.tsv'
         response.charset= "utf8"
