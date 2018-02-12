@@ -33,7 +33,7 @@ class GenesController(BaseController):
         if 'useSqlSoup' in config:
             self.useSqlSoup = asbool(config['useSqlSoup'])
 
-    @action(renderer='string')
+    @action()
     def search(self):
         c = self.request.c
         request = self.request
@@ -118,7 +118,7 @@ class GenesController(BaseController):
             response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.tsv'
             response.charset= "utf8"
             data = self._convert_genes_dict_to_csv(selected_gene_id,genes_dict)
-            return data
+            return render_to_response('string',data,request=request, response=response)
 
     def _convert_genes_dict_to_csv(self,ensembl_id,genes_dict):
         csv_text = "Symbol	Aliases	Description	Species	Ensembl ID	Entrez ID	Chromosome Location\n"
