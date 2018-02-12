@@ -119,6 +119,62 @@ class GenesController(BaseController):
             data = self._convert_genes_dict_to_csv(selected_gene_id,genes_dict)
             return render_to_response('string',data,request=self.request)
 
+    @action(renderer="templates/workbench/gene_set_index.mako")
+    def _convert_genes_dict_to_csv(self,ensembl_id,genes_dict):
+        csv_text = "Symbol  Aliases Description Species Ensembl ID  Entrez ID   Chromosome Location\n"
+        for gene in genes_dict:
+            if ensembl_id is not None and ensembl_id != gene:
+               continue
+            temp = genes_dict[gene]
+            direction ='+' if temp['Location']['direction'] != -1 else '-'
+            location = 'chr'+str(temp['Location']['chr'])+':'+str(temp['Location']['start'])+'-'+str(temp['Location']['end'])+','+direction
+            csv_text += temp['symbol']+"    "+temp['aliases']+" "+temp['description'].replace('<br />','')+"    "+temp['species']+" "+temp['EnsemblID']+"   "+temp['EntrezID']+"    "+location+"\n"
+
+        return csv_text
+
+    @action(renderer="string") # This might need to change as download may need to be a .tsv file
+    def download_yugene(self):
+        request = self.request
+        c = self.request.c
+        response = self.request.response
+        geneSearch = request.params.get("gene")
+        geneSearch = str(geneSearch)
+        c.ensemblID = geneSearch
+
+        db_id = request.params.get("db_id")
+        db_id = int(db_id)
+        param_view_by = request.params.get("choose_to_view_by")
+        if param_view_by is None:
+            choose_to_view_by = 0 # cell type
+        else:
+            choose_to_view_by = int(param_view_by)
+        c.choose_to_view_by = choose_to_view_by
+
+
+
+        param_show_lower = request.params.get("show_lower")
+        if param_show_lower is None:
+            show_lower = 'Dataset' # cell type
+        else:
+            show_lower = param_show_lower
+
+        datasets_dict = Stemformatics_Dataset.get_all_x_platform_datasets_for_user(db,c.uid,db_id)
+        c.platform_title =  'None'
+        yugene_granularity_for_gene_search = 'full'
+        graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db,db_id,datasets_dict,c.ensemblID,choose_to_view_by,show_lower,g.all_sample_metadata,yugene_granularity_for_gene_search)
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
+        response.headers['Content-type'] = 'text/tab-separated-values'
+        stemformatics_version = config['stemformatics_version']
+        response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.tsv'
+        response.charset= "utf8"
+        data = "dataset_id\tdataset_name\tsample_id\tprobe_id\tyugene_value\n"
+
+        for row in graph_values['export']:
+            data += row+"\n"
+
+        return data
+
     @action(renderer="string")
     # This is for the autocomplete function if we decide to use it
     def get_autocomplete(self):
@@ -177,65 +233,9 @@ class GenesController(BaseController):
 
         c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
         #if request.params.get("raise_error") == "true":
-        #   raise Error
+        #    raise Error
 
         return c.data
-
-    @action(renderer="templates/workbench/gene_set_index.mako")
-    def _convert_genes_dict_to_csv(self,ensembl_id,genes_dict):
-        csv_text = "Symbol	Aliases	Description	Species	Ensembl ID	Entrez ID	Chromosome Location\n"
-        for gene in genes_dict:
-            if ensembl_id is not None and ensembl_id != gene:
-               continue
-            temp = genes_dict[gene]
-            direction ='+' if temp['Location']['direction'] != -1 else '-'
-            location = 'chr'+str(temp['Location']['chr'])+':'+str(temp['Location']['start'])+'-'+str(temp['Location']['end'])+','+direction
-            csv_text += temp['symbol']+"	"+temp['aliases']+"	"+temp['description'].replace('<br />','')+"	"+temp['species']+"	"+temp['EnsemblID']+"	"+temp['EntrezID']+"	"+location+"\n"
-
-        return csv_text
-
-    action(renderer="string")#This might need to change as download may need to be a .tsv file
-    def download_yugene(self):
-        request = self.request
-        c = self.request.c
-        response = self.request.response
-        geneSearch = request.params.get("gene")
-        geneSearch = str(geneSearch)
-        c.ensemblID = geneSearch
-
-        db_id = request.params.get("db_id")
-        db_id = int(db_id)
-        param_view_by = request.params.get("choose_to_view_by")
-        if param_view_by is None:
-            choose_to_view_by = 0 # cell type
-        else:
-            choose_to_view_by = int(param_view_by)
-        c.choose_to_view_by = choose_to_view_by
-
-
-
-        param_show_lower = request.params.get("show_lower")
-        if param_show_lower is None:
-            show_lower = 'Dataset' # cell type
-        else:
-            show_lower = param_show_lower
-
-        datasets_dict = Stemformatics_Dataset.get_all_x_platform_datasets_for_user(db,c.uid,db_id)
-        c.platform_title =  'None'
-        yugene_granularity_for_gene_search = 'full'
-        graph_values = Stemformatics_Expression.return_x_platform_matricks_data(db,db_id,datasets_dict,c.ensemblID,choose_to_view_by,show_lower,g.all_sample_metadata,yugene_granularity_for_gene_search)
-        response.headers.pop('Cache-Control', None)
-        response.headers.pop('Pragma', None)
-        response.headers['Content-type'] = 'text/tab-separated-values'
-        stemformatics_version = config['stemformatics_version']
-        response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.tsv'
-        response.charset= "utf8"
-        data = "dataset_id\tdataset_name\tsample_id\tprobe_id\tyugene_value\n"
-
-        for row in graph_values['export']:
-            data += row+"\n"
-
-        return data
 
     def public_gene_set_index(self):
         request = self.request
@@ -566,4 +566,3 @@ class GenesController(BaseController):
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
         return json_data
-
