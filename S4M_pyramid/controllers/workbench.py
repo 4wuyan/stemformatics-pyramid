@@ -473,8 +473,8 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise()
     #---------------------NOT MIGRATED--------------------------------
-    def job_view_result(self,id):  #CRITICAL-4
-        job_id = int(id)
+    def job_view_result(self):  #CRITICAL-4
+        job_id = int(self.request.matchdict['id'])
         c = self.request.c
         request = self.request
         use_galaxy_server = config['use_galaxy_server']
