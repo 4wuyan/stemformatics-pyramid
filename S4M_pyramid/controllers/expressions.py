@@ -1,3 +1,6 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------7 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
 
  #TODO-1
 import logging
@@ -508,8 +511,8 @@ class ExpressionsController(BaseController):
         uid = c.uid
         request = self.request
         filters = str( request.params.get("filters",None))
-        ensembl_id = str( request.params.get("gene",""))
-        db_id = int(request.params.get("db_id",""))
+        ensembl_id = str( request.params.get("gene"))
+        db_id = int(request.params.get("db_id"))
 
         # Choose between json and tsv (tab separated values)
         format_type = request.params.get("format_type","json")
@@ -578,10 +581,10 @@ class ExpressionsController(BaseController):
     def choose_dataset(self):
         c = self.request.c
         request = self.request
-        graphType = request.params.get("graphType","")
-        gene = request.params.get("gene","")
-        db_id = request.params.get("db_id","")
-        gene_set_id = request.params.get("gene_set_id","")
+        graphType = request.params.get("graphType")
+        gene = request.params.get("gene")
+        db_id = request.params.get("db_id")
+        gene_set_id = request.params.get("gene_set_id")
         c.db_id = int(db_id)
 
         if gene_set_id is None:
@@ -601,8 +604,7 @@ class ExpressionsController(BaseController):
         request = self.request
         choose_dataset_immediately = False
         probeSearch = request.params.get('probe')
-        #sets the variable to "" instead of None,if parameter is not provided.
-        c.select_probes = select_probes = request.params.get('select_probes','')
+        c.select_probes = select_probes = request.params.get('select_probes')
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
         feature_type = request.params.get('feature_type')
         feature_id = request.params.get('feature_id')
@@ -636,7 +638,7 @@ class ExpressionsController(BaseController):
         c.list_of_valid_graphs = Stemformatics_Dataset.list_of_valid_graphs_for_dataset(ds_id)
 
         graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, request.params.get('graphType'), c.list_of_valid_graphs)
-        sortBy = request.params.get('sortBy','')
+        sortBy = request.params.get('sortBy')
 
         # This was an error with T#2079 where the graphType was originally line, but was changed to box
         # but the sortBy was still LineGraphGroup and that caused an error later on
@@ -675,7 +677,7 @@ class ExpressionsController(BaseController):
         #except:
         #    db_id = None
         try:
-            ds_id = datasetID = int(request.params.get('datasetID'),'')
+            ds_id = datasetID = int(request.params.get('datasetID'))
         except:
             ds_id = datasetID = None
 
@@ -716,8 +718,7 @@ class ExpressionsController(BaseController):
             show_limited = False
             c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db, c.uid, show_limited, db_id)
             c.breadcrumb_title = 'Choose Dataset for MultiGene Expression Graph'
-            c.url = h.url('/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(
-                gene_set_id))
+            c.url = h.url('/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id))
             c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)), 'MultiGene Expression Graph - Choose Dataset (Step 2 of 2)']]
 
             return render_to_response('S4M_Pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
@@ -776,8 +777,7 @@ class ExpressionsController(BaseController):
         c.select_probes = self._temp.select_probes = request.params.get('select_probes')
         c.db_id = self._temp.db_id = db_id
         c.list_of_valid_graphs = Stemformatics_Dataset.list_of_valid_graphs_for_dataset(ds_id)
-        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, request.params.get('graphType'),
-                                                                      c.list_of_valid_graphs)
+        graphType = Stemformatics_Dataset.check_graphType_for_dataset(db, ds_id, request.params.get('graphType'), c.list_of_valid_graphs)
         c.graphType = self._temp.graphType = graphType
         c.sortBy = self._temp.sortBy = comparison_type
         c.ds_id = self._temp.ds_id = ds_id

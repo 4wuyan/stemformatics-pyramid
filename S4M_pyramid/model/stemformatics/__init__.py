@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------8 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 __doc__ = """\
 
 Setting up class for stemformatics

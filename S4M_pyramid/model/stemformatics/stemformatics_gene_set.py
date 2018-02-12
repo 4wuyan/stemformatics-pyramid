@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#-------------------------8 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
@@ -23,7 +27,6 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 
 #CRITICAL-6
-from S4M_pyramid.model.stemformatics.stemformatics_gene import * #wouldn't work with Stemformatics_Gene
 from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin
 
 # check strong password
@@ -247,12 +250,12 @@ class Stemformatics_Gene_Set(object):
             result = join1.filter(gsi.id==gene_set_item_id).one()
 
             if result is None:
-                raise ValueError
+                raise Error
                 return None
 
             # check that this user owns this gene_set record
             if result.uid != uid:
-                raise ValueError
+                raise Error
                 return None
 
             # save gene_set_id
@@ -274,6 +277,7 @@ class Stemformatics_Gene_Set(object):
 
     @staticmethod
     def add_gene_to_set(db,uid,gene_set_id,db_id,gene): #CRITICAL-2
+        from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
         try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
