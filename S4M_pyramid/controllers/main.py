@@ -2,9 +2,7 @@ from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Admin, Stemformatics_Audit, Stemformatics_Export,db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
-from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
-from pyramid.response import Response
-from pyramid.response import response_adapter
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
 import json
 import formencode.validators as fe
 import re
@@ -21,8 +19,9 @@ class MainController(BaseController):
         result = Stemformatics_Admin.health_check(db)
         return result
 
-    #def tests(self):
-    #    return render('tests.mako')
+    #---------------------NOT MIGRATED--------------------------------
+    def tests(self):
+        return render('tests.mako')
 
     def suggest_dataset(self):
         redirect(config['agile_org_base_url']+'datasets/external_add')
@@ -31,8 +30,8 @@ class MainController(BaseController):
         request = self.request
         response = self.request.response
         # Task #396 - error with ie8 downloading with these on SSL
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
 
         response.headers['Content-type'] = 'text/csv'
         stemformatics_version = config['stemformatics_version']
@@ -62,9 +61,11 @@ class MainController(BaseController):
 
         NOTE: not sure about allowing download if you are registered only
     """
+    @action(renderer='string')
     #@Stemformatics_Auth.authorise(db)
     def export_d3(self):
         request = self.request
+        response = self.request.response
         """
         available = Stemformatics_Auth.check_real_user(c.uid)
         if not available:
@@ -78,14 +79,14 @@ class MainController(BaseController):
 
         export_data = Stemformatics_Export.get_export_data_for_d3(data,file_name,output_format)
 
-        #del response.headers['Cache-Control']
-        #del response.headers['Pragma']
-        response = Response(export_data.data)
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
+
         response.headers['Content-type'] = export_data.content_type
         response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
         response.charset= "utf8"
 
-        return response
+        return export_data.data
 
 
     def send_email(self):
@@ -115,8 +116,8 @@ class MainController(BaseController):
 
     # Trying to fix issues with ie9 and downloading canvas2image files
     def save_image(self):
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
 
         response.headers['Content-type'] = 'image/png'
         response.headers['Content-Disposition'] = 'attachment;filename=download_image.png'

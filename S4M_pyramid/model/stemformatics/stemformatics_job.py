@@ -266,8 +266,7 @@ class Stemformatics_Job(object):
                 result = join1.filter(db.jobs.job_id == job_id).one()
 
             return result
-        except Exception as e:
-            #print(e)
+        except:
             return None
 
     # changed to psycopg2

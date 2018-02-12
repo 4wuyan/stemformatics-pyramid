@@ -665,7 +665,8 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise()
     def job_delete(self):
-        job_id = self.request.matchdict['id']
+        id = self.request.matchdict['id']
+        job_id = int(id)
         c = self.request.c
         result = Stemformatics_Job.delete_job(db,job_id,c.uid)
         return redirect(url('/workbench/jobs_index'))
@@ -873,11 +874,12 @@ class WorkbenchController(BaseController):
         # return render('workbench/gene_set_view.mako')
         return render('/workbench/gene_set_gene_preview.mako')
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     @action(renderer='templates/workbench/analysis_confirmation_message.mako')
     def analysis_confirmation_message(self):
         c = self.request.c
-        job_id = self.request.matchdict['id']
+        id = self.request.matchdict['id']
+        job_id = int(id)
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
         if result is None:
@@ -1898,7 +1900,7 @@ class WorkbenchController(BaseController):
 
 
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     def gene_neighbour_wizard(self): #CRITICAL-5
         c = self.request.c
         request = self.request
@@ -2173,7 +2175,7 @@ class WorkbenchController(BaseController):
         return redirect(h.url('/workbench/analysis_confirmation_message/'+str(job_id)))
 
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     @action(renderer="templates/workbench/choose_gene_expression_profile.mako")
     def gene_expression_profile_wizard(self):
         c = self.request.c
@@ -2211,8 +2213,8 @@ class WorkbenchController(BaseController):
 
 
         if export is not None and c.datasets is not None:
-            del response.headers['Cache-Control']
-            del response.headers['Pragma']
+            response.headers.pop('Cache-Control', None)
+            response.headers.pop('Pragma', None)
             stemformatics_version = config['stemformatics_version']
             if export == 'download_script':
                 response.headers['Content-type'] = 'text/plain'
