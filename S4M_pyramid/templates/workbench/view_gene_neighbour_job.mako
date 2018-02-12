@@ -1,5 +1,5 @@
-<%inherit file="/default.html"/>
-<%namespace name="Base" file="/base.mako"/>
+<%inherit file="../default.html"/>
+<%namespace name="Base" file="../base.mako"/>
 
 <%def name="includes()">
     <link type="text/css" href="${h.url('/css/workbench/index.css')}" rel="stylesheet" />
