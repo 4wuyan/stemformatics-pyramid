@@ -1,6 +1,6 @@
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
@@ -475,6 +475,8 @@ class WorkbenchController(BaseController):
     #---------------------NOT MIGRATED--------------------------------
     def job_view_result(self,id):  #CRITICAL-4
         job_id = int(id)
+        c = self.request.c
+        request = self.request
         use_galaxy_server = config['use_galaxy_server']
         c.use_galaxy_server = use_galaxy_server
         output_file  = request.params.get('output_file')
@@ -512,8 +514,8 @@ class WorkbenchController(BaseController):
             if not available:
                 c.title = "You no longer have access to this dataset"
                 c.message = "This dataset is private and you no longer have access to it. Please contact "+c.site_name+" for further details."
-                return render('workbench/error_message.mako')
-
+                return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',
+                                          self.deprecated_pylons_data_for_view, request=self.request)
 
         c.job_id = job_id
         c.analysis = job_detail.analysis
@@ -546,7 +548,8 @@ class WorkbenchController(BaseController):
             if result == "Files not found":
                 c.title = "No files found for this output"
                 c.message = "Not all output files were found for this Hierarchical Cluster. Please try running the job again."
-                return render('workbench/error_message.mako')
+                return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',
+                                      self.deprecated_pylons_data_for_view, request=self.request)
 
             c.text = result["text"]
             c.gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,use_uid,c.job_detail.gene_set_id)
@@ -557,14 +560,16 @@ class WorkbenchController(BaseController):
             c.colour_by = result["colour_by"]
             c.db_id = result["db_id"]
 
-            return render('workbench/view_hc_job.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/view_hc_job.mako',
+                                      self.deprecated_pylons_data_for_view, request=self.request)
 
         elif job_detail.analysis == 2 or job_detail.analysis == 7: # Gene Neighbourhood
             c.url = h.url('/workbench/job_view_result/')+str(job_id)
             p_value  = request.params.get('p_value')
             if p_value is None:
                 c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],['','Choose P Value']]
-                return render('workbench/choose_p_value.mako')
+                return render_to_response('S4M_pyramid:templates/workbench/choose_p_value.mako',
+                                          self.deprecated_pylons_data_for_view, request=self.request)
             c.p_value = float(p_value)
             c.job_detail = job_detail
 
@@ -582,16 +587,18 @@ class WorkbenchController(BaseController):
             if fileTotals == 0:
                 c.title = "No files found for this output"
                 c.message = "No files were found for this Gene Neighbourhood. Please try running the job again."
-                return render('workbench/error_message.mako')
+                return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',
+                                      self.deprecated_pylons_data_for_view, request=self.request)
             elif fileTotals == 1:
                 openFile = path+odfList[0]
                 if not os.path.isfile(openFile):
                     c.title = "No files found for this output"
                     c.message = "No output files were found for this Gene Neighbourhood. Please try running the job again."
-                    return render('workbench/error_message.mako')
+                    return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',
+                                              self.deprecated_pylons_data_for_view, request=self.request)
 
             # get db_id for this dataset
-            c.db_id = Stemformatics_Dataset.get_db_id(db,c.job_detail.dataset_id)
+            c.db_id = Stemformatics_Dataset.get_db_id(c.job_detail.dataset_id)
             c.handle = Stemformatics_Dataset.getHandle(db,c.job_detail.dataset_id,use_uid)
             c.gene = job_detail.gene
             c.probe = job_detail.probe
@@ -745,9 +752,8 @@ class WorkbenchController(BaseController):
 
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def _view_gene_neighbour_output_file(self,openFile,job_id,db_id,p_value,analysis_server):
-
+        c = self.request.c
         f = open(openFile,'r')
         c.text = f.readlines()
         f.close()
@@ -762,7 +768,8 @@ class WorkbenchController(BaseController):
         search_type = 'probes_using_chromosomal_locations' # this doesn't clean up the probe name
         c.geneList = Stemformatics_Gene.get_unique_gene_fast(db,c.listProbesInOrderODF,db_id,search_type,select_all_ambiguous)
         c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],['','Gene Neighbourhood Result']]
-        return render('workbench/view_gene_neighbour_job.mako')
+        return render_to_response('S4M_pyramid:templates/workbench/view_gene_neighbour_job.mako',
+                                  self.deprecated_pylons_data_for_view, request=self.request)
 
 
 
