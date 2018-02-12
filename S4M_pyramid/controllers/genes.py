@@ -1,5 +1,5 @@
 #-------Last synchronised with Pylons repo (master) on---------------#
-#-------------------------8 Feb 2018---------------------------------#
+#------------------------12 Feb 2018---------------------------------#
 #-------------------------by WU Yan----------------------------------#
 
 from pyramid_handlers import action
@@ -33,6 +33,7 @@ class GenesController(BaseController):
         if 'useSqlSoup' in config:
             self.useSqlSoup = asbool(config['useSqlSoup'])
 
+    @action(renderer='string')
     def search(self):
         c = self.request.c
         request = self.request
@@ -117,18 +118,17 @@ class GenesController(BaseController):
             response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.tsv'
             response.charset= "utf8"
             data = self._convert_genes_dict_to_csv(selected_gene_id,genes_dict)
-            return render_to_response('string',data,request=self.request)
+            return data
 
-    @action(renderer="templates/workbench/gene_set_index.mako")
     def _convert_genes_dict_to_csv(self,ensembl_id,genes_dict):
-        csv_text = "Symbol  Aliases Description Species Ensembl ID  Entrez ID   Chromosome Location\n"
+        csv_text = "Symbol	Aliases	Description	Species	Ensembl ID	Entrez ID	Chromosome Location\n"
         for gene in genes_dict:
             if ensembl_id is not None and ensembl_id != gene:
                continue
             temp = genes_dict[gene]
             direction ='+' if temp['Location']['direction'] != -1 else '-'
             location = 'chr'+str(temp['Location']['chr'])+':'+str(temp['Location']['start'])+'-'+str(temp['Location']['end'])+','+direction
-            csv_text += temp['symbol']+"    "+temp['aliases']+" "+temp['description'].replace('<br />','')+"    "+temp['species']+" "+temp['EnsemblID']+"   "+temp['EntrezID']+"    "+location+"\n"
+            csv_text += temp['symbol']+"	"+temp['aliases']+"	"+temp['description'].replace('<br />','')+"	"+temp['species']+"	"+temp['EnsemblID']+"	"+temp['EntrezID']+"	"+location+"\n"
 
         return csv_text
 
@@ -232,11 +232,12 @@ class GenesController(BaseController):
             species = None
 
         c.data = Stemformatics_Gene.autocomplete_feature_search_items(feature_search_term,species,feature_type)
-        #if request.params.get("raise_error") == "true":
-        #    raise Error
+        if request.params.get("raise_error") == "true":
+            raise Error
 
         return c.data
 
+    @action(renderer='templates/workbench/gene_set_index.mako')
     def public_gene_set_index(self):
         request = self.request
         c = self.request.c
