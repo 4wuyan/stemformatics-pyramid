@@ -227,7 +227,7 @@ class ApiController(BaseController):
 
 
 
-                        body = "Congratulations, your job #%s has been completed, you have 30 days until it expires and is removed from the system.\n\n Click here to view result: %s \n\n To stop receiving these emails click here: %s" % (str(job_id),new_url,external_base_url+url('auth/unsubscribe_job_notification/'+str(user.uid)+'_'+Stemformatics_Auth.get_secret_unsubscribe_sha1(str(user.uid)) )
+                        body = "Congratulations, your job #%s has been completed, you have 30 days until it expires and is removed from the system.\n\n Click here to view result: %s \n\n To stop receiving these emails click here: %s" % (str(job_id),new_url,external_base_url+url('auth/unsubscribe_job_notification/'+str(user.uid)) )
 
                         # raise Error
                         # Send the message via our own SMTP server, but don't include the
@@ -281,6 +281,7 @@ class ApiController(BaseController):
 
         else:
             return "error"
+
 
     #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_job(self,id):  #CRITICAL-4
