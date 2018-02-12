@@ -34,7 +34,7 @@ class Stemformatics_Export(object):
 
         if output_format == "svg":
             temp_data.content_type = 'image/svg+xml'
-            temp_data.data = data
+            temp_data.data = data.encode()
             return temp_data
 
         base_dir = config['export_d3_dir']
