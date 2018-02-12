@@ -7,6 +7,7 @@
 #from pylons import request, response, session, url, tmpl_context as c,config, app_globals as g
 #from pylons.controllers.util import abort, redirect
 #
+from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Job,db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
@@ -158,6 +159,7 @@ class ApiController(BaseController):
             p = subprocess.Popen(command,shell=True)
 
     # This fetch all the pending jobs from s4m and updates them based on galaxy job status
+    @action(renderer="string")
     def get_galaxy_pending_jobs(self):
         import socket
         server_name = socket.gethostname()
@@ -176,6 +178,7 @@ class ApiController(BaseController):
         status = Stemformatics_Galaxy.return_job_status(galaxyInstance,pending_job_list,server_name)
         # update jobs based on galaxy status
         Stemformatics_Galaxy.update_job_status(db,status,galaxyInstance)
+        return "success"
 
 
     #---------------------NOT MIGRATED--------------------------------
