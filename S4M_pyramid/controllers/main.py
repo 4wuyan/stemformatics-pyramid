@@ -86,7 +86,7 @@ class MainController(BaseController):
         response.headers['Content-type'] = export_data.content_type
         response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
         response.charset= "utf8"
-        response.body = export_data
+        response.body = export_data.data
 
         return response
 
