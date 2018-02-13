@@ -2,19 +2,15 @@
 import logging
 
 log = logging.getLogger(__name__)
-
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect
-from pylons import url
-from pylons import config
-
-import formencode.validators as fe
-from guide.lib.base import BaseController, render
+from pyramid_handlers import action
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+from S4M_pyramid.lib.base import BaseController
 
 import json
 
 # Live querying
-from guide.model.stemformatics import *
+from S4M_pyramid.model.stemformatics import *
 
 import re,os.path,subprocess
 
@@ -403,16 +399,17 @@ class DatasetsController(BaseController):
 
         return data
 
-
+    @action(renderer="string")
     def search_and_choose_datasets_ajax(self):
-
+        c = self.request.c
+        request = self.request
         temp_data = {}
 
         rohart_msc_test = request.params.get("rohart_msc_test", False)
         if rohart_msc_test == 'true':
-            rohart_msc_test == True
+            rohart_msc_test = True
         else:
-            rohart_msc_test == False
+            rohart_msc_test = False
 
         filter_dict = {'show_limited':False,'rohart_msc_test':rohart_msc_test}
         c.searchQuery = request.params.get("filter", None)
