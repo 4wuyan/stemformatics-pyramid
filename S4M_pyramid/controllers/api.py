@@ -9,7 +9,7 @@
 #
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Job,db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Job,Stemformatics_Auth,db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 #from guide.model.stemformatics import *
 #from guide.controllers.workbench import WorkbenchController
@@ -230,7 +230,7 @@ class ApiController(BaseController):
 
 
 
-                        body = "Congratulations, your job #%s has been completed, you have 30 days until it expires and is removed from the system.\n\n Click here to view result: %s \n\n To stop receiving these emails click here: %s" % (str(job_id),new_url,external_base_url+url('auth/unsubscribe_job_notification/'+str(user.uid)) )
+                        body = "Congratulations, your job #%s has been completed, you have 30 days until it expires and is removed from the system.\n\n Click here to view result: %s \n\n To stop receiving these emails click here: %s" % (str(job_id),new_url,external_base_url+url('auth/unsubscribe_job_notification/'+str(user.uid))+'_'+Stemformatics_Auth.get_secret_unsubscribe_sha1(str(user.uid) )
 
                         # raise Error
                         # Send the message via our own SMTP server, but don't include the
