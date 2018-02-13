@@ -42,7 +42,7 @@ class MainController(BaseController):
         response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.'+format
         response.charset= "utf8"
         data = request.params['exportdata']
-        response.body = data
+        response.text = data
         return response
 
     """
@@ -86,7 +86,7 @@ class MainController(BaseController):
         response.headers['Content-type'] = export_data.content_type
         response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
         response.charset= "utf8"
-        response.body = export_data
+        response.body = export_data.data
 
         return response
 
