@@ -42,7 +42,8 @@ class MainController(BaseController):
         response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.'+format
         response.charset= "utf8"
         data = request.params['exportdata']
-        return data
+        response.body = data
+        return response
 
     """
         must be logged in to use this
@@ -85,8 +86,9 @@ class MainController(BaseController):
         response.headers['Content-type'] = export_data.content_type
         response.headers['Content-Disposition'] = 'attachment;filename='+export_data.file_name
         response.charset= "utf8"
+        response.body = export_data
 
-        return export_data.data
+        return response
 
 
     def send_email(self):

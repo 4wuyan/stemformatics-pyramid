@@ -528,8 +528,8 @@ class WorkbenchController(BaseController):
         try:
             c.gp_job_id = job_detail.reference_id
             if analysis_server != "GenePattern": # Hierarchical cluster
-                c.gp_job_id = int(id)
-                path = self.StemformaticsQueue +str(id) + "/"
+                c.gp_job_id = int(job_id) # id is no longer a input parameter
+                path = self.StemformaticsQueue +str(job_id) + "/"
                 dirList = os.listdir(path)
             else:
                 path = self.GPQueue+str(c.gp_job_id) + "/"
