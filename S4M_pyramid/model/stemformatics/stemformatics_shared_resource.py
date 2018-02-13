@@ -1,5 +1,6 @@
 
-
+from sqlalchemy import and_
+from datetime import timedelta,datetime
 __all__ = ['Stemformatics_Shared_Resource']
 
 
@@ -55,16 +56,12 @@ class Stemformatics_Shared_Resource(object):
         db.schema = 'stemformatics'
         sr = db.shared_resources
         share = sr.filter(and_(sr.share_type == share_type, sr.share_id == share_id, sr.to_uid == to_uid))
-        print
-        "\n\n\n\n\n==================\n\n"
-        print
-        share
+        print("\n\n\n\n\n==================\n\n")
+        print(share)
         share.delete()
         db.commit()
-        print
-        sr.filter(and_(sr.share_type == share_type, sr.share_id == share_id, sr.to_uid == to_uid))
-        print
-        "\n\n==================\n\n\n\n\n"
+        print(sr.filter(and_(sr.share_type == share_type, sr.share_id == share_id, sr.to_uid == to_uid)))
+        print("\n\n==================\n\n\n\n\n")
 
 
 

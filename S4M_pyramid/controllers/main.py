@@ -42,7 +42,8 @@ class MainController(BaseController):
         response.headers['Content-Disposition'] = 'attachment;filename=export_stemformatics_'+stemformatics_version+'.'+format
         response.charset= "utf8"
         data = request.params['exportdata']
-        return data
+        response.text = data
+        return response
 
     """
         must be logged in to use this
