@@ -159,7 +159,6 @@ class ApiController(BaseController):
             p = subprocess.Popen(command,shell=True)
 
     # This fetch all the pending jobs from s4m and updates them based on galaxy job status
-    @action(renderer="string")
     def get_galaxy_pending_jobs(self):
         import socket
         server_name = socket.gethostname()
@@ -178,8 +177,7 @@ class ApiController(BaseController):
         status = Stemformatics_Galaxy.return_job_status(galaxyInstance,pending_job_list,server_name)
         # update jobs based on galaxy status
         Stemformatics_Galaxy.update_job_status(db,status,galaxyInstance)
-        return "success"
-
+        return self.request.response
 
     #---------------------NOT MIGRATED--------------------------------
     def update_job(self,id): #CRITICAL-4
