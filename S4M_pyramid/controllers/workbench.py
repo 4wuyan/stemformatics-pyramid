@@ -430,7 +430,7 @@ class WorkbenchController(BaseController):
         job_mapping_file.close()
 
         # connect to galaxy now
-        from guide.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
+        from S4M_pyramid.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
         galaxyInstance = Stemformatics_Galaxy.connect_to_galaxy()
         # run tool
         galaxy_history_id = Stemformatics_Galaxy.run_HC_tool(galaxyInstance,job_id,gct_file_path,c.uid,column_distance_measure,row_distance_measure,colour_by,chip_type)
