@@ -23,6 +23,7 @@ var tip = d3.tip()
 
 
 function run_scatter_gene_expression_graph(colours, graphDiv,sortByOption, show_min_y_axis, legend_required, ref_name,main_title, whiskers_needed, scaling_required, dataset_data, probe_name_for_tooltip,ref_type ) {
+    whiskers_needed = false // hardcoding whiskers to be false for scatter graph [As only 2000 dataset had technical replicates and now all those replicates now been set to different samples]
     var multi_group = sortByOption.split(",").length;
     /* Extracting the data from the csv files for use in the graph
      * Also sets relevent options based on the data passed in (for example
