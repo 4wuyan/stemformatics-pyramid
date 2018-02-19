@@ -4,10 +4,8 @@ from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemfo
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
-import formencode.validators as fe
 import re
 from pyramid.renderers import render_to_response
-from asbool import asbool
 import S4M_pyramid.lib.helpers as h
 import os
 import subprocess
@@ -472,7 +470,6 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def job_view_result(self):  #CRITICAL-4
         job_id = int(self.request.matchdict['id'])
         c = self.request.c
