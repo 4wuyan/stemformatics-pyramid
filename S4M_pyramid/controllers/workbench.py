@@ -2185,10 +2185,9 @@ class WorkbenchController(BaseController):
         c.url = h.url('/workbench/gene_expression_profile_wizard')
         return self.deprecated_pylons_data_for_view
 
-
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/workbench/ucsc.mako")
     def ucsc(self):
-        return render('workbench/ucsc.mako')
+        return self.deprecated_pylons_data_for_view
 
 
     def download_multiple_datasets(self):
