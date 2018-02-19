@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 from S4M_pyramid.lib.deprecated_pylons_globals import config
 import psycopg2
 import psycopg2.extras
