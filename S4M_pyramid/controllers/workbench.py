@@ -2194,8 +2194,10 @@ class WorkbenchController(BaseController):
         return render('workbench/ucsc.mako')
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def download_multiple_datasets(self):
+        request = self.request
+        c = self.request.c
+        response = self.request.response
         search= request.params.get('filter')
         export= request.params.get('export')
         ds_ids= request.params.get('ds_ids')
@@ -2228,8 +2230,8 @@ class WorkbenchController(BaseController):
                 response.headers['Content-Disposition'] = 'attachment;filename=export_metadata_'+export+'_'+stemformatics_version+'.tsv'
             response.charset= "utf8"
             data = Stemformatics_Dataset.export_download_dataset_metadata(temp_result,export,ds_ids,g.all_sample_metadata,c.uid,c.user)
-
-            return data
+            response.body = data
+            return response
 
 
         else:
@@ -2237,7 +2239,7 @@ class WorkbenchController(BaseController):
                 audit_dict = {'ref_type':'search_term','ref_id':search,'uid':c.uid,'url':url,'request':request}
                 result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-            return render('workbench/download_multiple_datasets.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/download_multiple_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
     @action(renderer="templates/workbench/rohart_msc_landing_page.mako")
     def rohart_msc_test(self):
