@@ -1756,8 +1756,8 @@ class WorkbenchController(BaseController):
         self._temp.large = request.params.get('size') == "large"
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def _set_outputs_for_graph(self):
+        c = self.request.c
         c.choose_dataset_immediately = self._temp.choose_dataset_immediately
         c.allow_genePattern_analysis = Stemformatics_Dataset.allow_genePattern_analysis(db,self._temp.ds_id)
         c.geneSearch = self._temp.geneSearch

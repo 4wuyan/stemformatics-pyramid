@@ -29,7 +29,7 @@ class Graph_Data(object):
         self.ref_type = ref_type
         self.ref_id = ref_id
         self.db_id = int(db_id)
-        self.chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        self.chip_type = Stemformatics_Dataset.getChipType(ds_id)
         self.list_of_samples_to_remove = list_of_samples_to_remove
         self.species_dict = species_dict
         self.species = species_dict[self.db_id]['sci_name']
