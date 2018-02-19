@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 
@@ -14,14 +18,14 @@ class MscSignatureController(BaseController):
         if request.path_info not in ('/msc_signature/get_msc_signature_values', '/msc_signature/rohart_msc_test'):
             access = Stemformatics_Msc_Signature.get_user_access(db, c.uid)
             if not access:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
 
     @action(renderer="templates/msc_signature/index.mako")
     def index(self):
         request = self.request
         c = self.request.c
         project_msc_set = 'All'
-        c.msc_samples_summary = Stemformatics_Msc_Signature.get_msc_samples_summary_by_ds_id(db, project_msc_set)
+        c.msc_samples_summary= Stemformatics_Msc_Signature.get_msc_samples_summary_by_ds_id(db,project_msc_set)
         return self.deprecated_pylons_data_for_view
 
     def get_msc_signature_values(self):
@@ -45,7 +49,7 @@ class MscSignatureController(BaseController):
             response.text = values
             return response
 
-        values = Stemformatics_Msc_Signature.get_msc_values(db, ds_id, c.uid)
+        values = Stemformatics_Msc_Signature.get_msc_values(db,ds_id,c.uid)
         if isinstance(values, dict):
             response.headers['Content-type'] = 'text/plain'
             response.headers['Content-Disposition'] = 'attachment;filename=error.txt'
@@ -53,10 +57,10 @@ class MscSignatureController(BaseController):
             response.text = values
             return response
 
-        file_name = Stemformatics_Msc_Signature.get_file_name_of_msc_values(ds_id, False)
+        file_name = Stemformatics_Msc_Signature.get_file_name_of_msc_values(ds_id,False)
         response.headers['Content-type'] = 'text/tab-separated-values'
         # Content-Disposition: by convention the filename ends in ".rohart.MSC.txt" - see Stemformatics_Msc_Signature.get_file_name_of_msc_values
-        response.headers['Content-Disposition'] = 'attachment;filename=' + file_name
+        response.headers['Content-Disposition'] = 'attachment;filename='+file_name
         response.text = values
         return response
 
