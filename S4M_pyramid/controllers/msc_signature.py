@@ -42,7 +42,7 @@ class MscSignatureController(BaseController):
             response.headers['Content-type'] = 'text/plain'
             response.headers['Content-Disposition'] = 'attachment;filename=error.txt'
             values = "Error with dataset id."
-            response.body = values
+            response.text = values
             return response
 
         values = Stemformatics_Msc_Signature.get_msc_values(db, ds_id, c.uid)
@@ -50,15 +50,15 @@ class MscSignatureController(BaseController):
             response.headers['Content-type'] = 'text/plain'
             response.headers['Content-Disposition'] = 'attachment;filename=error.txt'
             values = values['error']
-            response.body = values
+            response.text = values
             return response
 
         file_name = Stemformatics_Msc_Signature.get_file_name_of_msc_values(ds_id, False)
         response.headers['Content-type'] = 'text/tab-separated-values'
         # Content-Disposition: by convention the filename ends in ".rohart.MSC.txt" - see Stemformatics_Msc_Signature.get_file_name_of_msc_values
         response.headers['Content-Disposition'] = 'attachment;filename=' + file_name
-        response.body = values
-        return values
+        response.text = values
+        return response
 
     def export(self):
 

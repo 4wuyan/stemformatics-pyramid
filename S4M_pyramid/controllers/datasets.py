@@ -14,7 +14,7 @@ from S4M_pyramid.model.stemformatics import *
 
 import re,os.path,subprocess
 
-from sqlalchemy.exceptions import *
+from sqlalchemy.exc import *
 
 
 class DatasetsController(BaseController):
