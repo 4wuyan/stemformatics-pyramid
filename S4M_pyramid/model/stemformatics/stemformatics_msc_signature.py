@@ -1,9 +1,9 @@
 __all__ = ['Stemformatics_Msc_Signature']
 
 # CRITICAL-6
-from guide.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
-from guide.model.stemformatics.stemformatics_auth import Stemformatics_Auth
-from pylons import config
+from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
+from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 import psycopg2, psycopg2.extras, redis, json
 import os.path
 
