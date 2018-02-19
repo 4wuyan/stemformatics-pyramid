@@ -1818,7 +1818,7 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Gene.get_genes(db, c.species_dict, gene, db_id, False, None)
 
         if len(result) ==1 :
-            temp_gene = result.itervalues().next()
+            temp_gene = next(iter(result.values()))
             c.ensemblID = ensembl_gene_id = temp_gene['EnsemblID']
             c.gene = symbol = temp_gene['symbol']
 
