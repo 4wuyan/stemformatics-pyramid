@@ -2230,7 +2230,7 @@ class WorkbenchController(BaseController):
                 response.headers['Content-Disposition'] = 'attachment;filename=export_metadata_'+export+'_'+stemformatics_version+'.tsv'
             response.charset= "utf8"
             data = Stemformatics_Dataset.export_download_dataset_metadata(temp_result,export,ds_ids,g.all_sample_metadata,c.uid,c.user)
-            response.body = data
+            response.text = data
             return response
 
 
