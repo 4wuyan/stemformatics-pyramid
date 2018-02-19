@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 # coding=utf-8
 #TODO-1
 import logging
@@ -1546,8 +1550,7 @@ All functions have a try that will return None if errors are found
 
                     if status in ("Admin","Annotate","Available"):
                         temp_list_of_ds_ids.append(ds_id)
-            except Exception as e:
-                #print(e)
+            except:
                 temp_list_of_ds_ids = None
 
 
