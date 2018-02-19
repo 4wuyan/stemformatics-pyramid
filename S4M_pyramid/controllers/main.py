@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Admin, Stemformatics_Audit, Stemformatics_Export,db_deprecated_pylons_orm as db
