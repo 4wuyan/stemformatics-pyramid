@@ -955,7 +955,7 @@ All functions have a try that will return None if errors are found
 
             ds_mt_result = {}
 
-            metadataValues = ds_md.filter(ds_md.ds_id==ds_id).all()
+            metadataValues = ds_md.filter(ds_md.ds_id==ds_id).filter(ds_md.ds_name!='showReportOnDatasetSummaryPage').filter(ds_md.ds_name!='ShowPCALinksOnDatasetSummaryPage').all()
 
             for r in metadataValues:
                 ds_mt_result[r.ds_name] = r.ds_value
@@ -1741,7 +1741,7 @@ All functions have a try that will return None if errors are found
             #delete all from biosamples_metadata for that ds_id
             b.filter(b.ds_id==ds_id).delete()
             # delete all from dataset_metadata for that ds_id
-            d.filter(d.ds_id==ds_id).delete()
+            d.filter(d.ds_id==ds_id).filter(d.ds_name!='showReportOnDatasetSummaryPage').filter(d.ds_name!='ShowPCALinksOnDatasetSummaryPage').delete()
 
             for item in bs_md_list:
                 chip_type = item['chip_type']
