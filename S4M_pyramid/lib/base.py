@@ -234,7 +234,7 @@ class BaseController():
         return "1"
 
     @staticmethod
-    def _setup_graphs(temp_object):
+    def _setup_graphs(self,temp_object):
         """ What other values are needed to be setup here for it to work?
         From expressions.py / _get_inputs_for_graph()
             self._temp.line_graph_available = Stemformatics_Dataset.check_line_graph_for_dataset(db,ds_id)
@@ -259,7 +259,7 @@ class BaseController():
         are only affecting self._temp.db_id and temp_object.ref_id
 
         """
-
+        c = self.request.c
         ref_type = temp_object.ref_type
         ref_id = temp_object.ref_id
         graphType = temp_object.graphType

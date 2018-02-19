@@ -1887,7 +1887,7 @@ class WorkbenchController(BaseController):
         self._temp.ref_type = 'ensemblID'
         self._temp.ref_id = self._temp.ensemblID = ensembl_gene_id
         self._temp.line_graph_available = False
-        self._temp.this_view = self._setup_graphs(self._temp)
+        self._temp.this_view = self._setup_graphs(self,self._temp)
         self._set_outputs_for_graph()
 
 
