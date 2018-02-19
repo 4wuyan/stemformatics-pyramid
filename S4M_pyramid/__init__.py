@@ -8,7 +8,7 @@ from .controllers.genes import GenesController
 from .controllers.main import MainController
 from .controllers.api import ApiController
 from .controllers.datasets import DatasetsController
-
+from .controllers.msc_signature import MscSignatureController
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
     setup_database_connection(settings)
@@ -57,6 +57,7 @@ def main(global_config, **settings):
     config.add_handler("main","/main/{action}",handler=MainController)
     config.add_handler("api","/api/{action}",handler=ApiController)
     config.add_handler("datasets","/datasets/{action}",handler=DatasetsController)
+    config.add_handler("msc_signature","/msc_signature/{action}",handler=MscSignatureController)
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
