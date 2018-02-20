@@ -242,4 +242,3 @@ class BaseController():
         self._temp.ensemblID = ensemblID
         self._temp.symbol = result[ensemblID]['symbol']
         return "1"
-
