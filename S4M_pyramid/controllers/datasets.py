@@ -29,10 +29,10 @@ class DatasetsController(BaseController):
     #---------------------NOT MIGRATED--------------------------------
     def __before__(self): #CRITICAL-3
 
-        super(DatasetsController, self).__before__ ()
+        c = self.request.c
+	super(DatasetsController, self).__before__ ()
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
-        c = self.request.c
         c.human_db = self.human_db
         c.mouse_db = self.mouse_db
 
