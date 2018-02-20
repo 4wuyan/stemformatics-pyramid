@@ -183,7 +183,7 @@ function help_icon_in_page_help(){
     $('div.help_icon a').click(function(){
         $("div.help_icon ul.main_help_menu").removeClass('main_help_menu').addClass('hidden');
     });
-    $helpButton.live('click.PageGuide',function(event){
+    $('div.help_icon').on('click.PageGuide','a.page_guide',function(event){
         if (helpsystem.pageHelp.isOn) {
             helpsystem.pageHelp.turnOff();
             $helpButton.removeClass('active');
@@ -200,7 +200,7 @@ function help_icon_in_page_help(){
 function dropdown_buttons(){
 
     // dropdown code for buttons
-    $("ul.buttonMenus a.button.dropdown").live('click', function(e) {
+    $("body").on('click', 'a.button.dropdown', function(e) {
         e.preventDefault();
         var $button = $(this);
         var $menu = $button.parent().children("ul");
@@ -357,7 +357,7 @@ $(function () {
         });
 
     project_grandiose_click_header();
-    $('a.in_page_tutorial_link').live('click',function (){
+    $('body').on('click','a.in_page_tutorial_link',function (){
         tutorial_name= $(this).attr('data-tutorial');
         helpsystem.tutorial.start(tutorial_name);
         return false;
@@ -388,7 +388,7 @@ $(function () {
 
 
 
-    $('div.wb_help_bar').live('click',function(){
+    $('body').on('click','div.wb_help_bar',function(){
 
 
         $(this).children().html("Hide help information <img class=\"help\" src=\""+BASE_PATH+"images/workbench/minus.png\"\">");
@@ -398,7 +398,7 @@ $(function () {
 
     });
 
-    $('div.wb_help_bar_showing').live('click',function(){
+    $('body').on('click','div.wb_help_bar_showing',function(){
 
         $(this).children().html("Show help information <img class=\"help\" src=\""+BASE_PATH+"images/workbench/plus.png\"\">");
 
@@ -894,7 +894,7 @@ function set_search_and_choose(base_url,filter_dict,search_button_id,input_text_
             input_text_field.keypress(function(e){
                 if(e.which == 13){
                     e.preventDefault();
-                    filter = input_text_field.val();
+                    filter = input_text_field.val().replace("<script>","").replace("</script>","");
                     filter_dict['filter'] = filter;
                     this_ajax_search.get_data_from_ajax(filter_dict);
                 }
@@ -903,7 +903,7 @@ function set_search_and_choose(base_url,filter_dict,search_button_id,input_text_
             // this is for when they click the button
             search_button.click(function(e){
                 e.preventDefault();
-                filter = input_text_field.val();
+                filter = input_text_field.val().replace("<script>","").replace("</script>","");
                 filter_dict['filter'] = filter;
                 this_ajax_search.get_data_from_ajax(filter_dict);
             });

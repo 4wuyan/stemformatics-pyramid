@@ -1,7 +1,10 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 import string, json, redis
 import psycopg2
 import psycopg2.extras
-from sqlalchemy import or_, and_, desc
 from datetime import datetime, timedelta
 
 # for list_authorised_users

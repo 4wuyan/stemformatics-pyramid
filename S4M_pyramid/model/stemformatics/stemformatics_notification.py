@@ -1,3 +1,10 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+# Note the model has not been tesed, since the email service is not
+# turned on in Pyramid environment
+
+
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
@@ -45,19 +52,16 @@ class Stemformatics_Notification(object):
 
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def __init__ (self):
         pass
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def add_notification(db,notify_type,uid,subject,body):
 
 
         return "OK"
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def send_email(sender,recipient,subject,body):
 
         if not isinstance(recipient,list):
@@ -130,7 +134,6 @@ class Stemformatics_Notification(object):
 
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def send_basic_email(recipient, subject, message):
         magic_globals.fetch()
         c = magic_globals.c
@@ -140,7 +143,6 @@ class Stemformatics_Notification(object):
 
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def get_header(db, request, uid):
         datasetID = request.params.get('datasetID', request.params.get('ds_id', None))
 
@@ -158,7 +160,6 @@ class Stemformatics_Notification(object):
         return None
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def get_header_name_from_datasetId(datasetID):
         delimiter = config['redis_delimiter']
         try:
@@ -168,7 +169,6 @@ class Stemformatics_Notification(object):
             return None
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def set_project_headers(db):
         # Using dataset_metadata 'project' with ds_value of 3iii or grandiose
         conn_string = config['psycopg2_conn_string']
@@ -191,7 +191,6 @@ class Stemformatics_Notification(object):
 
 
     @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
     def send_error_email(error_subject,error_body):
         magic_globals.fetch()
         c = magic_globals.c

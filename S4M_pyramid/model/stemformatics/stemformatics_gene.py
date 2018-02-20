@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
@@ -189,7 +193,7 @@ class Stemformatics_Gene(object):
 
         geneSearchFinal = Stemformatics_Gene._preGeneSearch(geneSearch)
         if geneSearchFinal == None:
-           return None
+            return None
 
         # explicit search on gene id
         conn_string = config['psycopg2_conn_string']
@@ -210,6 +214,7 @@ class Stemformatics_Gene(object):
         result = cursor.fetchall()
         cursor.close()
         conn.close()
+
         # Always return if we get an exact match. No need to go into more searches
         if len(result) == 1:
             row_result = result[0]
@@ -494,7 +499,7 @@ class Stemformatics_Gene(object):
 
     @staticmethod
     def _preGeneSearch(geneSearch):
-
+        try:
             geneSearch = geneSearch.strip()
 
             genes = re.findall("[\/\w\.\-\@]{1,}",geneSearch)
@@ -516,7 +521,8 @@ class Stemformatics_Gene(object):
                     geneSearchFinal = geneSearchFinal + genes[i]
 
             return geneSearchFinal
-
+        except:
+            return None
 
     @staticmethod
     def get_ensembl_from_probe(db,probe_list,db_id):
@@ -1320,15 +1326,17 @@ class Stemformatics_Gene(object):
 
         # get the mapping id for ds_id
         result = redis_interface_for_pickle.get("dataset_mapping_data")
-        if not result:
-            resut = Stemformatics_Dataset.set_datasets_mapping_id_into_redis()
-            mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
-        else:
-            mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
+        if not result: # when not found in redis
+            Stemformatics_Dataset.set_datasets_mapping_id_into_redis()
+            result = r_server.get("dataset_mapping_data")
+
+        mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
 
         # check if mapping id for that dataset is available, if not means it is new datast and we should update redis
         if ds_id not in mapping_id:
             Stemformatics_Dataset.set_datasets_mapping_id_into_redis()
+            result = r_server.get("dataset_mapping_data")
+            mapping_id = Stemformatics_Expression.unpickle_expression_data(result)
 
         ref_type = 'gene_set_id'
         gene_set_mapping_data_from_redis = {}
