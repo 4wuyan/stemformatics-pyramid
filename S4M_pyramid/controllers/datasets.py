@@ -9,6 +9,8 @@ from pyramid_handlers import action
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.base import BaseController
+from pyramid.renderers import render_to_response
+import S4M_pyramid.lib.helpers as h
 
 import json
 
@@ -30,8 +32,10 @@ class DatasetsController(BaseController):
         super(DatasetsController, self).__before__ ()
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
+        c = self.request.c
         c.human_db = self.human_db
         c.mouse_db = self.mouse_db
+
 
         self.default_human_dataset = int(config['default_human_dataset'])
         self.default_mouse_dataset = int(config['default_mouse_dataset'])
@@ -62,8 +66,10 @@ class DatasetsController(BaseController):
         else:
             redirect(url(controller='contents', action='index'), code=404)
 
-    #---------------------NOT MIGRATED--------------------------------
     def search(self):
+        c = self.request.c
+        request = self.request
+        response = self.request.response
         c.msc_values_access = config['msc_values_access']
         c.searchQuery = request.params.get("filter", None)
 
@@ -115,11 +121,11 @@ class DatasetsController(BaseController):
             if c.ds_id is not None:
                 audit_dict = {'ref_type':'ds_id','ref_id':c.ds_id,'uid':c.uid,'url':url,'request':request}
                 result = Stemformatics_Audit.add_audit_log(audit_dict)
-            return render('/datasets/search.mako')
+            return render_to_response('S4M_pyramid:templates/datasets/search.mako',self.deprecated_pylons_data_for_view,request=self.request)
         else:
             # Task #396 - error with ie8 downloading with these on SSL
-            del response.headers['Cache-Control']
-            del response.headers['Pragma']
+            response.headers.pop('Cache-Control', None)
+            response.headers.pop('Pragma', None)
 
             response.headers['Content-type'] = 'text/tab-separated-values'
             stemformatics_version = config['stemformatics_version']
@@ -134,12 +140,8 @@ class DatasetsController(BaseController):
                 datasets = Stemformatics_Dataset.dataset_search(c.uid,c.searchQuery, filter_dict)
 
             data = self._convert_datasets_to_csv(ds_id,datasets)
-            return data
-
-
-
-
-
+            response.text = data
+            return response
 
     #---------------------NOT MIGRATED--------------------------------
     def _convert_datasets_to_csv(self,ds_id,datasets):
