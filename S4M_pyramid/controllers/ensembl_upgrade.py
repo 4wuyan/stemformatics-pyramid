@@ -8,7 +8,6 @@ from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import S4M_pyramid.lib.helpers as h
 from pyramid_handlers import action
 from pyramid.renderers import render_to_response
-from sqlalchemy.exc import *
 # Live querying
 import re
 
