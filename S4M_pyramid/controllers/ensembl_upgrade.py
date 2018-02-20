@@ -47,12 +47,12 @@ class EnsemblUpgradeController(BaseController):
 
     @Stemformatics_Auth.authorise()
     @action(renderer="templates/ensembl_upgrade/gene_set_changed.mako")
-    def view(self,id):
+    def view(self):
         request = self.request
         c = self.request.c
         c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/ensembl_upgrade/index'),'Manage Gene Lists that have changed since the Ensembl Upgrade'],['','Changes in this Gene List']]
         uid = c.uid 
-        c.gene_set_id = int(id)
+        c.gene_set_id = int(self.request.matchdict['id'])
         c.title = c.site_name+'  - List of Gene Lists that have changed since the upgrade'
         result = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
         c.data = result[c.gene_set_id]
@@ -65,12 +65,12 @@ class EnsemblUpgradeController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    def update_gene_set(self,id): #CRITICAL-4
+    def update_gene_set(self): #CRITICAL-4
         request = self.request
         c = self.request.c
         c.title = c.site_name+' Workbench - Upload New Gene List'
         try:
-            gene_set_id = c.gene_set_id = int(id) 
+            gene_set_id = c.gene_set_id = int(self.request.matchdict['id'])
         except:
             redirect(url(controller='contents', action='index'), code=404)
 
