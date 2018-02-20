@@ -150,6 +150,33 @@ class BaseController():
                 session['page_history'].append({'title': title, 'path': request.path_info + '?' + request.query_string})
             session.save()
 
+    def _check_dataset_status(self):
+        c = self.request.c
+        request = self.request
+        session = self.request.session
+        dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
+
+        # if no access and already logged in then error out
+        # if no access and not already logged in then redirect
+        if dataset_status == "Unavailable":
+            if c.uid == '' or c.uid == 0:
+                # got this code from decorator in model/stemformatics/stemformatics_auth.py
+                c.user = None
+                session['path_before_login'] = request.path_info + '?' + request.query_string
+                session.save()
+                raise redirect(h.url('/auth/login'))
+            else:
+                self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
+                raise redirect(url(controller='contents', action='index'), code=404)
+        self._temp.dataset_status = dataset_status
+
+    #---------------------NOT MIGRATED--------------------------------
+    def _check_probe_status():
+        probeSearch = self._temp.probeSearch
+        if (probeSearch is None) or (len(probeSearch) < 1):
+            error_handling_for_invalid_search_string()
+            redirect(url(controller='contents', action='index'), code=404)
+
     def _check_gene_status(self):
         request = self.request
         c = self.request.c
@@ -216,84 +243,3 @@ class BaseController():
         self._temp.symbol = result[ensemblID]['symbol']
         return "1"
 
-    def _check_dataset_status(self):
-        c = self.request.c
-        request = self.request
-        session = self.request.session
-        dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
-
-        # if no access and already logged in then error out
-        # if no access and not already logged in then redirect
-        if dataset_status == "Unavailable":
-            if c.uid == '' or c.uid == 0:
-                # got this code from decorator in model/stemformatics/stemformatics_auth.py
-                c.user = None
-                session['path_before_login'] = request.path_info + '?' + request.query_string
-                session.save()
-                raise redirect(h.url('/auth/login'))
-            else:
-                self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
-                raise redirect(url(controller='contents', action='index'), code=404)
-        self._temp.dataset_status = dataset_status
-
-    #---------------------NOT MIGRATED--------------------------------
-    def _check_probe_status():
-        probeSearch = self._temp.probeSearch
-        if (probeSearch is None) or (len(probeSearch) < 1):
-            error_handling_for_invalid_search_string()
-            redirect(url(controller='contents', action='index'), code=404)
-
-    @staticmethod
-    #---------------------NOT MIGRATED--------------------------------
-    def _setup_graphs(temp_object):
-        """ What other values are needed to be setup here for it to work?
-        From expressions.py / _get_inputs_for_graph()
-            self._temp.line_graph_available = Stemformatics_Dataset.check_line_graph_for_dataset(db,ds_id)
-            self._temp.feature_type = feature_type
-            self._temp.feature_id = feature_id
-            self._temp.probeSearch = probeSearch
-            self._temp.geneSearch = geneSearch
-            self._temp.db_id = db_id
-            self._temp.graphType = graphType
-            self._temp.sortBy = sortBy
-            self._temp.ds_id = ds_id
-            self._temp.choose_dataset_immediately  = choose_dataset_immediately
-            self._temp.url = request.environ.get('PATH_INFO')
-            self._temp.original_temp_datasets = original_temp_datasets
-            self._temp.force_choose = force_choose
-
-            if request.environ.get('QUERY_STRING'):
-                self._temp.url += '?' + request.environ['QUERY_STRING']
-            self._temp.large = request.params.get('size') == "large"
-
-        Note that lib/base.py / _check_dataset_status() and _check_gene_status
-        are only affecting self._temp.db_id and temp_object.ref_id
-
-        """
-
-        ref_type = temp_object.ref_type
-        ref_id = temp_object.ref_id
-        graphType = temp_object.graphType
-        sortBy = temp_object.sortBy
-        if hasattr(temp_object,'select_probes'):
-            select_probes = temp_object.select_probes
-        else:
-            select_probes = None
-
-        list_of_samples_to_remove = []
-        line_graph_available = temp_object.line_graph_available
-        """ Build the graph data first using the temp_object and other information. And then choose the
-        graph that is appropriate and then convert the data to be ready for the view """
-        this_graph_data = Graph_Data(db,temp_object.ds_id,ref_type,ref_id,temp_object.db_id,list_of_samples_to_remove,c.species_dict,select_probes)
-
-        if graphType == "scatter":
-            this_graph = Scatterplot_Graph(this_graph_data,sortBy)
-        if graphType == "box":
-            this_graph = Box_Graph(this_graph_data,sortBy)
-        if graphType =="bar":
-            this_graph = Bar_Graph(this_graph_data,sortBy)
-        if graphType =="line":
-            this_graph = Line_Graph(this_graph_data,sortBy)
-
-        this_view = Preview(this_graph,line_graph_available)
-        return this_view
