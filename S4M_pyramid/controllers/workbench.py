@@ -1760,8 +1760,8 @@ class WorkbenchController(BaseController):
         self._temp.large = request.params.get('size') == "large"
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def _set_outputs_for_graph(self):
+        c = self.request.c
         c.choose_dataset_immediately = self._temp.choose_dataset_immediately
         c.allow_genePattern_analysis = Stemformatics_Dataset.allow_genePattern_analysis(db,self._temp.ds_id)
         c.geneSearch = self._temp.geneSearch
@@ -1787,9 +1787,9 @@ class WorkbenchController(BaseController):
         show_limited = True
         c.datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,c.uid,show_limited,c.db_id)
 
-    #---------------------NOT MIGRATED--------------------------------
     def fold_change_viewer_wizard(self): #CRITICAL-5
-
+        request = self.request
+        c = self.request.c
         analysis  = 5
         c.analysis = analysis
 
@@ -1808,7 +1808,8 @@ class WorkbenchController(BaseController):
             c.message = request.params.get('message')
             c.breadcrumb_title = 'Choose Gene for Fold Change Viewer - please enter in a HGNC gene symbol, Ensembl ID, Entrez ID or RefSeq ID in the search provided'
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/fold_change_viewer_wizard'),'Fold Change Viewer - Choose Gene (Step 1 of 2)']]
-            return render('workbench/choose_gene.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
 
 
         select_all_ambiguous = True
@@ -1821,7 +1822,7 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Gene.get_genes(db, c.species_dict, gene, db_id, False, None)
 
         if len(result) ==1 :
-            temp_gene = result.itervalues().next()
+            temp_gene = next(iter(result.values()))
             c.ensemblID = ensembl_gene_id = temp_gene['EnsemblID']
             c.gene = symbol = temp_gene['symbol']
 
@@ -1836,7 +1837,8 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/fold_change_viewer_wizard?use=')
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
-            return render('workbench/choose_from_multiple_genes.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
 
         if ds_id is None:
             #now get the dataset ID
@@ -1846,7 +1848,8 @@ class WorkbenchController(BaseController):
             c.breadcrumb_title = 'Choose Dataset for Fold Change Viewer'
             c.url = h.url('/workbench/fold_change_viewer_wizard?db_id='+str(db_id)+'&gene='+str(gene))
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/fold_change_viewer_wizard?datasetID='+str(ds_id)),'Fold Change Viewer - Choose Gene'],[h.url('/workbench/fold_change_viewer_wizard'),'Fold Change Viewer - Choose Dataset (Step 2 of 2)']]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
+
 
         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
         if c.dataset_status != "Available":
@@ -1899,14 +1902,8 @@ class WorkbenchController(BaseController):
         audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-
-
-        return render('workbench/fold_change_viewer.mako')
-
-
-
-
-
+        return render_to_response('S4M_pyramid:templates/workbench/fold_change_viewer.mako',
+                                  self.deprecated_pylons_data_for_view, request=self.request)
 
     @Stemformatics_Auth.authorise()
     def gene_neighbour_wizard(self): #CRITICAL-5
@@ -2192,10 +2189,9 @@ class WorkbenchController(BaseController):
         c.url = h.url('/workbench/gene_expression_profile_wizard')
         return self.deprecated_pylons_data_for_view
 
-
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/workbench/ucsc.mako")
     def ucsc(self):
-        return render('workbench/ucsc.mako')
+        return self.deprecated_pylons_data_for_view
 
 
     def download_multiple_datasets(self):
