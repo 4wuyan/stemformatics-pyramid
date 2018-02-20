@@ -36,7 +36,8 @@ class EnsemblUpgradeController(BaseController):
     def index(self):
         request = self.request
         c = self.request.c
-        uid = c.uid 
+        uid = c.uid
+        c.message = "" # Not needed in pylons
         c.title = c.site_name+'  - List of Gene Lists that have changed since the upgrade'
         c.data = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/index'))
