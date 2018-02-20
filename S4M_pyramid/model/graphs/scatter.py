@@ -1,4 +1,4 @@
-from .graph import *
+from .graph import Graph
 class Scatterplot_Graph(Graph):
     def __init__ (self,Graph_Data,sort_by):
         #super(Graph, self).__init__()

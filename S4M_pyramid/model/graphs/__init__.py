@@ -5,11 +5,11 @@ Setup graphs for stemformatics
 
 
 """ 
-from .graph import *
-from .graph_data import *
-from .bar import *
-from .line import *
-from .scatter import *
-from .view import *
+from .graph import Graph
+from .graph_data import Graph_Data
+from .bar import Bar_Graph,Box_Graph,Histogram_Graph
+from .line import Line_Graph
+from .scatter import Scatterplot_Graph
+from .view import View,Preview
 
 

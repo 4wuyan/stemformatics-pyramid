@@ -233,7 +233,6 @@ class BaseController():
         self._temp.symbol = result[ensemblID]['symbol']
         return "1"
 
-    @staticmethod
     def _setup_graphs(self,temp_object):
         """ What other values are needed to be setup here for it to work?
         From expressions.py / _get_inputs_for_graph()

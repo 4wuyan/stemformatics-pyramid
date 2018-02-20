@@ -1,4 +1,4 @@
-from .graph import *
+from .graph import Graph
 import json 
 class Line_Graph(Graph):
 
