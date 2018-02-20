@@ -1,30 +1,25 @@
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
-from pylons import request, response, session, url, tmpl_context as c
-from pylons.controllers.util import abort, redirect
-from pylons import app_globals as g
-#from guide import model
-from guide.lib.base import BaseController, render
-from sqlalchemy import or_, and_, desc
-from sqlalchemy.exceptions import *
-from paste.deploy.converters import asbool
+from S4M_pyramid.lib.deprecated_pylons_globals import  url, config
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.model.stemformatics import Stemformatics_Ensembl_Upgrade,Stemformatics_Auth,Stemformatics_Gene_Set,Stemformatics_Gene,db_deprecated_pylons_orm as db
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+import S4M_pyramid.lib.helpers as h
+from pyramid_handlers import action
+from pyramid.renderers import render_to_response
+from sqlalchemy.exc import *
 # Live querying
-from guide.model.stemformatics import *
-from pylons import config
-connection = db.engine.connect()
-# for some reason it is not applied in guide/lib/base.py
-import guide.lib.helpers as h
 import re
 
 
 
 class EnsemblUpgradeController(BaseController):
     __name__ = 'EnsemblUpgradeController'
-    
-    
-    def __before__(self): #CRITICAL-3
-        super(EnsemblUpgradeController, self).__before__ ()
+
+    def __init__(self, request):
+        super().__init__(request)
+        c = self.request.c
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         c.human_db = self.human_db
@@ -36,18 +31,24 @@ class EnsemblUpgradeController(BaseController):
         c.old_mouse_ensembl_version = config['old_mouse_ensembl_version_text']
         c.old_human_ensembl_version = config['old_human_ensembl_version_text']
   
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
+    @action(renderer="templates/ensembl_upgrade/private_gene_sets_archive.mako")
     def index(self):
+        request = self.request
+        c = self.request.c
         uid = c.uid 
         c.title = c.site_name+'  - List of Gene Lists that have changed since the upgrade'
         c.data = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/index'))
         if request.params.get('debug') == "yes":
-            raise Error
-        return render('ensembl_upgrade/private_gene_sets_archive.mako')
+            raise Exception
+        return self.deprecated_pylons_data_for_view
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
+    @action(renderer="templates/ensembl_upgrade/gene_set_changed.mako")
     def view(self,id):
+        request = self.request
+        c = self.request.c
         c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/ensembl_upgrade/index'),'Manage Gene Lists that have changed since the Ensembl Upgrade'],['','Changes in this Gene List']]
         uid = c.uid 
         c.gene_set_id = int(id)
@@ -56,15 +57,16 @@ class EnsemblUpgradeController(BaseController):
         c.data = result[c.gene_set_id]
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/view/'+str(c.gene_set_id)))
         if request.params.get('debug') == "yes":
-            raise Error
-        return render('ensembl_upgrade/gene_set_changed.mako')
+            raise Exception
+        return self.deprecated_pylons_data_for_view
 
 
 
 
-    @Stemformatics_Auth.authorise(db)
+    @Stemformatics_Auth.authorise()
     def update_gene_set(self,id): #CRITICAL-4
-        
+        request = self.request
+        c = self.request.c
         c.title = c.site_name+' Workbench - Upload New Gene List'
         try:
             gene_set_id = c.gene_set_id = int(id) 
@@ -89,8 +91,9 @@ class EnsemblUpgradeController(BaseController):
         if update is None:
             c.title = "You must provide an update option."
             c.message = "You must provide an update option to update your gene set."
-            return render('workbench/error_message.mako')
-            
+            return render_to_response("S4M_pyramid:templates/workbench/error_message.mako",
+                                      self.deprecated_pylons_data_for_view, request=self.request)
+
         if gene_set_id is not None:
             gene_set_result = Stemformatics_Gene_Set.getGeneSetData(db,c.uid,gene_set_id)
             gene_set = gene_set_result[0]
@@ -135,5 +138,6 @@ class EnsemblUpgradeController(BaseController):
         c.title = c.site_name+' Workbench  - New Gene List'
         c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/workbench/gene_set_upload'),'Upload New Gene List'],['','Bulk Import Manager']]
         c.description = ''
-        return render('workbench/gene_set_manage_bulk_import.mako')
+        return render_to_response("S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako",self.deprecated_pylons_data_for_view,request=self.request)
+
   
