@@ -730,7 +730,7 @@ module.exports = biojsvisboxplot = function (init_options)
 
     /*  Setting up the graph including y and x axes */
     setup_graph = function(graph){
-        // setup all the graph element
+        // setup all the graph elements
 	    graph.graph_type = "Box Plot";
         options = graph.options;
         var label_padding = options.x_axis_label_padding;

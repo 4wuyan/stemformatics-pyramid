@@ -309,8 +309,14 @@ Except for pickle data, the reason that Bytes should be decoded into Unicode imm
 
 You might want to google more about the string differences in Python 2 and 3.
 
+Python2 vs Python3
+=====================
+Although the most tricky python2 vs python3 bugs (e.g. string vs unicode) were mentioned above. There are also other minor differences that can cause a page to crash
+for example, dict.itervalues.next() is a one that's being used quite often, it needs to be replaced with next(iter(dict.values))
+Those bugs should be quite easy to fix, with some research on the differences and alternatives.
+
 Export PDF (STILL NEED TO BE FIXED)
 ======================================
 
 In the pylons code, a tool called "prince" is used to convert the svg format graphs to PDF for the users to download. As of now, prince produces serveral major visual errors when converting svg with our pyramid server.
-The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors. This still needs to be investigated further.
+The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors, e.g. the error occurs when exporting yugene graph summaries. This still needs to be investigated further.

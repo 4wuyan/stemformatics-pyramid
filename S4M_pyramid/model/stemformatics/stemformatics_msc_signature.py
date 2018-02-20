@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 __all__ = ['Stemformatics_Msc_Signature']
 
 # CRITICAL-6
@@ -96,7 +100,7 @@ class Stemformatics_Msc_Signature(object):
         if not os.path.isfile(file_name):
             return {'error': 'There was an error with finding the msc file for this dataset.'}
 
-            # read in the values
+        # read in the values
         with open(file_name, 'r') as f:
             count = 0
             for line in f:
