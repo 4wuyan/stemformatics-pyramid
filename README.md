@@ -319,4 +319,4 @@ Export PDF (STILL NEED TO BE FIXED)
 ======================================
 
 In the pylons code, a tool called "prince" is used to convert the svg format graphs to PDF for the users to download. As of now, prince produces serveral major visual errors when converting svg with our pyramid server.
-The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors, e.g. the error occurs when exporting yugene graphs. This still needs to be investigated further.
+The alternative is using rsvg-convert(librsvg), however it still produces other minor visual errors, e.g. the error occurs when exporting yugene graph summaries. This still needs to be investigated further.
