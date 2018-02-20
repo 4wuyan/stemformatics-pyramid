@@ -137,6 +137,8 @@ class BaseController():
                                 or 'expressions/return_yugene_filtered_graph_data' in request.path_info
                                 or 'expressions/return_breakdown_of_yugene_filtered_data' in request.path_info
                                 or 'help/json' in request.path_info
+                                or 'expressions/graph_data' in request.path_info
+                                or 'expressions/dataset_metadata' in request.path_info
                             ) else False
 
         if not skip_history:
