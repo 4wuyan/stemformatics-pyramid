@@ -51,7 +51,7 @@ div.show_row_div a.show_rows:hover {
 }
 
 #modalDiv {
-  position: absolute ;
+  position: fixed ;
 	background-color: white;
 	width:97vw;
   overflow: scroll;
@@ -59,7 +59,7 @@ div.show_row_div a.show_rows:hover {
 	border:5px solid #000;
 	z-index: 1000;
   left: 1vw !important;
-  top: 0.5vh;
+  top: 5vh !important;
 }
 #simplemodal-container {
   border: none !important;

@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 # TODO-1
 import logging
 
@@ -90,8 +94,7 @@ class Stemformatics_Help(object):
         if page_keys_matched:
             sorted_keys = sorted(page_keys_matched, key=page_keys_matched.get, reverse=True)
             final_page_data = Stemformatics_Help.get_all_help_from_page_key(sorted_keys[0])
-            if final_page_data[
-                'page_guide'] is None:  # check if page contains page guide, and if it doesn't iterate over other
+            if final_page_data['page_guide'] is None: # check if page contains page guide, and if it doesn't iterate over other
                 for page_key in sorted_keys:
                     page_data = Stemformatics_Help.get_all_help_from_page_key(page_key)
                     if page_data['page_guide'] is None:

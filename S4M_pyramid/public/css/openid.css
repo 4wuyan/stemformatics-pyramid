@@ -11,7 +11,7 @@ form.jqopenid label {display:block; font-weight:bold; font-size:larger; margin-b
 input[name=openid_username] {width:8em}
 input[name=openid_identifier] {width:18em}
 form.jqopenid ul li.highlight { -moz-border-radius:4px; -webkit-border-radius:4px; background-color: #FD6}
-form.jqopenid fieldset div {font-family:arial;-moz-border-radius:4px; -webkit-border-radius:4px; 
+form.jqopenid fieldset div {font-family:arial;-moz-border-radius:4px; -webkit-border-radius:4px;
                           background: #ACDCFC url(../images/openid/fadegrey.png); padding:10px;display:inline-block}
 form.jqopenid input[type='submit'] {margin-left:1em;}
 

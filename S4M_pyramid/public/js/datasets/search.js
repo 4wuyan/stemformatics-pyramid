@@ -57,7 +57,7 @@ $(document).ready(function() {
 
     // if filter specified but no ds_id selected, then run the ajax call
     db_id = $('#db_id').html();
-    filter = $('#dataset_search').val();
+    filter = $('#dataset_search').val().replace("<script>","").replace("</script>","");
     if (filter != "" && db_id == "") {
         filter_dict = {};
         filter_dict['filter'] = filter;

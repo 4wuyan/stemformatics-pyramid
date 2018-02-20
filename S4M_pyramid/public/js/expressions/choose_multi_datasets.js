@@ -55,7 +55,7 @@ $(document).ready(function() {
 
         var ds_id = this_object.attr('id');
 
-        var checked = this_object.attr('checked');
+        var checked = this_object.is(':checked');
 
         if (checked) {
 
