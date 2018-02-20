@@ -3,7 +3,7 @@ from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import url, config
 from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Notification, Stemformatics_Help, Stemformatics_Gene, Stemformatics_Auth, Stemformatics_Dataset
 from S4M_pyramid.templates.external_db import externalDB, innateDB, stringDB
-from S4M_pyramid.model.graphs import *
+from S4M_pyramid.model.graphs import Preview,Graph_Data,Scatterplot_Graph,Box_Graph,Bar_Graph,Line_Graph
 import json
 import socket
 import re
