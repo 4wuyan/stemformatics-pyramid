@@ -26,11 +26,9 @@ class DatasetsController(BaseController):
     __name__ = 'DatasetsController'
 
 
-    #---------------------NOT MIGRATED--------------------------------
-    def __before__(self): #CRITICAL-3
-
+    def __init__(self,request):
+        super().__init__(request)
         c = self.request.c
-	super(DatasetsController, self).__before__ ()
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         c.human_db = self.human_db
@@ -106,7 +104,7 @@ class DatasetsController(BaseController):
             try:
                 c.dataset_status = c.dataset[ds_id]['dataset_status']
             except:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
             c.db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
         else:
             c.ds_id = None
