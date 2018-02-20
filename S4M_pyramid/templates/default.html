@@ -1,24 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-    
     <%namespace name="Base" file="base.mako"/>
-	<head>    
-		${Base.default_inclusions()}  
-        
-		<!-- all the javascript and css includes for the rendered mako file -->  	
+	<head>
+		${Base.default_inclusions()}
+
+		<!-- all the javascript and css includes for the rendered mako file -->
 		${self.includes()}
-        
+
 	</head>
 
 	<body>
+
+        <script type="text/javascript" src= "${h.web_asset_url('/js/jquery_patches.js')}" > </script>
+        ${Base.header()}
         <div id="main_body">
 
-            ${Base.header()}
             <!-- actual body for the rendered mako file -->
             ${self.body()}
 
-            ${Base.footer()}
-        
-        
-        </div> 
+
+
+        </div>
+        ${Base.footer()}
 	</body>
-</html>    
+</html>
