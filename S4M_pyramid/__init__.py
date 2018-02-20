@@ -60,6 +60,8 @@ def main(global_config, **settings):
     config.add_handler("datasets","/datasets/{action}",handler=DatasetsController)
     config.add_handler("msc_signature","/msc_signature/{action}",handler=MscSignatureController)
     config.add_handler("ensembl_upgrade","/ensembl_upgrade/{action}",handler=EnsemblUpgradeController)
+    config.add_handler("ensembl_upgrade_withID","/ensembl_upgrade/{action}/{id}",handler=EnsemblUpgradeController)
+
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
