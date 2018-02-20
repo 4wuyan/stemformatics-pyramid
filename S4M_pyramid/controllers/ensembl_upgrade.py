@@ -42,7 +42,7 @@ class EnsemblUpgradeController(BaseController):
         c.data = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/index'))
         if request.params.get('debug') == "yes":
-            raise Exception
+            raise Exception# Error
         return self.deprecated_pylons_data_for_view
 
     @Stemformatics_Auth.authorise()
@@ -58,7 +58,7 @@ class EnsemblUpgradeController(BaseController):
         c.data = result[c.gene_set_id]
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/view/'+str(c.gene_set_id)))
         if request.params.get('debug') == "yes":
-            raise Exception
+            raise Exception# Error
         return self.deprecated_pylons_data_for_view
 
 
