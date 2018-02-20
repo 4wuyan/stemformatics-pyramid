@@ -1,34 +1,43 @@
-from pylons import config, request, response, session, tmpl_context as c, url
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
 
-from pylons.controllers.util import abort, redirect
-import guide.lib.helpers as h
-from guide.lib.base import BaseController, render
-from guide.model.stemformatics import *
-import json, os
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.model.stemformatics import Stemformatics_Msc_Signature, db_deprecated_pylons_orm as db,Stemformatics_Dataset
+from pyramid_handlers import action
 
 
 class MscSignatureController(BaseController):
-    def __before__(self):
-        super(MscSignatureController, self).__before__()
 
+    def __init__(self,request):
+        super().__init__(request)
+        c = self.request.c
         if request.path_info not in ('/msc_signature/get_msc_signature_values', '/msc_signature/rohart_msc_test'):
             access = Stemformatics_Msc_Signature.get_user_access(db, c.uid)
             if not access:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
 
+    @action(renderer="templates/msc_signature/index.mako")
     def index(self):
-
+        request = self.request
+        c = self.request.c
         project_msc_set = 'All'
-        c.msc_samples_summary = Stemformatics_Msc_Signature.get_msc_samples_summary_by_ds_id(db, project_msc_set)
-        return render('msc_signature/index.mako')
+        c.msc_samples_summary= Stemformatics_Msc_Signature.get_msc_samples_summary_by_ds_id(db,project_msc_set)
+        return self.deprecated_pylons_data_for_view
 
     def get_msc_signature_values(self):
+        request = self.request
+        c = self.request.c
+        response = self.request.response
 
         ds_id = request.params.get('ds_id', None)
         values = ""
 
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         response.charset = "utf8"
 
         try:
@@ -37,27 +46,33 @@ class MscSignatureController(BaseController):
             response.headers['Content-type'] = 'text/plain'
             response.headers['Content-Disposition'] = 'attachment;filename=error.txt'
             values = "Error with dataset id."
-            return values
+            response.text = values
+            return response
 
-        values = Stemformatics_Msc_Signature.get_msc_values(db, ds_id, c.uid)
+        values = Stemformatics_Msc_Signature.get_msc_values(db,ds_id,c.uid)
         if isinstance(values, dict):
             response.headers['Content-type'] = 'text/plain'
             response.headers['Content-Disposition'] = 'attachment;filename=error.txt'
             values = values['error']
-            return values
+            response.text = values
+            return response
 
-        file_name = Stemformatics_Msc_Signature.get_file_name_of_msc_values(ds_id, False)
+        file_name = Stemformatics_Msc_Signature.get_file_name_of_msc_values(ds_id,False)
         response.headers['Content-type'] = 'text/tab-separated-values'
         # Content-Disposition: by convention the filename ends in ".rohart.MSC.txt" - see Stemformatics_Msc_Signature.get_file_name_of_msc_values
-        response.headers['Content-Disposition'] = 'attachment;filename=' + file_name
-
-        return values
+        response.headers['Content-Disposition'] = 'attachment;filename='+file_name
+        response.text = values
+        return response
 
     def export(self):
 
+        request = self.request
+        c = self.request.c
+        response = self.request.reponse
+
         # Task #396 - error with ie8 downloading with these on SSL
-        del response.headers['Cache-Control']
-        del response.headers['Pragma']
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
 
         project_msc_set = request.params.get('project_msc_set')
         if project_msc_set == 'download_script':

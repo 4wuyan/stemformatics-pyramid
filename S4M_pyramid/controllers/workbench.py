@@ -1,13 +1,15 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Notification,Stemformatics_Auth,Stemformatics_Msc_Signature, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
-import formencode.validators as fe
 import re
 from pyramid.renderers import render_to_response
-from asbool import asbool
 import S4M_pyramid.lib.helpers as h
 import os
 import subprocess
@@ -430,7 +432,7 @@ class WorkbenchController(BaseController):
         job_mapping_file.close()
 
         # connect to galaxy now
-        from guide.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
+        from S4M_pyramid.model.stemformatics.stemformatics_galaxy import Stemformatics_Galaxy
         galaxyInstance = Stemformatics_Galaxy.connect_to_galaxy()
         # run tool
         galaxy_history_id = Stemformatics_Galaxy.run_HC_tool(galaxyInstance,job_id,gct_file_path,c.uid,column_distance_measure,row_distance_measure,colour_by,chip_type)
@@ -472,7 +474,6 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def job_view_result(self):  #CRITICAL-4
         job_id = int(self.request.matchdict['id'])
         c = self.request.c
@@ -2197,8 +2198,10 @@ class WorkbenchController(BaseController):
         return render('workbench/ucsc.mako')
 
 
-    #---------------------NOT MIGRATED--------------------------------
     def download_multiple_datasets(self):
+        request = self.request
+        c = self.request.c
+        response = self.request.response
         search= request.params.get('filter')
         export= request.params.get('export')
         ds_ids= request.params.get('ds_ids')
@@ -2231,8 +2234,8 @@ class WorkbenchController(BaseController):
                 response.headers['Content-Disposition'] = 'attachment;filename=export_metadata_'+export+'_'+stemformatics_version+'.tsv'
             response.charset= "utf8"
             data = Stemformatics_Dataset.export_download_dataset_metadata(temp_result,export,ds_ids,g.all_sample_metadata,c.uid,c.user)
-
-            return data
+            response.text = data
+            return response
 
 
         else:
@@ -2240,14 +2243,15 @@ class WorkbenchController(BaseController):
                 audit_dict = {'ref_type':'search_term','ref_id':search,'uid':c.uid,'url':url,'request':request}
                 result = Stemformatics_Audit.add_audit_log(audit_dict)
 
-            return render('workbench/download_multiple_datasets.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/download_multiple_datasets.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/workbench/rohart_msc_landing_page.mako")
     def rohart_msc_test(self):
-        return render('workbench/rohart_msc_landing_page.mako')
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
     def rohart_msc_graph(self):
+        c = self.request.c
+        request = self.request
         show_limited = False
         c.msc_values_access = config['msc_values_access']
         ds_id  = request.params.get('ds_id',None)
@@ -2263,7 +2267,8 @@ class WorkbenchController(BaseController):
                     error_body += " User was " + c.user + "("+str(c.uid)+") IP:" + ip_address
                     error_subject += " "+str(ds_id)
                     Stemformatics_Notification.send_error_email(error_subject,error_body)
-                    return render ('workbench/error_message.mako')
+                    return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',
+                                          self.deprecated_pylons_data_for_view, request=self.request)
 
                 # check the file exists and error out if not found
                 file_name = Stemformatics_Msc_Signature.get_file_name_of_msc_values(ds_id,True)
@@ -2274,7 +2279,8 @@ class WorkbenchController(BaseController):
                     error_body += " User was " + c.user + "("+str(c.uid)+") IP:" + ip_address
                     error_subject += " "+str(ds_id)
                     Stemformatics_Notification.send_error_email(error_subject,error_body)
-                    return render ('workbench/error_message.mako')
+                    return render_to_response('S4M_pyramid:templates/workbench/error_message.mako',
+                                              self.deprecated_pylons_data_for_view, request=self.request)
             except:
                 return redirect(url(controller='contents', action='index'), code=404)
         else:
@@ -2288,5 +2294,5 @@ class WorkbenchController(BaseController):
 
         audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
-
-        return render('workbench/rohart_msc_graph.mako')
+        return render_to_response('S4M_pyramid:templates/workbench/rohart_msc_graph.mako',
+                                  self.deprecated_pylons_data_for_view, request=self.request)

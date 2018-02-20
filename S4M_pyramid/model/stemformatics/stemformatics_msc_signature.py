@@ -1,9 +1,13 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 __all__ = ['Stemformatics_Msc_Signature']
 
 # CRITICAL-6
-from guide.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
-from guide.model.stemformatics.stemformatics_auth import Stemformatics_Auth
-from pylons import config
+from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
+from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 import psycopg2, psycopg2.extras, redis, json
 import os.path
 
@@ -96,7 +100,7 @@ class Stemformatics_Msc_Signature(object):
         if not os.path.isfile(file_name):
             return {'error': 'There was an error with finding the msc file for this dataset.'}
 
-            # read in the values
+        # read in the values
         with open(file_name, 'r') as f:
             count = 0
             for line in f:

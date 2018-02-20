@@ -35,7 +35,7 @@ var pca_type = $(document.getElementById('pca_type')).html().replace(/\s/g, '');
 //Create a form for groupby options
 var groupBySelectList = document.createElement("form");
 groupBySelectList.id = "colorSelect";
-body.append(groupBySelectList);
+body.appendChild(groupBySelectList);
 
 // ==========================
 // EACH PCA GRAPH IS BUILD USING 3 DATA FILES, WHICH MEANS WE HAVE TO MAKE 3 CALLS TO GET THESES FILES.

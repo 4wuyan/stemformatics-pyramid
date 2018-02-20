@@ -1,3 +1,6 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
 
 from sqlalchemy import and_
 from datetime import timedelta,datetime
@@ -33,8 +36,7 @@ class Stemformatics_Shared_Resource(object):
             expiry_date = created + delta_days
 
             db.schema = 'stemformatics'
-            result = db.shared_resources.insert(share_type=share_type, share_id=share_id, from_uid=from_uid,
-                                                to_uid=to_uid, expiry_date=expiry_date, created=created)
+            result = db.shared_resources.insert(share_type=share_type,share_id=share_id,from_uid=from_uid,to_uid=to_uid,expiry_date = expiry_date,created = created)
             db.commit()
             db.flush()
 

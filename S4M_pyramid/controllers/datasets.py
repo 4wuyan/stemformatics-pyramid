@@ -1,30 +1,30 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------19 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
 #TODO-1
 import logging
 
 log = logging.getLogger(__name__)
-
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect
-from pylons import url
-from pylons import config
-
-import formencode.validators as fe
-from guide.lib.base import BaseController, render
+from pyramid_handlers import action
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+from S4M_pyramid.lib.base import BaseController
 
 import json
 
 # Live querying
-from guide.model.stemformatics import *
+from S4M_pyramid.model.stemformatics import *
 
 import re,os.path,subprocess
 
-from sqlalchemy.exceptions import *
+from sqlalchemy.exc import *
 
 
 class DatasetsController(BaseController):
     __name__ = 'DatasetsController'
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def __before__(self): #CRITICAL-3
 
         super(DatasetsController, self).__before__ ()
@@ -36,6 +36,7 @@ class DatasetsController(BaseController):
         self.default_human_dataset = int(config['default_human_dataset'])
         self.default_mouse_dataset = int(config['default_mouse_dataset'])
 
+    #---------------------NOT MIGRATED--------------------------------
     def pca(self):
         c.ds_id = request.params.get("ds_id")
         pca_type = request.params.get("pca_type")
@@ -49,6 +50,7 @@ class DatasetsController(BaseController):
         else:
             redirect(url(controller='contents', action='index'), code=404)
 
+    #---------------------NOT MIGRATED--------------------------------
     def return_pca_data(self):
         file_name = request.params.get("file_name")
         c.ds_id =ds_id = request.params.get("ds_id") # check if user has access to data
@@ -60,9 +62,14 @@ class DatasetsController(BaseController):
         else:
             redirect(url(controller='contents', action='index'), code=404)
 
+    #---------------------NOT MIGRATED--------------------------------
     def search(self):
         c.msc_values_access = config['msc_values_access']
         c.searchQuery = request.params.get("filter", None)
+
+        if c.searchQuery:
+            c.searchQuery = c.searchQuery.replace('<script>','').replace('</script>','')
+
         c.title = c.site_name+" - Dataset Search"
         ds_id = request.params.get("ds_id", None)
         c.selected_ds_id = False
@@ -134,6 +141,7 @@ class DatasetsController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def _convert_datasets_to_csv(self,ds_id,datasets):
         csv_text ="Title	Handle	Cells	Authors	PubmedID	Array Express	GEO	Genes of Interest	Contact Name	Contact Email	Affiliation	Platform	SRA	PXD	ENA\n"
         if datasets is None:
@@ -172,12 +180,14 @@ class DatasetsController(BaseController):
             csv_text += title + "	" + handle + "	" + cells_assayed + "	" + authors + "	" + pubmed_id + "	" + AE + "	" + GEO + "	" + genes_of_interest + "	" + contact_name + "	" + contact_email + "	" + affiliation + "	" + platform + "	" + SRA + "	" + PXD    + "	" + ENA + "\n"
         return csv_text
 
+    #---------------------NOT MIGRATED--------------------------------
     def view(self,id):
         c.title = c.site_name+" - Dataset Summary"
         ds_id = c.ds_id = int(id)
         redirect('/datasets/search?ds_id='+str(ds_id))
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def summary(self):
         c.title = c.site_name+" - Dataset Summary"
         try:
@@ -191,12 +201,14 @@ class DatasetsController(BaseController):
         redirect('/datasets/search?ds_id='+str(ds_id))
 
    # Used in datasets/search for now
+    #---------------------NOT MIGRATED--------------------------------
     def get_details(self):
 
         dataSets = Stemformatics_Dataset.getAllDatasetDetails(db,c.uid)
         if (dataSets == None): redirect(url(controller='contents', action='index'), code=404)
         return json.dumps(dataSets)
 
+    #---------------------NOT MIGRATED--------------------------------
     def download_yugene(self,id):
         ds_id = int(id)
 
@@ -274,6 +286,7 @@ class DatasetsController(BaseController):
 
             return contents
 
+    #---------------------NOT MIGRATED--------------------------------
     def download_gct(self,id):
         ds_id = int(id)
         export_key = request.params.get("export_key", None)
@@ -349,6 +362,7 @@ class DatasetsController(BaseController):
 
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def download_cls(self,id):
         has_access = Stemformatics_Dataset.check_dataset_availability(db,c.uid,id)
         if not has_access: redirect(url(controller='contents', action='index'), code=404)
@@ -381,6 +395,7 @@ class DatasetsController(BaseController):
         return contents
 
 
+    #---------------------NOT MIGRATED--------------------------------
     def autocomplete_probes_for_dataset(self):
         search_term = request.params.get("term")
         ds_id = request.params.get("ds_id")
@@ -389,6 +404,7 @@ class DatasetsController(BaseController):
         result_json = Stemformatics_Dataset.get_autocomplete_probes_for_dataset(search_term,ds_id,use_json)
         return result_json
 
+    #---------------------NOT MIGRATED--------------------------------
     def download_ds_id_mapping_id_file(self):
         ds_id = 0
         result = Stemformatics_Dataset.get_dataset_mapping_id(ds_id)
@@ -403,16 +419,17 @@ class DatasetsController(BaseController):
 
         return data
 
-
+    @action(renderer="string")
     def search_and_choose_datasets_ajax(self):
-
+        c = self.request.c
+        request = self.request
         temp_data = {}
 
         rohart_msc_test = request.params.get("rohart_msc_test", False)
         if rohart_msc_test == 'true':
-            rohart_msc_test == True
+            rohart_msc_test = True
         else:
-            rohart_msc_test == False
+            rohart_msc_test = False
 
         filter_dict = {'show_limited':False,'rohart_msc_test':rohart_msc_test}
         c.searchQuery = request.params.get("filter", None)
