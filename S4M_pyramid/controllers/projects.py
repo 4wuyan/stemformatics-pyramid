@@ -70,7 +70,7 @@ class ProjectsController(BaseController):
         return redirect(url('/projects/project_grandiose'))
 
     def iii_main(self):
-        return redirect(url('/projects/iiiformatics')) 
+        return redirect(url('/projects/iiiformatics'))
 
     @action(renderer="templates/projects/iiiformatics.mako")
     def iiiformatics(self):
