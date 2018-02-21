@@ -272,7 +272,7 @@ $(document).ready(function(){
         helpsystem.run();
 
         // toggle controls
-        $(".toggle_controls_expand").live('click',function(){
+        $("body").on('click','.toggle_controls_expand',function(){
           $(document.getElementById("steps")).addClass("hidden");
           $(document.getElementById("other")).addClass("hidden");
           $(document.getElementById("other_buttons")).addClass("hidden");
@@ -281,7 +281,7 @@ $(document).ready(function(){
         })
 
 
-        $(".toggle_controls_shrink").live('click',function(){
+        $("body").on('click','.toggle_controls_shrink',function(){
           $(document.getElementById("steps")).removeClass("hidden");
           $(document.getElementById("other")).removeClass("hidden");
           $(document.getElementById("other_buttons")).removeClass("hidden");

@@ -1,5 +1,4 @@
 <%def name="default_inclusions()">
-    <% from S4M_pyramid.config import config %>
     <title>${c.title}</title>
     <meta name="google-site-verification" content="eKfRHsSQKFfEQDBulOvJy8P1H6d5PpjgRp8IoMXgE0A"/>
 	<!-- <meta http-equiv="content-language" content="en-us" /> -->
@@ -12,15 +11,16 @@
     <!-- Task #426 Safari iPhone issue -->
     <meta name="format-detection" content="telephone=no"/>
     <!-- jQuery, jQuery-UI and additional plug-ins should go here. -->
-    <script type="text/javascript" src="${h.external_dependency_url('ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js','/js/external_asset_dependencies/jquery-1.8.2.min.js')}"></script>
+    <script type="text/javascript" src="${h.external_dependency_url('ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js','/js/external_asset_dependencies/jquery-3.2.1.min.js')}"></script>
 
 
 
     <!-- jQuery css is included first.  Add other .css files after this line. -->
     % if not hasattr(c,'speed_up_page') or (hasattr(c,'speed_up_page') and c.speed_up_page != 'true'):
-        <link rel="stylesheet" type="text/css" href="${h.external_dependency_url('ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css','/css/external_asset_dependencies/jquery-1.9.4.dataTables.css')}">
-        <script type="text/javascript" charset="utf8" src="${h.external_dependency_url('ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js','/js/external_asset_dependencies/jquery-1.9.4.dataTables.min.js')}" ></script>
-        <script src="${h.external_dependency_url('cdn.jsdelivr.net/simplemodal/1.4.4/jquery.simplemodal.min.js','/js/external_asset_dependencies/jquery-1.4.4.simplemodal.min.js')}" ></script>
+        <link rel="stylesheet" type="text/css" href="${h.web_asset_url('/css/external_asset_dependencies/jquery-1.10.16.dataTables.min.css')}">
+        <script type="text/javascript" charset="utf8" src="${h.external_dependency_url('cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js','/js/external_asset_dependencies/jquery-1.10.16.dataTables.min.js')}" ></script>
+        <!-- No cdn is present for simplemodal1.4.5, the file has been manually added from git repo -->
+        <script src="${h.web_asset_url('/js/external_asset_dependencies/jquery-1.4.5.simplemodal.min.js')}" ></script>
 
         <link href="${h.web_asset_url('/css/combined_jquery_ui_tripoli_full.min.css')}" type="text/css" rel="stylesheet"/>
 
@@ -59,7 +59,7 @@
 
 
 
-    <script type="text/javascript" src="${h.external_dependency_url('ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js','/js/external_asset_dependencies/jquery-1.10.2-ui.min.js')}" ></script>
+    <script type="text/javascript" src="${h.external_dependency_url('ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js','/js/external_asset_dependencies/jquery-1.12.1-ui.min.js')}" ></script>
     <script type="text/javascript" src="${h.external_dependency_url('cdnjs.cloudflare.com/ajax/libs/marked/0.3.1/marked.min.js','/js/external_asset_dependencies/marked-0.3.1.min.js')}" ></script>
     <script src="${h.external_dependency_url('cdn.jsdelivr.net/jquery.cookie/1.3/jquery.cookie.js','/js/external_asset_dependencies/jquery-1.3.cookie.js')}" ></script>
     <script src="${h.external_dependency_url('cdn.jsdelivr.net/guiders.js/1.3.0/guiders-1.3.0.js','/js/external_asset_dependencies/guiders-1.3.0.js')}" ></script>
@@ -232,7 +232,7 @@ href="${h.url('/auth/show_private_datasets')}">My datasets</a>
                         </div>
 
                     </div>
-                   ${self.help_icon()}
+                    ${self.help_icon()}
                 </div>
             </div>
             <div id="menus">
@@ -757,6 +757,12 @@ for row_count in c.view_data.xaxis_labels['full']:
                 <div class="clear"></div>
             </div>
         </a>
+        <a class="our_data" href="${h.url('/contents/our_code')}">
+            <div class="contact_menu ${'selected' if action == 'our_code' else ''}">
+                <div class="contact_menu_title">Our Code</div>
+                <div class="clear"></div>
+            </div>
+        </a>
         <a class="our_publications" href="${h.url('/contents/our_publications')}">
             <div class="contact_menu ${'selected' if action == 'our_publications' else ''}">
                 <div class="contact_menu_title">Our Publications</div>
@@ -927,7 +933,7 @@ Wells CA et al Stemformatics: Visualisation and sharing of stem cell gene expres
                     </thead>
                     <tbody>
                         %for ds_id in datasets:
-                            %if not datasets[ds_id].has_key('has_data') or datasets[ds_id]['has_data'] == 'yes':
+                            %if 'has_data' not in datasets[ds_id] or datasets[ds_id]['has_data'] == 'yes':
                                 <%  organism = datasets[ds_id]['organism'] %>
                                 <%
                                     show_row = True

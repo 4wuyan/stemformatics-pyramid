@@ -774,7 +774,7 @@ module.exports = biojsvisboxplot = function (init_options)
         graph = setup_box_plot(graph);
         graph =  setup_watermark(graph);
         if (options.display.legend  === "yes") {
-             graph = setup_D3_legend(graph, options.legend_list);
+            graph = setup_D3_legend(graph, options.legend_list);
         }
         //graph = setup_vertical_lines(graph);
 

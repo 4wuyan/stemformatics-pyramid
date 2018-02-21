@@ -246,7 +246,7 @@ setup_brush = function(graph){
             Thus the tooltip can work correctly.
          */
          svg.selectAll(".dot").remove();
-         document.getElementById('svgForcircles').remove()
+         $('#svgForcircles').remove()
          svgForcircles = svg.append("svg").attr("id","svgForcircles").attr("width", page_options.width)
          .attr("height", page_options.height).append("g")
          svgForcircles.selectAll(".dot")

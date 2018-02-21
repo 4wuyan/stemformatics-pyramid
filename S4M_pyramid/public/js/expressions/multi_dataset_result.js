@@ -13,7 +13,7 @@ $(document).ready(function() {
     for (var count in dataset_status) {
         // have to do this to fix task #595 where ie8 had the ds_id as a function
         ds_id = dataset_status[count];
-        if((parseFloat(ds_id) == parseInt(ds_id)) && !isNaN(ds_id)){ 
+        if((parseFloat(ds_id) == parseInt(ds_id)) && !isNaN(ds_id)){
             graph_id = '#graph'+ds_id;
             this_graph_data = new graph_data(ds_id,graph_id,db_id);
 
@@ -29,7 +29,7 @@ $(document).ready(function() {
                 move_top = result[1];
                 this_graph_data.move_left = move_left;
                 this_graph_data.move_top = move_top;
-                //set_large();	
+                //set_large();
                 selectGraphToDraw();
                 data[ds_id] = this_graph_data;
 
@@ -45,9 +45,9 @@ $(document).ready(function() {
 
     first_ds_id = dataset_status[0];
     draw_legend_multiview(first_ds_id,data);
-    
+
     triggers_for_multi_dataset_result();
-    
+
 });
 function shift_xaxis_labels_relative_to_first_graph(id){
     top_position = base_position_first_graph.top;
@@ -73,7 +73,7 @@ function triggers_for_multi_dataset_result(){
     });
 
     $("a.toggle_sd").unbind('click');
-    $("a.toggle_sd").live('click',function(){
+    $("body").on('click','a.toggle_sd',function(){
         ds_id = $(this).attr('data-ds_id');
         this_graph_data = data[ds_id];
         var sd_option = this_graph_data.view_data.show_standard_deviation;
@@ -82,17 +82,17 @@ function triggers_for_multi_dataset_result(){
             this_graph_data.view_data.show_standard_deviation = 'off';
         } else {
             this_graph_data.view_data.show_standard_deviation = 'on';
-        } 
+        }
         switch (graph_type){
-        
+
             case "scatter":
                 drawScatterPlot(this_graph_data.view_data);
             break;
-            
+
             case "bar":
                 drawBarPlot(this_graph_data.view_data);
             break;
-        } 
+        }
 
     });
 
@@ -106,15 +106,15 @@ function triggers_for_multi_dataset_result(){
             this_graph_data.view_data.min_y_axis = null;
         }
         switch (graph_type){
-        
+
             case "scatter":
                 drawScatterPlot(this_graph_data.view_data);
             break;
-            
+
             case "bar":
                 drawBarPlot(this_graph_data.view_data);
             break;
-                
+
             case "box":
                 this_graph_data.view_data.show_standard_deviation="on";
                 drawBoxPlot(this_graph_data.view_data);
@@ -123,10 +123,10 @@ function triggers_for_multi_dataset_result(){
             case "line": // T#569
                 this_graph_data.view_data.show_standard_deviation="on";
                 drawLinePlot(this_graph_data.view_data);
-               
+
             break;
 
-        } 
+        }
 
     });
 }
@@ -145,8 +145,8 @@ function move_element(id,ds_id,data){
     old_left = parseInt($(id).css('left').replace('px',''));
     old_top = parseInt($(id).css('top').replace('px',''));
 
-    this_graph_data = data[ds_id]; 
-    
+    this_graph_data = data[ds_id];
+
     new_left = this_graph_data.move_left + old_left;
     new_top = this_graph_data.move_top + old_top;
     $(id).css('left',new_left+'px');
@@ -156,28 +156,28 @@ function move_element(id,ds_id,data){
 
 function multi_dataset_offset(ds_id){
 
-                
+
     base_position_this_graph = $('#content'+ds_id).offset();
-    
-    
+
+
     this_graph_left_position = base_position_this_graph.left;
     this_graph_top_position = base_position_this_graph.top;
-    
-    
+
+
     first_graph_left_position = base_position_first_graph.left;
     first_graph_top_position = base_position_first_graph.top;
-    
+
     if (first_graph_left_position != this_graph_left_position){
         move_left = this_graph_left_position - first_graph_left_position ;
     } else {
         move_left = 0;
     }
-    
+
     if (first_graph_top_position != this_graph_top_position){
         move_top = this_graph_top_position - first_graph_top_position;
     } else {
         move_top = 0;
     }
-    
+
     return [move_left,move_top];
 }
