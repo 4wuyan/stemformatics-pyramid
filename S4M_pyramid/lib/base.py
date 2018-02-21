@@ -138,6 +138,8 @@ class BaseController():
                                 or 'expressions/return_yugene_filtered_graph_data' in request.path_info
                                 or 'expressions/return_breakdown_of_yugene_filtered_data' in request.path_info
                                 or 'help/json' in request.path_info
+                                or 'expressions/graph_data' in request.path_info
+                                or 'expressions/dataset_metadata' in request.path_info
                             ) else False
 
         if not skip_history:
@@ -149,26 +151,8 @@ class BaseController():
                 session['page_history'].append({'title': title, 'path': request.path_info + '?' + request.query_string})
             session.save()
 
-    def _check_dataset_status(self):
-        c = self.request.c
-        dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
-
-        # if no access and already logged in then error out
-        # if no access and not already logged in then redirect
-        if dataset_status == "Unavailable":
-            if c.uid == '' or c.uid == 0:
-                # got this code from decorator in model/stemformatics/stemformatics_auth.py
-                c.user = None
-                self.request.session['path_before_login'] = self.request.path_info + '?' + self.request.query_string
-                self.request.session.save()
-                raise redirect(h.url('/auth/login'))
-            else:
-                self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
-                raise redirect(url(controller='contents', action='index'), code=404)
-        self._temp.dataset_status = dataset_status
-
-
     def _check_gene_status(self):
+        request = self.request
         c = self.request.c
         ds_id = self._temp.ds_id
         db_id = self._temp.db_id
@@ -216,9 +200,9 @@ class BaseController():
             c.analysis = None
             c.show_probes_in_dataset = False
             c.multiple_genes = result
-            c.url = self.request.environ.get('PATH_INFO')
-            if self.request.environ.get('QUERY_STRING'):
-                c.url += '?' + self.request.environ['QUERY_STRING']
+            c.url = request.environ.get('PATH_INFO')
+            if request.environ.get('QUERY_STRING'):
+                c.url += '?' + request.environ['QUERY_STRING']
             else:
                 c.url += '?use=true'
 
@@ -232,6 +216,33 @@ class BaseController():
         self._temp.ensemblID = ensemblID
         self._temp.symbol = result[ensemblID]['symbol']
         return "1"
+
+    def _check_dataset_status(self):
+        c = self.request.c
+        request = self.request
+        session = self.request.session
+        dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, self._temp.ds_id, c.uid)
+
+        # if no access and already logged in then error out
+        # if no access and not already logged in then redirect
+        if dataset_status == "Unavailable":
+            if c.uid == '' or c.uid == 0:
+                # got this code from decorator in model/stemformatics/stemformatics_auth.py
+                c.user = None
+                session['path_before_login'] = request.path_info + '?' + request.query_string
+                session.save()
+                raise redirect(h.url('/auth/login'))
+            else:
+                self._temp.error_message = "Dataset Not Found. Please Enter a Proper Dataset."
+                raise redirect(url(controller='contents', action='index'), code=404)
+        self._temp.dataset_status = dataset_status
+
+    #---------------------NOT MIGRATED--------------------------------
+    def _check_probe_status():
+        probeSearch = self._temp.probeSearch
+        if (probeSearch is None) or (len(probeSearch) < 1):
+            error_handling_for_invalid_search_string()
+            redirect(url(controller='contents', action='index'), code=404)
 
     def _setup_graphs(self,temp_object):
         """ What other values are needed to be setup here for it to work?
