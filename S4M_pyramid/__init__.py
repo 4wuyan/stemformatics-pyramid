@@ -47,7 +47,6 @@ def main(global_config, **settings):
     redirect_shortcut(config, '/expressions/', '/contents/index')
     redirect_shortcut(config, '/datasets', '/datasets/search')
     redirect_shortcut(config, '/datasets/', '/datasets/search')
-    
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
     config.add_handler("auth with id", "/auth/{action}/{id}", handler=AuthController)
