@@ -7,7 +7,7 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from pyramid_handlers import action
 from pyramid.renderers import render_to_response
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset,db_deprecated_pylons_orm as db
 
 class ProjectsController(BaseController):
     #---------------------NOT MIGRATED--------------------------------
