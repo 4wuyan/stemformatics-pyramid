@@ -26,6 +26,7 @@ from .stemformatics_job import Stemformatics_Job
 from .stemformatics_export import Stemformatics_Export
 from .stemformatics_shared_resource import Stemformatics_Shared_Resource
 from .stemformatics_msc_signature import Stemformatics_Msc_Signature
+from .stemformatics_ensembl_upgrade import Stemformatics_Ensembl_Upgrade
 # from .stemformatics_export import *
 # from .stemformatics_msc_signature import *
 # from .stemformatics_transcript import *

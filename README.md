@@ -315,6 +315,14 @@ Although the most tricky python2 vs python3 bugs (e.g. string vs unicode) were m
 for example, dict.itervalues.next() is a one that's being used quite often, it needs to be replaced with next(iter(dict.values))
 Those bugs should be quite easy to fix, with some research on the differences and alternatives.
 
+raise Error vs raise Exeception(STILL NEED TO BE FIXED)
+=====================
+We haven't found where the keyword Error comes from, it's replaced with raise Execption as a temporary solution in some places, further exploration is needed.
+
+pylons.app_globals.push_object(STILL NEED TO BE FIXED)
+=====================
+we commented out the line because it's a pylons built-in function, the effect of it still needs further exploration.
+
 Export PDF (STILL NEED TO BE FIXED)
 ======================================
 
