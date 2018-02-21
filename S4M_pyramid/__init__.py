@@ -5,6 +5,7 @@ from .controllers.contents import ContentsController
 from .controllers.expressions import ExpressionsController
 from .controllers.auth import AuthController
 from .controllers.tests import TestsController
+from .controllers.statistics import StatisticsController
 from .controllers.genes import GenesController
 from .controllers.main import MainController
 from .controllers.api import ApiController
@@ -48,6 +49,7 @@ def main(global_config, **settings):
     redirect_shortcut(config, '/expressions/', '/contents/index')
     redirect_shortcut(config, '/datasets', '/datasets/search')
     redirect_shortcut(config, '/datasets/', '/datasets/search')
+
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
     config.add_handler("auth with id", "/auth/{action}/{id}", handler=AuthController)
@@ -58,6 +60,7 @@ def main(global_config, **settings):
     config.add_handler("auth","/auth/{action}",handler=AuthController)
     config.add_handler("tests","/tests/{action}",handler=TestsController)
     config.add_handler("tests_withID","/tests/{action}/{id}",handler=TestsController)
+    config.add_handler("statistics","/statistics/{action}",handler=StatisticsController)
     config.add_handler("genes","/genes/{action}",handler=GenesController)
     config.add_handler("main","/main/{action}",handler=MainController)
     config.add_handler("api","/api/{action}",handler=ApiController)
