@@ -87,7 +87,7 @@ class DatasetsController(BaseController):
             db=None # this is not used at the moment
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
             if dataset_status == "Unavailable":
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
             if dataset_status == "Limited": # always show limited datasets
                 pass
 
