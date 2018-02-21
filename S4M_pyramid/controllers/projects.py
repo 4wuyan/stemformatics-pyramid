@@ -65,13 +65,11 @@ class ProjectsController(BaseController):
         c.header = 'grandiose'
         return self.deprecated_pylons_data_for_view
 
-    @action(renderer="templates/projects/project_grandiose.mako")
     def grandiose(self):
-        return self.deprecated_pylons_data_for_view
+        return redirect(url('/projects/project_grandiose'))
 
-    @action(renderer="templates/projects/iiiformatics")
     def iii_main(self):
-        return self.deprecated_pylons_data_for_view
+        return redirect(url('/projects/iiiformatics')) 
 
     @action(renderer="templates/projects/iiiformatics.mako")
     def iiiformatics(self):
