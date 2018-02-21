@@ -29,16 +29,15 @@ class EnsemblUpgradeController(BaseController):
         c.current_human_ensembl_version = config['current_human_ensembl_version_text']
         c.old_mouse_ensembl_version = config['old_mouse_ensembl_version_text']
         c.old_human_ensembl_version = config['old_human_ensembl_version_text']
-  
+
     @Stemformatics_Auth.authorise()
     @action(renderer="templates/ensembl_upgrade/private_gene_sets_archive.mako")
     def index(self):
         request = self.request
         c = self.request.c
         uid = c.uid
-        c.message = "" # Not needed in pylons
         c.title = c.site_name+'  - List of Gene Lists that have changed since the upgrade'
-        c.data = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
+        c.data = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/index'))
         if request.params.get('debug') == "yes":
             raise Exception# Error
@@ -50,10 +49,10 @@ class EnsemblUpgradeController(BaseController):
         request = self.request
         c = self.request.c
         c.breadcrumbs = [[h.url('/workbench/index'),'Workbench'],[h.url('/ensembl_upgrade/index'),'Manage Gene Lists that have changed since the Ensembl Upgrade'],['','Changes in this Gene List']]
-        uid = c.uid 
+        uid = c.uid
         c.gene_set_id = int(self.request.matchdict['id'])
         c.title = c.site_name+'  - List of Gene Lists that have changed since the upgrade'
-        result = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
+        result = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)
         c.data = result[c.gene_set_id]
         Stemformatics_Auth.set_smart_redirect(h.url('/ensembl_upgrade/view/'+str(c.gene_set_id)))
         if request.params.get('debug') == "yes":
@@ -74,19 +73,19 @@ class EnsemblUpgradeController(BaseController):
             redirect(url(controller='contents', action='index'), code=404)
 
         uid = c.uid
-        result = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)        
+        result = Stemformatics_Ensembl_Upgrade.get_private_gene_sets_archive(db,uid)
         data = result[c.gene_set_id]
 
         posted  = request.params.get('posted')
         gene_set_name  = data['gene_set_name']
         c.db_id =  db_id = data['db_id']
         update = request.params.get('update')
-        
+
         if update =="OK":
             result = Stemformatics_Gene_Set.set_needs_attention_to_false(db,c.uid,gene_set_id)
-            default_url =h.url('/ensembl_upgrade/index') 
+            default_url =h.url('/ensembl_upgrade/index')
             redirect_url = Stemformatics_Auth.get_smart_redirect(default_url)
-            redirect(redirect_url) 
+            redirect(redirect_url)
 
         if update is None:
             c.title = "You must provide an update option."
@@ -106,7 +105,7 @@ class EnsemblUpgradeController(BaseController):
             ogs = mapped_gene.old_ogs
             entrezid = str(mapped_gene.old_entrez_id) if mapped_gene.old_entrez_id is not None else ""
             if update == 'ogs':
-                gene_set_raw_line = ogs 
+                gene_set_raw_line = ogs
             if update == 'entrez':
                 gene_set_raw_line= entrezid
             if update == 'all':
@@ -114,18 +113,18 @@ class EnsemblUpgradeController(BaseController):
             if gene_set_raw_line != "" and gene_set_raw_line != " ":
                 gene_set_raw += gene_set_raw_line +"\n"
         for gene in gene_set_items:
-            gene_set_raw += gene.gene_id+"\n" 
-        
-       
+            gene_set_raw += gene.gene_id+"\n"
+
+
         m = re.findall('[\w\.\-\@]{1,}',gene_set_raw)
-        
+
         # now input this list into a gene function that will return a dictionary
         # { 'ILMN_2174394' : { 'original' : 'ILMN_2174394', 'symbol' : 'STAT1', 'status' : 'OK' } }
         # If we make it a list of objects then we can sort, we cannot sort on a dictionary
         search_type = 'all'
         select_all_ambiguous = False
         c.select_all_ambiguous = select_all_ambiguous
-        resultData = Stemformatics_Gene.get_unique_gene_fast(db,m,db_id,search_type,select_all_ambiguous)            
+        resultData = Stemformatics_Gene.get_unique_gene_fast(db,m,db_id,search_type,select_all_ambiguous)
         c.gene_set_raw = gene_set_raw
         c.gene_set_raw_list = m
         c.gene_set_name = gene_set_name
@@ -140,4 +139,4 @@ class EnsemblUpgradeController(BaseController):
         c.description = ''
         return render_to_response("S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako",self.deprecated_pylons_data_for_view,request=self.request)
 
-  
+
