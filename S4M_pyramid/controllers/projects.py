@@ -10,10 +10,11 @@ from pyramid.renderers import render_to_response
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset,db_deprecated_pylons_orm as db
 
 class ProjectsController(BaseController):
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/mcri.mako")
     def mcri(self):
         # Just keep this under our hat for now - too early to show them and finalise 16/04/2015
-        redirect(url(controller='contents', action='index'), code=404)
+        return redirect(url(controller='contents', action='index'), code=404)
+        c = self.request.c
         c.title = c.site_name + " - Murdoch Children's Research Institute"
         c.header = 'mcri'
 
@@ -21,9 +22,9 @@ class ProjectsController(BaseController):
         if c.role != 'annotator' and c.role != 'admin':
             result = Stemformatics_Auth.check_uid_in_group(c.uid,gid,c.role)
             if not result:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
 
-        return render (url('/projects/mcri.mako'))
+        return self.deprecated_pylons_data_for_view
 
     @action(renderer="templates/projects/leukomics.mako")
     def leukomics(self):
