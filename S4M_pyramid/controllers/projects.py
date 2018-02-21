@@ -7,7 +7,7 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from pyramid_handlers import action
 from pyramid.renderers import render_to_response
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset as db
 
 class ProjectsController(BaseController):
     #---------------------NOT MIGRATED--------------------------------
@@ -39,15 +39,16 @@ class ProjectsController(BaseController):
         c.header = 'leukomics'
         return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/leukomics.mako") 
     def leukomics_publications(self):
+        c = self.request.c
         c.title = c.site_name+" - LEUKomics"
         c.header = 'leukomics'
-        return render (url('/projects/leukomics.mako'))
-
-    #---------------------NOT MIGRATED--------------------------------
+        return self.deprecated_pylons_data_for_view
+    
+    @action(renderer="templates/projects/project_grandiose.mako") 
     def project_grandiose(self):
-
+        c = self.request.c
         ds_id = 6368
         dataset = Stemformatics_Dataset.getDatasetDetails(db,ds_id,c.uid)
 
@@ -62,36 +63,40 @@ class ProjectsController(BaseController):
 
         c.title = c.site_name+" - Project Grandiose"
         c.header = 'grandiose'
-        return render (url('/projects/project_grandiose.mako'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/project_grandiose.mako")
     def grandiose(self):
-        return redirect(url('/projects/project_grandiose'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/iiiformatics")
     def iii_main(self):
-        return redirect(url('/projects/iiiformatics'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/iiiformatics.mako")
     def iiiformatics(self):
+        c = self.request.c
         c.title = "3IIIformatics"
         c.header = 'iii_main'
-        return render (url('/projects/iiiformatics.mako'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/iiiformatics_wellcome.mako")
     def iii_wellcome(self):
+        c = self.request.c
         c.title = "3IIIformatics"
         c.header = 'iii_wellcome'
-        return render (url('/projects/iiiformatics_wellcome.mako'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/iiiformatics_arthritis.mako")
     def iii_arthritis(self):
+        c = self.request.c
         c.title = "3IIIformatics"
         c.header = 'iii_arthritis'
-        return render (url('/projects/iiiformatics_arthritis.mako'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/iiiformatics_immunobiology.mako")
     def iii_immunobiology(self):
+        c = self.request.c
         c.title = "3IIIformatics"
         c.header = 'iii_immunobiology'
-        return render (url('/projects/iiiformatics_immunobiology.mako'))
+        return self.deprecated_pylons_data_for_view
