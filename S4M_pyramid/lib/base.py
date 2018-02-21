@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------21 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 import S4M_pyramid.lib.helpers as h
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import url, config
@@ -27,7 +31,7 @@ class BaseController():
 
         self._setup_c_deprecated_pylons_global()
 
-        self.deprecated_pylons_data_for_view = {'c': self.request.c, 'h': h, 'url':url, 'config':config}
+        self.deprecated_pylons_data_for_view = {'c': c, 'h': h, 'url':url, 'config':config}
 
         self.request.add_finished_callback(self._update_page_history)
 
@@ -36,6 +40,7 @@ class BaseController():
         request = self.request
         session = self.request.session
 
+        #---------Originally in __before__-------------------------------------------------
         self._temp = tempData()
 
         c.site_name = config['site_name']
@@ -60,20 +65,28 @@ class BaseController():
 
         c.stemformatics_version = config['stemformatics_version']
         c.header = ""#Stemformatics_Notification.get_header(db, request, c.uid) ##########################################################
-
         #----------------------------------------------------------------------------------
 
+        #----------Originally in __init__--------------------------------------------------
         c.species_dict = Stemformatics_Gene.get_species(db)
 
         #set up external db
         single_gene_url = "http://www.innatedb.com/getGeneCard.do?id="
         multiple_gene_url = "http://www.innatedb.com/batchSearch.do"
+        # innateDB from templates/external_db.py
         c.innate_db_object = innateDB(single_gene_url,multiple_gene_url)
 
         single_gene_url = "http://string-db.com/newstring_cgi/show_network_section.pl?identifier="
         c.string_db_object = stringDB(single_gene_url)
 
+        c.guest_username = config['guest_username']
         c.hostname = socket.gethostname()
+
+        # Set 'baseurl' for templating (if available) from config. Allow "correct" embedded XHTML link
+        # generation in proxied environments etc.
+        # Ensure that 'message' and 'msg_css' template variables exist
+        c.message = ""
+        c.msg_css = ""
 
         action = url.environ['pylons.routes_dict']['action']
         controller = url.environ['pylons.routes_dict']['controller']
@@ -81,6 +94,7 @@ class BaseController():
         if controller in change_name:
             controller = change_name[controller]
         c.title = config['site_name'] + ' ' + controller.capitalize() + ' - ' + action.replace('_',' ').title()
+        #----------------------------------------------------------------------------------
     def _user_related_setup_for_c_deprecated_pylons_global(self):
         c = self.request.c
         request = self.request
@@ -296,3 +310,28 @@ class BaseController():
 
         this_view = Preview(this_graph,line_graph_available)
         return this_view
+
+'''
+The following are not copied from the Pylons repo, becase they seem redundant.
+
+In __init__:
+        if 'noCache' in config:
+            c.noCache = asbool(config['noCache'])
+        else:
+            c.noCache = False
+
+In __call__:
+        try:
+            db.session.close()
+            meta.Session.close()
+
+            return response
+        except SA.exc.InternalError as instance:
+            db.session.rollback()
+            new_message ="NOTE: This has been caught and rolled back. "
+            instance.orig.message = new_message + instance.orig.message
+            instance.orig.args = (new_message + instance.orig.args[0],)
+            raise SA.exc.InternalError(instance.statement, instance.params, instance.orig, instance.connection_invalidated)
+
+
+'''
