@@ -63,6 +63,7 @@ def main(global_config, **settings):
     config.add_handler("projects","/projects/{action}",handler=ProjectsController)
     config.add_handler("ensembl_upgrade","/ensembl_upgrade/{action}",handler=EnsemblUpgradeController)
     config.add_handler("ensembl_upgrade_withID","/ensembl_upgrade/{action}/{id}",handler=EnsemblUpgradeController)
+
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
@@ -116,3 +117,8 @@ def config_static_views(config):
     config.add_static_view(name='themes', path='public/themes')
     config.add_static_view(name='img', path='public/img')
     config.add_static_view(name='help', path='public/help')
+
+    # serve assets that need to be accessed from the root of your domain
+    config.include("pyramid_assetviews")
+    filenames = ['robots.txt', 'favicon.ico', 'favicon.png']
+    config.add_asset_views("S4M_pyramid:public", filenames=filenames)
