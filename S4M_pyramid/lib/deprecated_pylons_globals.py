@@ -47,7 +47,9 @@ class UrlGenerator(object):
             action = tokens[1]
         if token_num > 2:
             id_ = tokens[2]
-        self.environ['pylons.routes_dict'] = {'controller':controller, 'action':action, 'id':id_}
+        routes_dict = {'controller':controller, 'action':action, 'id':id_}
+        self.environ['pylons.routes_dict'] = routes_dict
+        request.urlvars.update(routes_dict)
     def set_request(self, request):
         self.request = request
 

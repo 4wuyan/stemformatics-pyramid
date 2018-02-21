@@ -14,6 +14,7 @@ requires = [
     'pyramid_debugtoolbar',
     'waitress',
     'pyramid_handlers',
+    'pyramid_assetviews',
     'psycopg2',
     'sqlalchemy',
     'redis',
