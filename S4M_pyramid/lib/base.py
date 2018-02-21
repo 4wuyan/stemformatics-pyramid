@@ -64,7 +64,9 @@ class BaseController():
         c.page_history = session.get('page_history')
 
         c.stemformatics_version = config['stemformatics_version']
-        c.header = ""#Stemformatics_Notification.get_header(db, request, c.uid) ##########################################################
+        c.header = Stemformatics_Notification.get_header(db, request, c.uid) ##########################################################
+        print(c.header)
+        print(self.request.path)
         #----------------------------------------------------------------------------------
 
         #----------Originally in __init__--------------------------------------------------
