@@ -1,5 +1,5 @@
-<%inherit file="/default.html"/>\
-<%namespace name="Base" file="/base.mako"/>
+<%inherit file="../default.html"/>\
+<%namespace name="Base" file="../base.mako"/>
 <%def name="includes()">
 	<script type="text/javascript" src="${h.url('/js/projects/project_grandiose.js')}"></script>
 </%def>
