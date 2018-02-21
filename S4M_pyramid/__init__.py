@@ -119,6 +119,7 @@ def config_static_views(config):
     config.add_static_view(name='help', path='public/help')
 
     # serve assets that need to be accessed from the root of your domain
+    # https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/pylons/static.html
     config.include("pyramid_assetviews")
     filenames = ['robots.txt', 'favicon.ico', 'favicon.png']
     config.add_asset_views("S4M_pyramid:public", filenames=filenames)
