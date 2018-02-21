@@ -2,14 +2,12 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from pylons import request, response, session, tmpl_context as c, url
-from pylons import config
-from pylons.controllers.util import abort, redirect
-
-from guide.lib.base import BaseController, render
-
-from guide.model.stemformatics import *
-
+from S4M_pyramid.lib.deprecated_pylons_globals import url, config
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+from pyramid_handlers import action
+from pyramid.renderers import render_to_response
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset
 
 class ProjectsController(BaseController):
     #---------------------NOT MIGRATED--------------------------------
@@ -27,17 +25,19 @@ class ProjectsController(BaseController):
 
         return render (url('/projects/mcri.mako'))
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/leukomics.mako")
     def leukomics(self):
+        c = self.request.c
         c.title = c.site_name+" - LEUKomics"
         c.header = 'leukomics'
-        return render (url('/projects/leukomics.mako'))
+        return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/projects/leukomics_data.mako")
     def leukomics_data(self):
+        c = self.request.c
         c.title = c.site_name+" - LEUKomics"
         c.header = 'leukomics'
-        return render (url('/projects/leukomics_data.mako'))
+        return self.deprecated_pylons_data_for_view
 
     #---------------------NOT MIGRATED--------------------------------
     def leukomics_publications(self):

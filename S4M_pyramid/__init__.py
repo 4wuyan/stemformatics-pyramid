@@ -9,6 +9,8 @@ from .controllers.main import MainController
 from .controllers.api import ApiController
 from .controllers.datasets import DatasetsController
 from .controllers.msc_signature import MscSignatureController
+from .controllers.projects import ProjectsController
+
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
     setup_database_connection(settings)
@@ -44,7 +46,7 @@ def main(global_config, **settings):
     redirect_shortcut(config, '/expressions/', '/contents/index')
     redirect_shortcut(config, '/datasets', '/datasets/search')
     redirect_shortcut(config, '/datasets/', '/datasets/search')
-
+    
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
     config.add_handler("auth with id", "/auth/{action}/{id}", handler=AuthController)
@@ -58,6 +60,7 @@ def main(global_config, **settings):
     config.add_handler("api","/api/{action}",handler=ApiController)
     config.add_handler("datasets","/datasets/{action}",handler=DatasetsController)
     config.add_handler("msc_signature","/msc_signature/{action}",handler=MscSignatureController)
+    config.add_handler("projects","/projects/{action}",handler=ProjectsController)
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
