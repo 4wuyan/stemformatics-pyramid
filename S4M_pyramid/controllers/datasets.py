@@ -26,13 +26,11 @@ class DatasetsController(BaseController):
     __name__ = 'DatasetsController'
 
 
-    #---------------------NOT MIGRATED--------------------------------
-    def __before__(self): #CRITICAL-3
-
-        super(DatasetsController, self).__before__ ()
+    def __init__(self,request):
+        super().__init__(request)
+        c = self.request.c
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
-        c = self.request.c
         c.human_db = self.human_db
         c.mouse_db = self.mouse_db
 
@@ -89,7 +87,7 @@ class DatasetsController(BaseController):
             db=None # this is not used at the moment
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,c.uid)
             if dataset_status == "Unavailable":
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
             if dataset_status == "Limited": # always show limited datasets
                 pass
 
@@ -106,7 +104,7 @@ class DatasetsController(BaseController):
             try:
                 c.dataset_status = c.dataset[ds_id]['dataset_status']
             except:
-                redirect(url(controller='contents', action='index'), code=404)
+                return redirect(url(controller='contents', action='index'), code=404)
             c.db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
         else:
             c.ds_id = None
