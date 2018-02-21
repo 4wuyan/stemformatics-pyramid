@@ -1,18 +1,16 @@
-import logging,base64
+import logging
 log = logging.getLogger(__name__)
-from pylons import config,request, response, session, tmpl_context as c, url
 
-from pylons.controllers.util import abort, redirect
-
-from guide.lib.base import BaseController, render
-
-from guide.model.stemformatics import *
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
+from pyramid_handlers import action
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.model.stemformatics import Stemformatics_Job, Stemformatics_Gene
 
 class TestsController(BaseController):
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/tests.mako')
     def static_tests(self):
-        return render('tests.mako')
+        return self.deprecated_pylons_data_for_view
 
     #---------------------NOT MIGRATED--------------------------------
     def last_job_result(self,id):
