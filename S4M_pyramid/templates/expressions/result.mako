@@ -42,6 +42,7 @@
 <%
     probe_name = c.probe_name
 %>
+
 <div class="hidden" id="probe_name">${probe_name}</div>
 <div class="content">
         <div id="db_id" class="hidden">${c.db_id}</div>
@@ -166,7 +167,7 @@
 
                                           %endif
                                           % if c.uid and c.ref_type == 'ensemblID':
-                                              <li><a id="multiviewButton" href="${h.url('/expressions/multi_dataset_result?graphType=scatter&gene='+ str(c.ref_id)+'&db_id='+str(c.db_id))}" >Multiview Expression Graph: view 4 datasets</a></li>
+                                              <li><a id="multiviewButton" href="${h.url('/expressions/multi_dataset_result?graphType=scatter&gene='+ str(c.ref_id)+'&db_id='+str(c.db_id))}" >Multiview Expression Graph: view 9 datasets</a></li>
 
                                           % endif
                                           % if c.uid and c.ref_type == 'ensemblID' and c.dataset_status == "Available":

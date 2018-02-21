@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------20 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 from webhelpers2.html import literal
 
 """

@@ -34,8 +34,7 @@ class stringDB(externalDB):
 
 class innateDB(externalDB):
     def return_list_of_types_in_order(self):
-        list_of_types_in_order = ['Pathway Analysis', 'Gene Ontology Analysis', 'Network Analysis',
-                                  'Interactor Analysis', 'Transcription Factor Binding Site Analysis']
+        list_of_types_in_order = ['Pathway Analysis', 'Gene Ontology Analysis', 'Network Analysis', 'Interactor Analysis', 'Transcription Factor Binding Site Analysis']
         return list_of_types_in_order
 
     def return_dict_of_types(self):
@@ -56,10 +55,10 @@ class innateDB(externalDB):
             """
                 innate_db_type can be replaced by one of the following via javascript
                 type = "interactor"
-                type = "go" 
-                type = "pw" 
-                type = "intx" 
-                type = "tfbs" 
+                type = "go"
+                type = "pw"
+                type = "intx"
+                type = "tfbs"
             """
 
             try:

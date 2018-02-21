@@ -1,3 +1,7 @@
+#-------Last synchronised with Pylons repo (master) on---------------#
+#------------------------20 Feb 2018---------------------------------#
+#-------------------------by WU Yan----------------------------------#
+
 """Helper functions
 
 Consists of functions to typically be used within templates, but also

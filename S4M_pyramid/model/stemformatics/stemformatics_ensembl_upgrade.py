@@ -1,16 +1,10 @@
 #TODO-1
 import logging
 log = logging.getLogger(__name__)
-import sqlalchemy as SA
-import re
-import string
-import json
-from guide.lib.state import *
-from pylons import config
-from decorator import decorator
-import sys
+
+
 __all__ = ['Stemformatics_Ensembl_Upgrade']
-from guide.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set  #CRITICAL-6
+from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set  #CRITICAL-6
 
 
 class Stemformatics_Ensembl_Upgrade(object):

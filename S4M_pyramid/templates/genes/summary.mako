@@ -76,7 +76,7 @@
                         <ul class="submenu">
                             <li><a href="${h.url(str('/expressions/result?graphType=box&gene='+c.ensemblID+'&db_id='+str(c.db_id)))}" >Gene Expression Graph: choose one dataset</a></li>
                         %if c.user:
-                            <li><a href="${h.url(str('/expressions/multi_dataset_result?graphType=box&gene='+c.ensemblID+'&db_id='+str(c.db_id)))}" >Multiview Expression Graph: compare 4 datasets</a></li>
+                            <li><a href="${h.url(str('/expressions/multi_dataset_result?graphType=box&gene='+c.ensemblID+'&db_id='+str(c.db_id)))}" >Multiview Expression Graph: compare 9 datasets</a></li>
                         % endif
                         </ul>
                     </li>
