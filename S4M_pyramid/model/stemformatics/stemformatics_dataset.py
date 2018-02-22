@@ -32,7 +32,7 @@ import formencode.validators as fe, time ,os , codecs , subprocess , re , string
 #from poster.streaminghttp import register_openers
 
 from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
-
+import urllib.request
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
 IDENTIFIER = fe.PlainText(not_empty=True)
@@ -1781,7 +1781,9 @@ All functions have a try that will return None if errors are found
 
         #then call curl
         # Register the streaming http handlers with urllib2
+        # this function requires poster.streaminghttp, which is unsupported in python3
         register_openers()
+        urllib.request.Re
 
         # Start the multipart/form-data encoding of the file "DSC0001.jpg"
         # "image1" is the name of the parameter, which is normally set
@@ -1789,6 +1791,7 @@ All functions have a try that will return None if errors are found
 
         # headers contains the necessary Content-Type and Content-Length
         # datagen is a generator object that yields the encoded parameters
+        # this function requires poster.encode, which is unsupported in python3
         datagen, headers = multipart_encode({
             "biosamples_metadata": open(file_bs_md, "rb"),
             "metastore": open(file_ds_md, "rb"),
@@ -1797,9 +1800,9 @@ All functions have a try that will return None if errors are found
 
         # Create the Request object
         url = config['validator_url']
-        request = urllib2.Request(url, datagen, headers)
+        request = urllib.request.Request(url, datagen, headers)
         # Actually do the request, and get the response
-        return_text = urllib2.urlopen(request).read()
+        return_text = urllib.request.urlopen(request).read()
 
         os.remove(file_bs_md)
         os.remove(file_ds_md)
