@@ -46,7 +46,6 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    @action(renderer="templates/workbench/gene_set_upload.mako")
     def gene_set_upload(self):
         c = self.request.c
         request = self.request
@@ -66,21 +65,21 @@ class WorkbenchController(BaseController):
         if posted == None:
             c.error_message = ""
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],['','Upload New Gene List']]
-            return self.deprecated_pylons_data_for_view
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         myfile = request.POST['gene_set_file']
 
         if gene_set_name == '':
             c.error_message = "You must provide a gene list name."
-            return self.deprecated_pylons_data_for_view
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         if myfile == '':
             c.error_message = "Error in uploading the file."
-            return self.deprecated_pylons_data_for_view
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         if db_id is None:
             c.error_message = "Error in choosing species."
-            return self.deprecated_pylons_data_for_view
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
         geneSetRaw = myfile.value
@@ -105,7 +104,7 @@ class WorkbenchController(BaseController):
         c.title = c.site_name+' Analyses  - New Gene List'
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_upload'),'Upload New Gene List'],['','Bulk Import Manager']]
         c.description = ''
-        return render_to_response('workbench/gene_set_manage_bulk_import.mako')
+        return render_to_response('S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
     @Stemformatics_Auth.authorise()
