@@ -4,7 +4,7 @@
 
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Notification,Stemformatics_Auth,Stemformatics_Msc_Signature, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Notification,Stemformatics_Auth,Stemformatics_Msc_Signature, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job,Stemformatics_Transcript, db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
 import json
@@ -35,6 +35,7 @@ class WorkbenchController(BaseController):
         # GenePattern modules
         self.GPQueue = config['GPQueue']
         self.StemformaticsQueue = config['StemformaticsQueue']
+        self.GeneSetFiles = config['GeneSetFiles']
         #self.StemformaticsController = config['StemformaticsController']
         #self.FullJavaPath = config['FullJavaPath']
 
@@ -945,9 +946,9 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_wizard(self):  #CRITICAL-5
-
+        c = self.request.c
+        request = self.request
         analysis  = 4
         transcripts_per_page = request.params.get('transcripts_per_page')
 
@@ -967,7 +968,7 @@ class WorkbenchController(BaseController):
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
             c.url = h.url('/workbench/gene_set_annotation_wizard')
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/gene_set_annotation_wizard'),'Gene List Annotation - Choose Gene List  (Step 1 of 2)']]
-            return render('workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         else:
             gene_set_id = int(gene_set_id)
@@ -1008,11 +1009,70 @@ class WorkbenchController(BaseController):
 
         ini_file.writelines(ini_file_list)
         ini_file.close()
+        # java code replacement
+        result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
-        # call java code from command line
-        command_line = "nice -n 15 " + self.FullJavaPath + " -jar "+ self.StemformaticsController +" " + str(job_id)+ " " + config['__file__']
+        if result is None:
+            redirect(url(controller='contents', action='index'), code=404)
 
-        p = subprocess.Popen(command_line,shell=True)
+        # get list of genes so we can get the db_id too
+        result = Stemformatics_Gene_Set.getGeneSetData(db,c.uid,gene_set_id)
+        raw_genes = result[1]
+
+        # expecting at least one gene in the gene set
+        db_id = raw_genes[0].db_id
+
+        # create directory
+        base_path = self.StemformaticsQueue + str(job_id) + '/'
+        ini_filename = base_path + 'job.ini'
+        main_filename = base_path + 'job.tsv'
+        gene_pathways_filename = base_path + 'pathways.tsv'
+        f_gene_sets = self.GeneSetFiles + 'db_id_'+str(db_id)+'_all_genes.tsv'
+        gene_pathways_export = base_path + 'pathway_export.tsv'
+
+        if not os.path.exists(base_path):
+            os.mkdir(base_path)
+
+        # now use the list of genes
+        genes_in_gene_set_count = len(raw_genes)
+        genes = []
+        dict_gene_names = {}
+
+        for gene_row in raw_genes:
+            genes.append(gene_row.gene_id)
+            dict_gene_names[gene_row.gene_id] = gene_row.associated_gene_name
+
+        tx_dict = Stemformatics_Transcript.get_transcript_annotations(db,db_id,genes)
+
+        # write the main job data file
+        result = Stemformatics_Job.write_transcript_data_gene_set_annotation(db,main_filename,tx_dict)
+
+        # read the gene sets large file to go through and work out the pathways this gene set is for
+        gene_list = Stemformatics_Gene_Set.read_db_all_genes(f_gene_sets,genes)
+
+        # write to file gene centric list of pathways that touch this gene set - returns dict_pathway and gene pathways list
+        result = Stemformatics_Job.write_gene_pathways_gene_set_annotation(gene_pathways_filename,gene_list,dict_gene_names)
+
+        dict_pathway = result[0]
+        gene_pathways_list = result[1]
+
+        public_uid = 0
+        gene_set_details = Stemformatics_Gene_Set.get_gene_set_details(db,public_uid,gene_pathways_list)
+
+        total_number_genes = Stemformatics_Gene.get_total_number_genes(db,db_id)
+
+        gene_set_counts = Stemformatics_Gene_Set.get_gene_set_counts(db,public_uid,gene_pathways_list)
+
+        dict_gene_set_details = {}
+        for gene_set in gene_set_details:
+            dict_gene_set_details[str(gene_set.id)] = gene_set
+
+
+        # show export for gene pathways
+        result = Stemformatics_Job.write_gene_pathways_export_gene_set_annotation(gene_pathways_export,dict_pathway,dict_gene_set_details,gene_set_counts,genes_in_gene_set_count,total_number_genes)
+
+        if result is None:
+            redirect(url(controller='contents', action='index'), code=404)
 
         audit_dict = {'ref_type':'gene_set_id','ref_id':gene_set_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)

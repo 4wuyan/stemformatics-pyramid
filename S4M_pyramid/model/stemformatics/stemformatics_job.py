@@ -15,7 +15,6 @@ from datetime import datetime, timedelta
 
 from S4M_pyramid.lib.deprecated_pylons_globals import config,url,magic_globals
 from S4M_pyramid.model.stemformatics import Stemformatics_Dataset,Stemformatics_Gene_Set
-from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g
 import formencode.validators as fe
 import os, subprocess
 import psycopg2
@@ -267,9 +266,8 @@ class Stemformatics_Job(object):
 
                 result = join2.filter(db.jobs.job_id == job_id).one()
             else:
-                join1 = db.join(db.jobs,gs,gs.id==db.jobs.gene_set_id,True)
+                join1 = db.join(db.jobs,gs,gs.stemformatics_gene_sets_id==db.jobs.gene_set_id,True)
                 result = join1.filter(db.jobs.job_id == job_id).one()
-
             return result
         except:
             return None
@@ -536,9 +534,9 @@ class Stemformatics_Job(object):
 
         f = open(file_name, 'w')
 
-        for gene_id,row in tx_dict.iteritems():
+        for gene_id,row in tx_dict.items():
             row_array = []
-            for key_details,value in row.iteritems():
+            for key_details,value in row.items():
                 row_array.append(str(value))
 
             raw_line = gene_id + "\t" + "\t".join(row_array)+"\n"
@@ -641,6 +639,7 @@ class Stemformatics_Job(object):
         f = open(file_name,'w')
         header = "InternalID\tPathway Name\t#Genes\tFisher Exact Test\tIndividual Genes\n"
         f.write(header)
+
         for pathway in dict_pathway:
 
             pathway_name = dict_gene_set_details[pathway].gene_set_name

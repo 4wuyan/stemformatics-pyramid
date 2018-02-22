@@ -285,6 +285,7 @@ class ApiController(BaseController):
 
 
     #---------------------NOT MIGRATED--------------------------------
+    # migrating this to workbench gene_set_annotation_wizard action
     def gene_set_annotation_job(self,id):  #CRITICAL-4
 
         job_id = int(id)

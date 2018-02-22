@@ -184,7 +184,8 @@ class Stemformatics_Gene_Set(object):
         try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
-            gsi = db.gene_set_items
+            gsi = db.with_labels(db.gene_set_items)
+
             db.schema = 'public'
             ga = db.genome_annotations
 
@@ -196,9 +197,9 @@ class Stemformatics_Gene_Set(object):
 
             if resultGeneSet is not None:
 
-                join1 = db.join(gsi,ga,and_(ga.gene_id==gsi.gene_id,ga.db_id == resultGeneSet.db_id))
-                where = and_(gsi.gene_set_id==gene_set_id)
-                resultGeneSetData = join1.filter(where).order_by(gsi.gene_id).all()
+                join1 = db.join(gsi,ga,and_(ga.gene_id==gsi.stemformatics_gene_set_items_gene_id,ga.db_id == resultGeneSet.db_id))
+                where = and_(gsi.stemformatics_gene_set_items_gene_set_id==gene_set_id)
+                resultGeneSetData = join1.filter(where).order_by(gsi.stemformatics_gene_set_items_gene_id).all()
 
                 result = [resultGeneSet,resultGeneSetData]
             else:
@@ -250,12 +251,12 @@ class Stemformatics_Gene_Set(object):
             result = join1.filter(gsi.id==gene_set_item_id).one()
 
             if result is None:
-                raise Exception # raise Error
+                raise Error
                 return None
 
             # check that this user owns this gene_set record
             if result.uid != uid:
-                raise Exception # raise Error
+                raise Error
                 return None
 
             # save gene_set_id
@@ -511,19 +512,16 @@ class Stemformatics_Gene_Set(object):
 
         db.schema = 'stemformatics'
         gs = db.gene_sets
-        gsi = db.gene_set_items
-
+        gsi = db.with_labels(db.gene_set_items)
         # check uid, geneset id are valid
         where = and_(gs.uid == uid, gs.id.in_(gene_sets))
-
-
-        join1 = db.join(gsi,gs,gsi.gene_set_id==gs.id)
+        join1 = db.join(gsi,gs,gsi.stemformatics_gene_set_items_gene_set_id==gs.id)
 
         result = join1.filter(where).order_by(gs.id).all()
 
         pathway_count_result = {}
         for gene in result:
-            gene.gene_set_id = str(gene.gene_set_id)
+            gene.gene_set_id = str(gene.stemformatics_gene_set_items_gene_set_id)
 
             if gene.gene_set_id not in pathway_count_result:
                 pathway_count_result[gene.gene_set_id] = 0
