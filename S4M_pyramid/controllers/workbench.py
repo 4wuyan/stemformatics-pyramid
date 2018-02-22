@@ -7,6 +7,7 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Notification,Stemformatics_Auth,Stemformatics_Msc_Signature, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+from datetime import datetime
 import json
 import re
 from pyramid.renderers import render_to_response
@@ -1614,24 +1615,15 @@ class WorkbenchController(BaseController):
         return printout
 
 
-
-
-
-
-    #---------------------NOT MIGRATED--------------------------------
     def download_gct_file_for_gene_set_wizard(self): #CRITICAL-5
+        c = self.request.c
+        request = self.request
 
         c.analysis = 6
 
         gene_set_id  = request.params.get('gene_set_id')
         file_type  = request.params.get('file_type')
 
-        #~ if file_type is None:
-            #~ file_type = 'gct'
-            #~
-        #~ if file_type != 'gct' and file_type != 'txt':
-            #~ raise Error
-        #~
         c.title = c.site_name+' Analyses - Download Expression Profile Wizard'
         if gene_set_id is None:
             # call a gene list chooser for
@@ -1660,7 +1652,8 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id)
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/download_gct_file_for_gene_set_wizard'),'Download Expression Profile - Choose Gene List'],[h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id),'Download Expression Profile - Choose Dataset  (Step 2 of 3)']]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
         ds_id = dataset_id
 
         if file_type is None:
@@ -1671,14 +1664,14 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id)+'&datasetID='+str(dataset_id)+'&file_type='
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/download_gct_file_for_gene_set_wizard'),'Choose Gene List'],[h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id),'Choose Dataset '],[h.url('/workbench/download_gct_file_for_gene_set_wizard'),'Download Expression Profile - Choose File Type (Step 3 of 3)']]
-            return render('workbench/generic_choose.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/generic_choose.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
         base_path = self.StemformaticsQueue
 
-        chip_type = Stemformatics_Dataset.getChipType(db,dataset_id)
+        chip_type = Stemformatics_Dataset.getChipType(dataset_id)
 
-        db_id = Stemformatics_Dataset.get_db_id(db,dataset_id)
+        db_id = Stemformatics_Dataset.get_db_id(dataset_id)
 
         # set some variables
         self.DatasetGCTFiles = config['DatasetGCTFiles']

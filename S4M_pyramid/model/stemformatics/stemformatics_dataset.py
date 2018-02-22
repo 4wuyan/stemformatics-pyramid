@@ -1639,7 +1639,7 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def convert_bs_md_into_json(db,ds_id,uid): #CRITICAL-2
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
         json_ds_md = []
         base_array = {}
         #header_array = ['chip_id','ds_id','chip_type','Sample Type','Replicate Group ID','Sample Description','Tissue','Cell Type','Organism'] # these are the first three columns all the time
@@ -1950,7 +1950,7 @@ All functions have a try that will return None if errors are found
         return_text =ds_result['limit_sort_by'] + "<br/>"
         sort_type_list = ds_result['limit_sort_by'].split(',')
         build_dict = {}
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
 
@@ -2262,8 +2262,8 @@ All functions have a try that will return None if errors are found
         sort_by = 'Sample Type'
         human_db = config['human_db']
         mouse_db = config['mouse_db']
-        db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        db_id = Stemformatics_Dataset.get_db_id(ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
         sample_chip_ids_in_order = Stemformatics_Dataset.get_sample_chip_ids_in_order(db,chip_type,sample_labels,sort_by,ds_id)
