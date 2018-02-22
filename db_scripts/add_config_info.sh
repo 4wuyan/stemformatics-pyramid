@@ -11,8 +11,8 @@ psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('twitter_oauth_token_secret','0Rftaoi6uPb9A5x9vNVcfdwLTUMa196LELBPpoZz1w');"
 
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('GPQueue','/var/www/pylons-data/prod/jobs/GPQueue/');"
-psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('StemformaticsQueue','/var/www/pylons-data/prod/jobs/StemformaticsQueue');"
-psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('DatasetGCTFiles','/var/www/prod/pylons-data/GCTFiles');"
+psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('StemformaticsQueue','/var/www/pylons-data/prod/jobs/StemformaticsQueue/');"
+psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('DatasetGCTFiles','/var/www/prod/pylons-data/GCTFiles/');"
 psql -U portaladmin portal_beta -c "INSERT INTO stemformatics.configs (ref_type,ref_id) values('email_to','test@mailinator.com');"
 psql -U portaladmin portal_beta -c "update stemformatics.configs set ref_id = 'stemformatics.sa.metacdn.com/release_69' where ref_type = 'cdn_base_url';"
 # psql -U portaladmin portal_beta -c "UPDATE stemformatics.configs set ref_id = 'false' where ref_type = 'production';"
