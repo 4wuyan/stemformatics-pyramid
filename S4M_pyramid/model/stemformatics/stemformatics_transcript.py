@@ -65,7 +65,7 @@ class Stemformatics_Transcript(object):
                 if filter == 'signal_peptide' and base_where is None:
                     base_where = tx_ann.signal_peptide == value
                 elif filter == 'signal_peptide' and base_where is not None:
-                    base_where = and_(base_where,tx_ann.signal_peptide == Value)
+                    base_where = and_(base_where,tx_ann.signal_peptide == value)
 
                 if filter == 'tm_domain' and base_where is None:
                     base_where = tx_ann.tm_domain == value
