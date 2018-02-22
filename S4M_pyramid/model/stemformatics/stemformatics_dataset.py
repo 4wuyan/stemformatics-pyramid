@@ -25,9 +25,7 @@ from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Ad
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob#urllib2
-#from poster.encode import multipart_encode
-#from poster.streaminghttp import register_openers
+import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob
 
 from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
 import urllib.request
@@ -1777,6 +1775,9 @@ All functions have a try that will return None if errors are found
         f_ds_md.write(ds_md_text)
         f_ds_md.close()
 
+        # The following code is not used because poster doesn't support Python3
+        # (multipart_encode & register_openers are from poster module)
+        '''
         #then call curl
         # Register the streaming http handlers with urllib2
         # this function requires poster.streaminghttp, which is unsupported in python3
@@ -1800,6 +1801,17 @@ All functions have a try that will return None if errors are found
         request = urllib.request.Request(url, datagen, headers)
         # Actually do the request, and get the response
         return_text = urllib.request.urlopen(request).read()
+        '''
+        # Let's use requests module
+        import requests
+        url = config['validator_url']
+        files = [
+            ("biosamples_metadata",  open(file_bs_md, "rb")        ),
+            ("metastore",            open(file_ds_md, "rb")        ),
+            ("annotation-submit",    "Validate Annotation Files"   ),
+        ]
+        request = requests.post(url, files=files)
+        return_text = request.text
 
         os.remove(file_bs_md)
         os.remove(file_ds_md)
