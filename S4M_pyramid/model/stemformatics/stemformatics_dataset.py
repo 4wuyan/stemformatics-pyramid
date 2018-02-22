@@ -1783,7 +1783,6 @@ All functions have a try that will return None if errors are found
         # Register the streaming http handlers with urllib2
         # this function requires poster.streaminghttp, which is unsupported in python3
         register_openers()
-        urllib.request.Re
 
         # Start the multipart/form-data encoding of the file "DSC0001.jpg"
         # "image1" is the name of the parameter, which is normally set
