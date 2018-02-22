@@ -15,7 +15,7 @@ import os
 
 from sqlalchemy import or_, and_, desc
 
-from S4M_pyramid.lib.deprecated_pylons_globals import config, magic_globals
+from S4M_pyramid.lib.deprecated_pylons_globals import config
 
 __all__ = ['Stemformatics_Gene_Set']
 
@@ -870,8 +870,6 @@ class Stemformatics_Gene_Set(object):
         return True
 
     def gene_list_annotation_wizard(job_id,db):
-        magic_globals.fetch()
-        c = magic_globals.c
 
         from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job
         from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
@@ -889,7 +887,7 @@ class Stemformatics_Gene_Set(object):
         use_gct = result.use_gct
 
         # get list of genes so we can get the db_id too
-        result = Stemformatics_Gene_Set.getGeneSetData(db,c.uid,gene_set_id)
+        result = Stemformatics_Gene_Set.getGeneSetData(db,uid,gene_set_id)
 
         raw_genes = result[1]
 
