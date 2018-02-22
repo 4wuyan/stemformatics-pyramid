@@ -16,7 +16,6 @@ import psycopg2,psycopg2.extras, pickle
 from S4M_pyramid.model.stemformatics.stemformatics_probe import *
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
 
-
 # Task#465 x PLATFORM
 #CRITICAL-6
 from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene # wouldn't work otherwise??
