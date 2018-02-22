@@ -46,8 +46,10 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="templates/workbench/gene_set_upload.mako")
     def gene_set_upload(self):
+        c = self.request.c
+        request = self.request
 
         c.title = c.site_name+' Analyses - Upload New Gene List'
         c.gene_set_id = None
@@ -64,21 +66,21 @@ class WorkbenchController(BaseController):
         if posted == None:
             c.error_message = ""
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],['','Upload New Gene List']]
-            return render('workbench/gene_set_upload.mako')
+            return self.deprecated_pylons_data_for_view
 
         myfile = request.POST['gene_set_file']
 
         if gene_set_name == '':
             c.error_message = "You must provide a gene list name."
-            return render('workbench/gene_set_upload.mako')
+            return self.deprecated_pylons_data_for_view
 
         if myfile == '':
             c.error_message = "Error in uploading the file."
-            return render('workbench/gene_set_upload.mako')
+            return self.deprecated_pylons_data_for_view
 
         if db_id is None:
             c.error_message = "Error in choosing species."
-            return render('workbench/gene_set_upload.mako')
+            return self.deprecated_pylons_data_for_view
 
 
         geneSetRaw = myfile.value
@@ -103,7 +105,7 @@ class WorkbenchController(BaseController):
         c.title = c.site_name+' Analyses  - New Gene List'
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_upload'),'Upload New Gene List'],['','Bulk Import Manager']]
         c.description = ''
-        return render('workbench/gene_set_manage_bulk_import.mako')
+        return render_to_response('workbench/gene_set_manage_bulk_import.mako')
 
 
     @Stemformatics_Auth.authorise()
