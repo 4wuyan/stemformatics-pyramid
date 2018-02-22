@@ -1004,7 +1004,7 @@ class WorkbenchController(BaseController):
         ini_file.writelines(ini_file_list)
         ini_file.close()
         # java code replacement
-        result = Stemformatics_Gene_Set.gene_list_annotation_wizard(job_id,db)
+        result = Stemformatics_Gene_Set.submit_gene_list_annotation_job(job_id,db)
 
         audit_dict = {'ref_type':'gene_set_id','ref_id':gene_set_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)

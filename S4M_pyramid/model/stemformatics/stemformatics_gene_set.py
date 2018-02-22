@@ -869,7 +869,7 @@ class Stemformatics_Gene_Set(object):
 
         return True
 
-    def gene_list_annotation_wizard(job_id,db):
+    def submit_gene_list_annotation_job(job_id,db):
 
         from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job
         from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
