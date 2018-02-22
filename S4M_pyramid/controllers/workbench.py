@@ -1013,7 +1013,7 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
 
         if result is None:
-            redirect(url(controller='contents', action='index'), code=404)
+            return redirect(url(controller='contents', action='index'), code=404)
 
         # get list of genes so we can get the db_id too
         result = Stemformatics_Gene_Set.getGeneSetData(db,c.uid,gene_set_id)
@@ -1072,7 +1072,7 @@ class WorkbenchController(BaseController):
         result = Stemformatics_Job.write_gene_pathways_export_gene_set_annotation(gene_pathways_export,dict_pathway,dict_gene_set_details,gene_set_counts,genes_in_gene_set_count,total_number_genes)
 
         if result is None:
-            redirect(url(controller='contents', action='index'), code=404)
+            return redirect(url(controller='contents', action='index'), code=404)
 
         audit_dict = {'ref_type':'gene_set_id','ref_id':gene_set_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
