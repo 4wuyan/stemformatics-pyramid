@@ -20,10 +20,8 @@ import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
 from S4M_pyramid.lib.deprecated_pylons_globals import config,app_globals as g
 from S4M_pyramid.lib.helpers import url
-#from S4M_pyramid.lib.state import *
-from S4M_pyramid.model.stemformatics import Stemformatics_Admin
 from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
-#from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
+from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
 
 __all__ = ['Stemformatics_Dataset']
 
