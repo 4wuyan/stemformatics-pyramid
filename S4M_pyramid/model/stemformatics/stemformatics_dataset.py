@@ -25,12 +25,10 @@ from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Ad
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob#urllib2
-#from poster.encode import multipart_encode
-#from poster.streaminghttp import register_openers
+import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob
 
 from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
-
+import urllib.request
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
 IDENTIFIER = fe.PlainText(not_empty=True)
@@ -1777,8 +1775,12 @@ All functions have a try that will return None if errors are found
         f_ds_md.write(ds_md_text)
         f_ds_md.close()
 
+        # The following code is not used because poster doesn't support Python3
+        # (multipart_encode & register_openers are from poster module)
+        '''
         #then call curl
         # Register the streaming http handlers with urllib2
+        # this function requires poster.streaminghttp, which is unsupported in python3
         register_openers()
 
         # Start the multipart/form-data encoding of the file "DSC0001.jpg"
@@ -1787,6 +1789,7 @@ All functions have a try that will return None if errors are found
 
         # headers contains the necessary Content-Type and Content-Length
         # datagen is a generator object that yields the encoded parameters
+        # this function requires poster.encode, which is unsupported in python3
         datagen, headers = multipart_encode({
             "biosamples_metadata": open(file_bs_md, "rb"),
             "metastore": open(file_ds_md, "rb"),
@@ -1795,9 +1798,20 @@ All functions have a try that will return None if errors are found
 
         # Create the Request object
         url = config['validator_url']
-        request = urllib2.Request(url, datagen, headers)
+        request = urllib.request.Request(url, datagen, headers)
         # Actually do the request, and get the response
-        return_text = urllib2.urlopen(request).read()
+        return_text = urllib.request.urlopen(request).read()
+        '''
+        # Let's use requests module
+        import requests
+        url = config['validator_url']
+        files = [
+            ("biosamples_metadata",  open(file_bs_md, "rb")        ),
+            ("metastore",            open(file_ds_md, "rb")        ),
+            ("annotation-submit",    "Validate Annotation Files"   ),
+        ]
+        request = requests.post(url, files=files)
+        return_text = request.text
 
         os.remove(file_bs_md)
         os.remove(file_ds_md)

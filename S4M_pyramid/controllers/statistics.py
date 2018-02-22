@@ -1,31 +1,21 @@
-
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect
-from pylons import url
-
-from guide.lib.base import BaseController, render
+from S4M_pyramid.lib.base import BaseController
+from pyramid_handlers import action
 import json
-
-
-# Live querying
-from guide.model.stemformatics import *
-import re
-
-from pylons import config
 
 class StatisticsController(BaseController):
     __name__ = 'StatisticsController'
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/statistics/index.mako')
     def index(self):
-        return render ('/statistics/index.mako')
+        return self.deprecated_pylons_data_for_view
 
     # api create for RDS Monitoring of when we moved the HC processing to Galaxy
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='string')
     def get_galaxy_hc_stats(self):
+        request = self.request
         start_date  = request.params.get('start_date')
         end_date  = request.params.get('end_date')
-        from guide.model.stemformatics.stemformatics_job import Stemformatics_Job
+        from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job
         hc_stats = Stemformatics_Job.get_hc_stats_from_s4m_db(start_date,end_date)
         hc_stats_json = json.dumps(hc_stats)
         return hc_stats_json
