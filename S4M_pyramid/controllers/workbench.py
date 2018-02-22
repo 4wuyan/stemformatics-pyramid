@@ -35,7 +35,6 @@ class WorkbenchController(BaseController):
         # GenePattern modules
         self.GPQueue = config['GPQueue']
         self.StemformaticsQueue = config['StemformaticsQueue']
-        self.GeneSetFiles = config['GeneSetFiles']
         #self.StemformaticsController = config['StemformaticsController']
         #self.FullJavaPath = config['FullJavaPath']
 
