@@ -11,7 +11,7 @@ import re
 from S4M_pyramid.model import redis_interface_normal as r_server
 import datetime
 from datetime import timedelta
-
+import os
 
 from sqlalchemy import or_, and_, desc
 
@@ -28,6 +28,7 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 #CRITICAL-6
 from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin
+from S4M_pyramid.model.stemformatics.stemformatics_transcript import Stemformatics_Transcript
 
 # check strong password
 # (?=^.{8,20}$)(?=.*\d)(?=.*\W+)(?!.*\s)(?=.*[A-Z])(?=.*[a-z]).*$
@@ -51,6 +52,7 @@ class Stemformatics_Gene_Set(object):
 
     def __init__ (self):
         pass
+
 
     @staticmethod
     def check_gene_set_availability(gene_set_id,uid):
@@ -866,3 +868,78 @@ class Stemformatics_Gene_Set(object):
                 r_server.delete(key)
 
         return True
+
+    def submit_gene_list_annotation_job(job_id,db):
+
+        from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job
+        from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
+
+        result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
+
+        if result is None:
+            return redirect(url(controller='contents', action='index'), code=404)
+
+        dataset_id  = result.dataset_id
+        uid = result.uid
+        analysis = result.analysis
+        gene_set_id= result.gene_set_id
+        use_cls = result.use_cls
+        use_gct = result.use_gct
+
+        # get list of genes so we can get the db_id too
+        result = Stemformatics_Gene_Set.getGeneSetData(db,uid,gene_set_id)
+
+        raw_genes = result[1]
+
+        # expecting at least one gene in the gene set
+        db_id = raw_genes[0].db_id
+
+        StemformaticsQueue = config['StemformaticsQueue']
+        GeneSetFiles = config['GeneSetFiles']
+        # create directory
+        base_path = StemformaticsQueue + str(job_id) + '/'
+        ini_filename = base_path + 'job.ini'
+        main_filename = base_path + 'job.tsv'
+        gene_pathways_filename = base_path + 'pathways.tsv'
+        f_gene_sets = GeneSetFiles + 'db_id_'+str(db_id)+'_all_genes.tsv'
+        gene_pathways_export = base_path + 'pathway_export.tsv'
+
+        if not os.path.exists(base_path):
+            os.mkdir(base_path)
+
+        # now use the list of genes
+        genes_in_gene_set_count = len(raw_genes)
+        genes = []
+        dict_gene_names = {}
+
+        for gene_row in raw_genes:
+            genes.append(gene_row.gene_id)
+            dict_gene_names[gene_row.gene_id] = gene_row.associated_gene_name
+
+        tx_dict = Stemformatics_Transcript.get_transcript_annotations(db,db_id,genes)
+
+        # write the main job data file
+        result = Stemformatics_Job.write_transcript_data_gene_set_annotation(db,main_filename,tx_dict)
+
+        # read the gene sets large file to go through and work out the pathways this gene set is for
+        gene_list = Stemformatics_Gene_Set.read_db_all_genes(f_gene_sets,genes)
+
+        # write to file gene centric list of pathways that touch this gene set - returns dict_pathway and gene pathways list
+        result = Stemformatics_Job.write_gene_pathways_gene_set_annotation(gene_pathways_filename,gene_list,dict_gene_names)
+
+        dict_pathway = result[0]
+        gene_pathways_list = result[1]
+
+        public_uid = 0
+        gene_set_details = Stemformatics_Gene_Set.get_gene_set_details(db,public_uid,gene_pathways_list)
+
+        total_number_genes = Stemformatics_Gene.get_total_number_genes(db,db_id)
+
+        gene_set_counts = Stemformatics_Gene_Set.get_gene_set_counts(db,public_uid,gene_pathways_list)
+
+        dict_gene_set_details = {}
+        for gene_set in gene_set_details:
+            dict_gene_set_details[str(gene_set.id)] = gene_set
+
+        # show export for gene pathways
+        result = Stemformatics_Job.write_gene_pathways_export_gene_set_annotation(gene_pathways_export,dict_pathway,dict_gene_set_details,gene_set_counts,genes_in_gene_set_count,total_number_genes)
