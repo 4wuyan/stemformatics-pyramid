@@ -295,9 +295,12 @@ class GenesController(BaseController):
         c.publish_gene_set_email_address = Stemformatics_Auth.get_publish_gene_set_email_address()
         return self.deprecated_pylons_data_for_view
 
-    #---------------------NOT MIGRATED--------------------------------
-    def gene_set_view(self,id):
-        gene_set_id = int(id)
+    @action(renderer="templates/workbench/gene_set_view.mako")
+    def gene_set_view(self):
+        c = self.request.c
+        request = self.request
+
+        gene_set_id = int(self.request.matchdict['id'])
 
         updated_gene_set_description  = request.params.get('description')
 
@@ -327,11 +330,12 @@ class GenesController(BaseController):
 
 
         c.result = resultGeneSetData
+        print(c.result)
         c.gene_set = resultGeneSet
         c.db_id = resultGeneSet.db_id
         c.message = request.params.get('message')
         Stemformatics_Auth.set_smart_redirect(h.url('/workbench/gene_set_view/'+str(gene_set_id)))
-        return render('workbench/gene_set_view.mako')
+        return self.deprecated_pylons_data_for_view
 
     @Stemformatics_Auth.authorise(db)
     def gene_set_bulk_import_manager(self): #CRITICAL-4

@@ -56,6 +56,7 @@ def main(global_config, **settings):
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
     config.add_handler("genes","/genes/{action}",handler=GenesController)
+    config.add_handler("genes_withID","/genes/{action}/{id}",handler=GenesController)
     config.add_handler("main","/main/{action}",handler=MainController)
     config.add_handler("api","/api/{action}",handler=ApiController)
     config.add_handler("datasets","/datasets/{action}",handler=DatasetsController)
