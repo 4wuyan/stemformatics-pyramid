@@ -330,7 +330,10 @@ class GenesController(BaseController):
 
 
         c.result = resultGeneSetData
-        print(c.result)
+        for genes in c.result:
+            genes.gene_id = genes.stemformatics_gene_set_items_gene_id
+            genes.id = genes.stemformatics_gene_set_items_id
+
         c.gene_set = resultGeneSet
         c.db_id = resultGeneSet.db_id
         c.message = request.params.get('message')

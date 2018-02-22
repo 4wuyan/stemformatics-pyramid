@@ -133,9 +133,9 @@ endif
                                 <%
                                     name = genes.associated_gene_name
                                     aliases = genes.associated_gene_synonym
-                                    ensemblID = genes.stemformatics_gene_set_items_gene_id
+                                    ensemblID = genes.gene_id
                                     description = genes.description
-                                    gene_set_list_id = genes.stemformatics_gene_set_items_id
+                                    gene_set_list_id = genes.id
                                 %>
 
 
