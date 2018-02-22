@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 
 from S4M_pyramid.lib.deprecated_pylons_globals import config,url,magic_globals
 from S4M_pyramid.model.stemformatics import Stemformatics_Dataset,Stemformatics_Gene_Set
+from S4M_pyramid.lib.deprecated_pylons_globals import app_globals as g
 import formencode.validators as fe
 import os, subprocess
 import psycopg2

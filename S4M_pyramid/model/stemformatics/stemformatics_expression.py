@@ -14,6 +14,8 @@ import psycopg2,psycopg2.extras, pickle
 
 # Task #500 - wouldn't work otherwise
 from S4M_pyramid.model.stemformatics.stemformatics_probe import *
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals
+
 
 # Task#465 x PLATFORM
 #CRITICAL-6
@@ -702,6 +704,8 @@ class Stemformatics_Expression(object):
                     gct_header +="\t"+replicate_group_id
             gct_header +="\n"
         else:
+            magic_globals.fetch()
+            c = magic_globals.c
             gct_header +="\tIssue with finding chip_ids. Please contact the "+c.site_name+" team.\n"
         return gct_header
 
@@ -1362,7 +1366,7 @@ class Stemformatics_Expression(object):
 
         if expression_type == 'yugene':
             x_platform_base_dir = config['x_platform_base_dir']
-            # yugene redis
+            # yugene redis #redis_initialise_yugene and redis_server not defined
             cmd = redis_initialise_yugene + " " + redis_server + " " + x_platform_base_dir + " " + str(ds_id)
             p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
             output = p.stdout.read()

@@ -18,8 +18,10 @@ import S4M_pyramid.lib.helpers as h
 import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
-from S4M_pyramid.lib.deprecated_pylons_globals import config
+from S4M_pyramid.lib.deprecated_pylons_globals import config,app_globals as g
+from S4M_pyramid.lib.helpers import url
 #from S4M_pyramid.lib.state import *
+from S4M_pyramid.model.stemformatics import Stemformatics_Admin
 from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
 #from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
 
@@ -530,7 +532,7 @@ All functions have a try that will return None if errors are found
                 temp_result_dict[ds_id]['showReportOnDatasetSummaryPage'] = sorted(hosted_reports_dict.items())
                 temp_result_dict[ds_id]['ShowExternalLinksOnDatasetSummaryPage'] = sorted(external_analysis_links_dict.items())
                 temp_result_dict[ds_id]['ShowPCALinksOnDatasetSummaryPage'] = sorted(pca_links_dict.items())
-                temp_result_dict[ds_id]['has_data'] = ds_row.has_data
+                temp_result_dict[ds_id]['has_data'] = ds_row.has_data #ds_row is not defined before
             except:
                 pass # when no ds_id found (eg. jjjj) this will be executed
             """
@@ -796,7 +798,7 @@ All functions have a try that will return None if errors are found
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
             if dataset_status == "Unavailable":
                 continue
-            if dataset_status == "Limited" and show_limited == False:
+            if dataset_status == "Limited" and show_limited == False:#show_limited is not defined before
                 continue
 
             ds_mt_result = {}
@@ -2595,7 +2597,7 @@ All functions have a try that will return None if errors are found
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
             if dataset_status == "Unavailable":
                 continue
-            if dataset_status == "Limited" and show_limited == False:
+            if dataset_status == "Limited" and show_limited == False:# show_limited not defined
                 continue
 
             ds_mt_result = {}
@@ -3350,7 +3352,7 @@ All functions have a try that will return None if errors are found
             for line in f:
                 columns = line.split() # split line into columns
                 if len(columns) == 1:
-                    probes.append(column[0])   # column 1
+                    probes.append(columns[0])   # column 1
         cumulative_value_keys = []
         gct_value_keys = []
         for probe in probes:
