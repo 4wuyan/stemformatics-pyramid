@@ -23,9 +23,9 @@ class MainController(BaseController):
         result = Stemformatics_Admin.health_check(db)
         return result
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/tests.mako')
     def tests(self):
-        return render('tests.mako')
+        return self.deprecated_pylons_data_for_view
 
     def suggest_dataset(self):
         redirect(config['agile_org_base_url']+'datasets/external_add')
