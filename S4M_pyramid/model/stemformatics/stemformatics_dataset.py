@@ -25,7 +25,7 @@ from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Ad
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob#urllib2
+import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob
 
 from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
 import urllib.request
