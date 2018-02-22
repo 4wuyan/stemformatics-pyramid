@@ -251,12 +251,12 @@ class Stemformatics_Gene_Set(object):
             result = join1.filter(gsi.id==gene_set_item_id).one()
 
             if result is None:
-                raise Error
+                raise Exception # raise Error
                 return None
 
             # check that this user owns this gene_set record
             if result.uid != uid:
-                raise Error
+                raise Exception # raise Error
                 return None
 
             # save gene_set_id
