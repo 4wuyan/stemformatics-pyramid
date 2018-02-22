@@ -10,7 +10,7 @@ from pyramid.renderers import render_to_response
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth,Stemformatics_Dataset,db_deprecated_pylons_orm as db
 
 class ProjectsController(BaseController):
-    @action(renderer="templates/projects/mcri.mako")
+    #@action(renderer="templates/projects/mcri.mako")
     def mcri(self):
         # Just keep this under our hat for now - too early to show them and finalise 16/04/2015
         return redirect(url(controller='contents', action='index'), code=404)
@@ -40,14 +40,14 @@ class ProjectsController(BaseController):
         c.header = 'leukomics'
         return self.deprecated_pylons_data_for_view
 
-    @action(renderer="templates/projects/leukomics.mako") 
+    @action(renderer="templates/projects/leukomics.mako")
     def leukomics_publications(self):
         c = self.request.c
         c.title = c.site_name+" - LEUKomics"
         c.header = 'leukomics'
         return self.deprecated_pylons_data_for_view
-    
-    @action(renderer="templates/projects/project_grandiose.mako") 
+
+    @action(renderer="templates/projects/project_grandiose.mako")
     def project_grandiose(self):
         c = self.request.c
         ds_id = 6368
