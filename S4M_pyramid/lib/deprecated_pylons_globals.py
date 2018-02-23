@@ -7,6 +7,8 @@ class tmpl_context:
 
 # https://docs.galaxyproject.org/en/master/_modules/routes/util.html
 class UrlGenerator(object):
+    def __init__(self):
+        self.special_rules = {}
     def __call__(self, *args, **kwargs):
         self.request = pyramid.threadlocal.get_current_request()
         is_qualified = kwargs.pop('qualified', False)
@@ -48,8 +50,12 @@ class UrlGenerator(object):
         if token_num > 2:
             id_ = tokens[2]
         routes_dict = {'controller':controller, 'action':action, 'id':id_}
+
+        path_info = self.request.path_info
+        if path_info in self.special_rules:
+            routes_dict.update(self.special_rules[path_info])
         self.environ['pylons.routes_dict'] = routes_dict
-        request.urlvars.update(routes_dict)
+        self.request.urlvars.update(routes_dict)
     def set_request(self, request):
         self.request = request
 

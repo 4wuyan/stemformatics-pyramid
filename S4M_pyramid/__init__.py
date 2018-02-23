@@ -30,25 +30,25 @@ def main(global_config, **settings):
     # the routing order is consistent with the order in pylons project
 
     # Custom routes are placed first
-    redirect_shortcut(config, '/project_grandiose', '/projects/project_grandiose')
-    redirect_shortcut(config, '/leukomics', '/projects/leukomics')
-    redirect_shortcut(config, '/', '/contents/index')
-    redirect_shortcut(config, '/hamlet/index', '/contents/removal_of_hamlet')
-    redirect_shortcut(config, '/tests', '/main/tests')
-    redirect_shortcut(config, '/genes', '/genes/search')
-    redirect_shortcut(config, '/genes/', '/genes/search')
-    redirect_shortcut(config, '/genes/summary', '/expressions/yugene_graph')
-    redirect_shortcut(config, '/workbench/gene_set_index', '/genes/gene_set_index')
-    redirect_shortcut(config, '/workbench/public_gene_set_index', '/genes/public_gene_set_index')
-    redirect_shortcut(config, '/workbench/gene_set_view/{id}', '/genes/gene_set_view/{id}')
-    redirect_shortcut(config, '/workbench/gene_set_bulk_import_manager', '/genes/gene_set_bulk_import_manager')
-    redirect_shortcut(config, '/workbench/merge_gene_sets', '/genes/merge_gene_sets')
-    redirect_shortcut(config, '/admin/check_redis_consistency_for_datasets', '/api/check_redis_consistency_for_datasets')
-    redirect_shortcut(config, '/workbench/histogram_wizard', '/expressions/histogram_wizard')
-    redirect_shortcut(config, '/expressions', '/contents/index')
-    redirect_shortcut(config, '/expressions/', '/contents/index')
-    redirect_shortcut(config, '/datasets', '/datasets/search')
-    redirect_shortcut(config, '/datasets/', '/datasets/search')
+    special_routing(config, '/project_grandiose', controller='projects', action='project_grandiose')
+    special_routing(config, '/leukomics', controller='projects', action='leukomics')
+    special_routing(config, '/', controller='contents', action='index')
+    special_routing(config, '/hamlet/index', controller='contents', action='removal_of_hamlet')
+    special_routing(config, '/tests', controller='main', action='tests')
+    special_routing(config, '/genes', controller='genes', action='search')
+    special_routing(config, '/genes/', controller='genes', action='search')
+    special_routing(config, '/genes/summary', controller='expressions', action='yugene_graph')
+    special_routing(config, '/workbench/gene_set_index', controller='genes', action='gene_set_index')
+    special_routing(config, '/workbench/public_gene_set_index', controller='genes', action='public_gene_set_index')
+    special_routing(config, '/workbench/gene_set_view/{id}', controller='genes', action='gene_set_view')
+    special_routing(config, '/workbench/gene_set_bulk_import_manager', controller='genes', action='gene_set_bulk_import_manager')
+    special_routing(config, '/workbench/merge_gene_sets', controller='genes', action='merge_gene_sets')
+    special_routing(config, '/admin/check_redis_consistency_for_datasets', controller='api', action='check_redis_consistency_for_datasets')
+    special_routing(config, '/workbench/histogram_wizard', controller='expressions', action='histogram_wizard')
+    special_routing(config, '/expressions', controller='contents', action='index')
+    special_routing(config, '/expressions/', controller='contents', action='index')
+    special_routing(config, '/datasets', controller='datasets', action='search')
+    special_routing(config, '/datasets/', controller='datasets', action='search')
 
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
@@ -106,15 +106,22 @@ def setup_database_connection(settings):
     redis_interface_for_pickle.lazy_init(unix_socket_path = config['redis_server'])
     #---------------------------------------------
 
-def redirect_shortcut(config, old_path_pattern, new_path_pattern):
-    def redirect_view(request):
-        path = new_path_pattern.format(**request.matchdict)
-        if request.query_string:
-            path += '?' + request.query_string
-        return HTTPFound(location = path)
-    route_name = 'route_name for ' + old_path_pattern.format(controller='controller', action='action', id='id')
-    config.add_route(route_name, old_path_pattern)
-    config.add_view(redirect_view, route_name=route_name)
+from S4M_pyramid.lib.deprecated_pylons_globals import url
+def special_routing(config, path, **kwargs):
+    controller = kwargs.get('controller')
+    action = kwargs.get('action')
+    controller_pointer = eval(controller.capitalize() + 'Controller')
+
+    route_name = 'route_name for ' + path.format(controller='controller', action='action', id='id')
+    config.add_handler(route_name, path, handler=controller_pointer, action=action)
+
+    '''
+    The code below makes sure things like
+    url.environ['pylons.routes_dict']['controller']
+    url.environ['pylons.routes_dict']['action']
+    get correct values
+    '''
+    url.special_rules[path] = kwargs
 
 def config_static_views(config):
     config.add_static_view(name='static_views', path='public')
