@@ -9,8 +9,7 @@ log = logging.getLogger(__name__)
 
 import re
 from S4M_pyramid.model import redis_interface_normal as r_server
-import datetime
-from datetime import timedelta
+from datetime import timedelta, datetime
 import os
 
 from sqlalchemy import or_, and_, desc
@@ -243,14 +242,15 @@ class Stemformatics_Gene_Set(object):
 
     @staticmethod
     def delete_gene_set_item(db,uid,gene_set_item_id): #CRITICAL-2
-        try:
+        #try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
-            gsi = db.gene_set_items
+            gsi = db.with_labels(db.gene_set_items)
+            print(gsi.all())
 
             # first find the gene_set_item_id and the gene_set record
-            join1 = db.join(gsi,gs,gsi.gene_set_id==gs.id)
-            result = join1.filter(gsi.id==gene_set_item_id).one()
+            join1 = db.join(gsi,gs,gsi.stemformatics_gene_set_items_gene_set_id==gs.id)
+            result = join1.filter(gsi.stemformatics_gene_set_items_id==gene_set_item_id).one()
 
             if result is None:
                 raise Exception # raise Error
@@ -262,9 +262,11 @@ class Stemformatics_Gene_Set(object):
                 return None
 
             # save gene_set_id
+            result.gene_set_id = result.stemformatics_gene_set_items_gene_set_id
             gene_set_id = result.gene_set_id
 
             # delete gene_set_item
+            gsi = db.gene_set_items
             gsi.filter(gsi.id==gene_set_item_id).delete()
 
             if result is None:
@@ -275,8 +277,8 @@ class Stemformatics_Gene_Set(object):
 
             # return gene_set_id
             return gene_set_id
-        except:
-            return None
+        #except:
+        #    return None
 
     @staticmethod
     def add_gene_to_set(db,uid,gene_set_id,db_id,gene): #CRITICAL-2
