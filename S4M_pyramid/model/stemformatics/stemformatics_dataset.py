@@ -1943,7 +1943,7 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def write_cls_file(db,ds_id,uid): #CRITICAL-6
         ds_id = int(ds_id)
-        pylons.app_globals._push_object(config['pylons.app_globals'])
+        # pylons.app_globals._push_object(config['pylons.app_globals'])
         redis_server = config['redis_server']
         cls_base_dir = config['DatasetCLSFiles']
         ds_result = Stemformatics_Dataset.getExpressionDatasetMetadata(db,ds_id,uid,True)
@@ -2140,7 +2140,7 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def get_sample_chip_ids_in_order(db,chip_type,chip_ids,sort_by,ds_id):   #CRITICAL-2
         ds_id = int(ds_id)
-        pylons.app_globals._push_object(config['pylons.app_globals'])
+        # pylons.app_globals._push_object(config['pylons.app_globals'])
         temp_result_dict = {}
         map_replicate_group_id_to_chip_id = {}
         for chip_id in chip_ids:

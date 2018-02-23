@@ -1618,6 +1618,7 @@ class WorkbenchController(BaseController):
     def download_gct_file_for_gene_set_wizard(self): #CRITICAL-5
         c = self.request.c
         request = self.request
+        response = self.request.response
 
         c.analysis = 6
 
@@ -1692,9 +1693,7 @@ class WorkbenchController(BaseController):
             download_gct_filename = 'download_expression_profile_gene_set_'+str(gene_set_id)+'_dataset_'+handle+'.txt'
             options = ['no_gct_header']
 
-
         read_gct_file_name = self.DatasetGCTFiles + 'dataset'+str(dataset_id)+'.gct'
-
 
         ref_type = 'gene_set_id'
         ref_id = gene_set_id
@@ -1705,9 +1704,8 @@ class WorkbenchController(BaseController):
         stemformatics_version = config['stemformatics_version']
         response.headers['Content-Disposition'] = 'attachment;filename='+download_gct_filename
         response.charset= "utf8"
-
-        return gct_text
-
+        response.text = gct_text
+        return response
 
 
     #---------------------NOT MIGRATED--------------------------------
