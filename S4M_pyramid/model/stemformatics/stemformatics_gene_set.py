@@ -242,11 +242,10 @@ class Stemformatics_Gene_Set(object):
 
     @staticmethod
     def delete_gene_set_item(db,uid,gene_set_item_id): #CRITICAL-2
-        #try:
+        try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
             gsi = db.with_labels(db.gene_set_items)
-            print(gsi.all())
 
             # first find the gene_set_item_id and the gene_set record
             join1 = db.join(gsi,gs,gsi.stemformatics_gene_set_items_gene_set_id==gs.id)
@@ -266,7 +265,7 @@ class Stemformatics_Gene_Set(object):
             gene_set_id = result.gene_set_id
 
             # delete gene_set_item
-            gsi = db.gene_set_items
+            gsi = db.gene_set_items # you can't delete when column names are wrapped with labels
             gsi.filter(gsi.id==gene_set_item_id).delete()
 
             if result is None:
@@ -277,8 +276,8 @@ class Stemformatics_Gene_Set(object):
 
             # return gene_set_id
             return gene_set_id
-        #except:
-        #    return None
+        except:
+            return None
 
     @staticmethod
     def add_gene_to_set(db,uid,gene_set_id,db_id,gene): #CRITICAL-2
