@@ -110,7 +110,9 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise()
     #---------------------NOT MIGRATED--------------------------------
-    def delete_gene_from_set(self,id):
+    def delete_gene_from_set(self):
+        c = self.request.c
+        id = self.request.matchdict['id']
         gene_set_item_id = int(id)
 
         result = Stemformatics_Gene_Set.delete_gene_set_item(db,c.uid,gene_set_item_id)
@@ -162,7 +164,9 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise()
     #---------------------NOT MIGRATED--------------------------------
-    def gene_set_delete(self,id):
+    def gene_set_delete(self):
+        c = self.request.c
+        id = self.request.matchdict['id']
         gene_set_id = int(id)
 
         result = Stemformatics_Gene_Set.delete_gene_set(db,c.uid,gene_set_id)
