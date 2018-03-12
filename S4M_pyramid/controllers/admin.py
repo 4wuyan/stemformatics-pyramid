@@ -147,8 +147,6 @@ class AdminController(BaseController):
 
         return result.replace("\n","<br/>")
 
-
-
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
     def confirm(self):
@@ -201,7 +199,7 @@ class AdminController(BaseController):
         cmd = redis_initialise + " " + redis_server + " " + x_platform_base_dir + " " + str(ds_id)
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
         output = p.stdout.read()
-
+        output = output.decode('utf-8')
         return cmd + "<br><br>" + output.replace("\n","<br/>") + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
 
