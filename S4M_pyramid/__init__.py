@@ -9,6 +9,7 @@ from .controllers.statistics import StatisticsController
 from .controllers.genes import GenesController
 from .controllers.main import MainController
 from .controllers.api import ApiController
+from .controllers.admin import AdminController
 from .controllers.datasets import DatasetsController
 from .controllers.msc_signature import MscSignatureController
 from .controllers.projects import ProjectsController
@@ -70,6 +71,8 @@ def main(global_config, **settings):
     config.add_handler("projects","/projects/{action}",handler=ProjectsController)
     config.add_handler("ensembl_upgrade","/ensembl_upgrade/{action}",handler=EnsemblUpgradeController)
     config.add_handler("ensembl_upgrade_withID","/ensembl_upgrade/{action}/{id}",handler=EnsemblUpgradeController)
+    config.add_handler("admin","/admin/{action}",handler=AdminController)
+    config.add_handler("admin_withID","/admin/{action}/{id}",handler=AdminController)    
 
     return config.make_wsgi_app()
 
