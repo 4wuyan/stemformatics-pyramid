@@ -718,3 +718,20 @@ class ApiController(BaseController):
         return_str = Stemformatics_Expression.check_redis_consistency_for_datasets(days,num_of_datasets,reset_redis_required,db)
 
         return return_str
+
+    #---------------------NOT MIGRATED--------------------------------
+    def check_dataset_availability_for_user(self):
+        ds_id = request.params.get('ds_id')
+        user_and_pwd_md5 = request.params.get('user_and_pwd_md5')
+        username = request.params.get('username').replace(r"\100","@")
+
+        if username == "guest":
+            user_id = 0
+        else:
+            cookie_user = Stemformatics_Auth.check_stay_signed_in_md5(db,username,user_and_pwd_md5)
+            user_id = cookie_user.uid
+
+        result = Stemformatics_Dataset.check_dataset_availability(db,user_id,ds_id)
+        result = str(result)
+
+        return result
