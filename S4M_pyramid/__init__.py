@@ -76,6 +76,7 @@ def main(global_config, **settings):
     config.add_handler("admin", "/admin/{action}", handler=AdminController)
     config.add_handler("admin_withID", "/admin/{action}/{id}", handler=AdminController)
     config.add_handler("probes","/probes/{action}",handler=ProbesController)
+    return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
     from .lib.deprecated_pylons_globals import app_globals as g, config

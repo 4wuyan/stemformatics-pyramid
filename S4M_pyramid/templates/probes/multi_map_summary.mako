@@ -1,4 +1,3 @@
-##<%inherit file="/default.html"/>
 <%inherit file="../default.html"/>
 
 <%def name="includes()">
