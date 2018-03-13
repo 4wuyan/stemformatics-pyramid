@@ -77,12 +77,6 @@ def main(global_config, **settings):
     config.add_handler("admin_withID", "/admin/{action}/{id}", handler=AdminController)
     config.add_handler("probes","/probes/{action}",handler=ProbesController)
 
-
-
-   
-
-
-
 def setup_deprecated_pylons_globals(settings):
     from .lib.deprecated_pylons_globals import app_globals as g, config
     from .model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
