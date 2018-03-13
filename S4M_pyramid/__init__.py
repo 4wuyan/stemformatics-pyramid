@@ -78,8 +78,6 @@ def main(global_config, **settings):
 
 
 
-    return config.make_wsgi_app()
-
 def setup_deprecated_pylons_globals(settings):
     from .lib.deprecated_pylons_globals import app_globals as g, config
     from .model.stemformatics import Stemformatics_Expression, Stemformatics_Admin
