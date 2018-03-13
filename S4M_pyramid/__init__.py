@@ -72,9 +72,14 @@ def main(global_config, **settings):
     config.add_handler("projects","/projects/{action}",handler=ProjectsController)
     config.add_handler("ensembl_upgrade","/ensembl_upgrade/{action}",handler=EnsemblUpgradeController)
     config.add_handler("ensembl_upgrade_withID","/ensembl_upgrade/{action}/{id}",handler=EnsemblUpgradeController)
+
     config.add_handler("admin", "/admin/{action}", handler=AdminController)
     config.add_handler("admin_withID", "/admin/{action}/{id}", handler=AdminController)
     config.add_handler("probes","/probes/{action}",handler=ProbesController)
+
+
+
+   
 
 
 
