@@ -13,6 +13,7 @@ from .controllers.datasets import DatasetsController
 from .controllers.msc_signature import MscSignatureController
 from .controllers.projects import ProjectsController
 from .controllers.ensembl_upgrade import EnsemblUpgradeController
+from .controllers.probes import ProbesController
 
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
@@ -70,6 +71,7 @@ def main(global_config, **settings):
     config.add_handler("projects","/projects/{action}",handler=ProjectsController)
     config.add_handler("ensembl_upgrade","/ensembl_upgrade/{action}",handler=EnsemblUpgradeController)
     config.add_handler("ensembl_upgrade_withID","/ensembl_upgrade/{action}/{id}",handler=EnsemblUpgradeController)
+    config.add_handler("probes","/probes/{action}",handler=ProbesController)
 
     return config.make_wsgi_app()
 

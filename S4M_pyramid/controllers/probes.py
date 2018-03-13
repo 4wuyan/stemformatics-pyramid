@@ -1,43 +1,54 @@
 #TODO-1
 import logging
+from pyramid_handlers import action
+#from pylons import request, response, session, tmpl_context as c
+#from pylons.controllers.util import abort, redirect
+#from pylons import url
 
-from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect
-from pylons import url
+#from pylons import request, response, session, url, tmpl_context as c
+#from pylons.controllers.util import abort, redirect
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Probe, Stemformatics_Gene
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression
 
-from guide.lib.base import BaseController, render
+#from guide.lib.base import BaseController, render
 
-from sqlalchemy import or_, and_, desc
+# from sqlalchemy import or_, and_, desc
 
-from sqlalchemy.exceptions import *
+# from sqlalchemy.exceptions import *
 
 from paste.deploy.converters import asbool
 
 import json
 
 #for result data only
-import math
+# import math
 
 import logging
 log = logging.getLogger(__name__)
 
 # Live querying
-from guide.model.stemformatics import *
+# from guide.model.stemformatics import *
 import re
 
 
-from pylons import config
+#from pylons import config
 
-connection = db.engine.connect()
+# connection = db.engine.connect()
 
 
 class ProbesController(BaseController):
     __name__ = 'ProbesController'
 
     #---------------------NOT MIGRATED--------------------------------
-    def __before__(self):
+    #def __before__(self):
 
-        super(ProbesController, self).__before__ ()
+        #super(ProbesController, self).__before__ ()
+    def __init__(self,request):
+        super().__init__(request)
+        c = self.request.c
         self.human_db = config['human_db']
         self.mouse_db = config['mouse_db']
         c.human_db = self.human_db
@@ -52,22 +63,25 @@ class ProbesController(BaseController):
 
     # Removed all ajax calls for getting gene search. Still using ajax for getting graph data
     #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/probes/multi_map_summary.mako')
     def multi_map_summary(self):
-
-        probe_id = request.params.get('probe_id')
-        ds_id = request.params.get('ds_id')
-        db_id = request.params.get('db_id')
+        c = self.request.c
+        probe_id = self.request.params.get('probe_id')
+        ds_id = self.request.params.get('ds_id')
+        db_id = self.request.params.get('db_id')
 
         try:
             ds_id = int(ds_id)
         except:
-            redirect(url(controller='contents', action='index'), code=404)
+            #redirect(url(controller='contents', action='index'), code=404)
+            return redirect(url(controller='contents', action='index'), code=404)
 
 
         unique_genes = Stemformatics_Probe.get_genes_for_probe([probe_id],db_id,ds_id)
 
         if unique_genes is None or unique_genes == []:
-            redirect(url(controller='contents', action='index'), code=404)
+            # redirect(url(controller='contents', action='index'), code=404)
+            return redirect(url(controller='contents', action='index'), code=404)
 
         if len(unique_genes) > 1:
             c.message = "This probe maps to multiple Ensembl identifiers ("
@@ -95,7 +109,8 @@ class ProbesController(BaseController):
         c.db_id = db_id
         c.probe_id = probe_id
 
-        return render('probes/multi_map_summary.mako')
+        # return render('probes/multi_map_summary.mako')
+        return self.deprecated_pylons_data_for_view
 
 
 
