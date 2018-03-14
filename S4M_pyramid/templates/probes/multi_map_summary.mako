@@ -1,4 +1,4 @@
-<%inherit file="/default.html"/>\
+<%inherit file="../default.html"/>
 
 <%def name="includes()">
     <script type="text/javascript" src="${h.url('/js/probes/multi_map_summary.js')}"></script>
