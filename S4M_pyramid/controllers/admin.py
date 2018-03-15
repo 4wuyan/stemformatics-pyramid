@@ -1,4 +1,7 @@
 import logging, redis
+
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
+
 log = logging.getLogger(__name__)
 from subprocess import Popen, PIPE, STDOUT
 from S4M_pyramid.model import twitter
@@ -7,7 +10,7 @@ from pyramid_handlers import action
 # from pylons import request, response, session, url, tmpl_context as c
 # from pylons.controllers.util import abort, redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
-from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression
 
@@ -48,7 +51,7 @@ class AdminController(BaseController):
                     # if only one number in audit_reports_uid_list, then it will be treated as an integer
                     if isinstance(uids,int):
                         if c.uid != uids:
-                            redirect(url(controller='contents', action='index'), code=404)
+                            return redirect(url(controller='contents', action='index'), code=404)
                     else:
                         delimiter = config['delimiter']
                         uid_list = uids.split(delimiter)
@@ -668,7 +671,7 @@ class AdminController(BaseController):
         return "Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="string")
     def triggers_for_change_in_user(self):
         Stemformatics_Auth.triggers_for_change_in_user(db)
 
@@ -1111,10 +1114,11 @@ class AdminController(BaseController):
         return "<br><br>" + result + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/admin/config_index.mako')
     def config_index(self):
+        c = self.request.c
         c.configs = Stemformatics_Admin.get_all_configs()
-        return render('admin/config_index.mako')
+        return self.deprecated_pylons_data_for_view
 
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
