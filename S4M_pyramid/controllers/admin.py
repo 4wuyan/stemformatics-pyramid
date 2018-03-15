@@ -66,7 +66,7 @@ class AdminController(BaseController):
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
     def read_logfile(self):
-        number  = self.request.params.get('number_of_lines')
+        number  = request.params.get('number_of_lines')
         if number is None:
             number = 500
         logfile= Stemformatics_Admin.get_logfile(number)
@@ -88,11 +88,10 @@ class AdminController(BaseController):
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
     def troubleshoot_geg(self):
-        c = self.request.c
-        c.ds_id = ds_id = self.request.params.get('ds_id')
-        output = self.request.params.get('output')
-        expiry_seconds = self.request.params.get('expiry_seconds')
-        delete_keys = self.request.params.get('delete')
+        c.ds_id = ds_id = request.params.get('ds_id')
+        output = request.params.get('output')
+        expiry_seconds = request.params.get('expiry_seconds')
+        delete_keys = request.params.get('delete')
         if expiry_seconds is not None:
             try:
                 days = int(expiry_seconds)/86400
