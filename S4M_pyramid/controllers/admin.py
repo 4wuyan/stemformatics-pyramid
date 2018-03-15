@@ -1,4 +1,7 @@
 import logging, redis
+
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
+
 log = logging.getLogger(__name__)
 from subprocess import Popen, PIPE, STDOUT
 from S4M_pyramid.model import twitter
@@ -7,7 +10,7 @@ from pyramid_handlers import action
 # from pylons import request, response, session, url, tmpl_context as c
 # from pylons.controllers.util import abort, redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
-from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression
 
@@ -48,7 +51,7 @@ class AdminController(BaseController):
                     # if only one number in audit_reports_uid_list, then it will be treated as an integer
                     if isinstance(uids,int):
                         if c.uid != uids:
-                            redirect(url(controller='contents', action='index'), code=404)
+                            return redirect(url(controller='contents', action='index'), code=404)
                     else:
                         delimiter = config['delimiter']
                         uid_list = uids.split(delimiter)
@@ -63,7 +66,7 @@ class AdminController(BaseController):
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
     def read_logfile(self):
-        number  = request.params.get('number_of_lines')
+        number  = self.request.params.get('number_of_lines')
         if number is None:
             number = 500
         logfile= Stemformatics_Admin.get_logfile(number)
@@ -85,10 +88,11 @@ class AdminController(BaseController):
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
     def troubleshoot_geg(self):
-        c.ds_id = ds_id = request.params.get('ds_id')
-        output = request.params.get('output')
-        expiry_seconds = request.params.get('expiry_seconds')
-        delete_keys = request.params.get('delete')
+        c = self.request.c
+        c.ds_id = ds_id = self.request.params.get('ds_id')
+        output = self.request.params.get('output')
+        expiry_seconds = self.request.params.get('expiry_seconds')
+        delete_keys = self.request.params.get('delete')
         if expiry_seconds is not None:
             try:
                 days = int(expiry_seconds)/86400
@@ -1112,9 +1116,12 @@ class AdminController(BaseController):
 
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/admin/config_index.mako')
     def config_index(self):
+        c = self.request.c
         c.configs = Stemformatics_Admin.get_all_configs()
-        return render('admin/config_index.mako')
+        # return render('admin/config_index.mako')
+        return self.deprecated_pylons_data_for_view
 
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
