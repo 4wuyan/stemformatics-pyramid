@@ -672,7 +672,7 @@ class AdminController(BaseController):
         return "Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="string")
     def triggers_for_change_in_user(self):
         Stemformatics_Auth.triggers_for_change_in_user(db)
 
@@ -1115,12 +1115,10 @@ class AdminController(BaseController):
         return "<br><br>" + result + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
     @action(renderer='templates/admin/config_index.mako')
     def config_index(self):
         c = self.request.c
         c.configs = Stemformatics_Admin.get_all_configs()
-        # return render('admin/config_index.mako')
         return self.deprecated_pylons_data_for_view
 
     @Stemformatics_Auth.authorise(db)
