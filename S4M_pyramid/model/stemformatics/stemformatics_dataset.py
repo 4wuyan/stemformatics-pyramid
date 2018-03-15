@@ -308,20 +308,9 @@ All functions have a try that will return None if errors are found
         choose_datasets = {}
 
         if db_id!= None:
-            # fetch all matching species db_id's
-            conn_string = config['psycopg2_conn_string']
-            conn = psycopg2.connect(conn_string)
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cursor.execute("select an_database_id from annotation_databases where genome_version in (select genome_version from annotation_databases where an_database_id = %s)",(db_id,))
-            # retrieve the records from the database
-            result = cursor.fetchall()
-            cursor.close()
-            conn.close()
-
-            same_species_db_id_list = []
-            for row in result:
-                db_id_found = row[0]
-                same_species_db_id_list.append(db_id_found)
+            same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
+        else:
+            same_species_db_id_list = [db_id]
 
         for ds_id in temp_datasets:
             db = None
