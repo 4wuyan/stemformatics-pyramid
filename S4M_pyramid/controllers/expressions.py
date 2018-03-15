@@ -160,7 +160,12 @@ class ExpressionsController(BaseController):
             if result == "1":
                 ref_id = self._temp.ensemblID
         ref_id = ref_id.split(" ")
-        data = Stemformatics_Expression.get_expression_graph_data(ds_id,ref_id,ref_type,db_id)
+        species = Stemformatics_Dataset.returnSpecies(db_id)
+
+        current_ensembl_version_db_id = db_id
+        c.dataset_ensembl_version_db_id = dataset_ensembl_version_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+        data = Stemformatics_Expression.get_expression_graph_data(ds_id,ref_id,ref_type,db_id,dataset_ensembl_version_db_id,current_ensembl_version_db_id)
+
         if data == [] :
             data = None
             error_data = "Data Not found for Selected Parameters. Please choose different Parameters."
