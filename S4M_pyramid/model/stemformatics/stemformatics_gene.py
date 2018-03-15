@@ -1240,7 +1240,7 @@ class Stemformatics_Gene(object):
         genes_not_in_redis = []
         probe_list = []
         gene_mapping_redis = {}
-
+        # over her we can check for matching probe for all genes
         # first get the gene mapping from redis
         for gene in unique_gene_list:
             gene_mapping_redis[gene] = []
@@ -1356,14 +1356,10 @@ class Stemformatics_Gene(object):
             return gene_set_mapping_data_from_redis
         else:
             # get the mapping for gene_set_ids not in redis
-            chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            chip_type = Stemformatics_Dataset.getChipType(ds_id)
             for gene_set_id in gene_set_not_in_redis:
                 # it will be executed only once as we always have 1 gene_set_id in our list
-                gene_set_mapping_data = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
-                dict_of_probe_to_gene_id = gene_set_mapping_data[2]
-                probe_list = gene_set_mapping_data[0]
-
-                gene_set_mapping_data_from_database[gene_set_id] = dict_of_probe_to_gene_id.values()
+                gene_set_mapping_data_from_database[gene_set_id] = Stemformatics_Gene_Set.get_gene_set_items(gene_set_id)
 
                 # combine the database data with redis data
                 gene_set_mapping_data_from_redis[gene_set_id] = gene_set_mapping_data_from_database[gene_set_id]

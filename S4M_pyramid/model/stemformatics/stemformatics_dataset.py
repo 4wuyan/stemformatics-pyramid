@@ -307,6 +307,22 @@ All functions have a try that will return None if errors are found
         temp_datasets = json.loads(result)
         choose_datasets = {}
 
+        if db_id!= None:
+            # fetch all matching species db_id's
+            conn_string = config['psycopg2_conn_string']
+            conn = psycopg2.connect(conn_string)
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute("select an_database_id from annotation_databases where genome_version in (select genome_version from annotation_databases where an_database_id = %s)",(db_id,))
+            # retrieve the records from the database
+            result = cursor.fetchall()
+            cursor.close()
+            conn.close()
+
+            same_species_db_id_list = []
+            for row in result:
+                db_id_found = row[0]
+                same_species_db_id_list.append(db_id_found)
+
         for ds_id in temp_datasets:
             db = None
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
@@ -314,7 +330,7 @@ All functions have a try that will return None if errors are found
                 continue
             if dataset_status == "Limited" and show_limited == False:
                 continue
-            if temp_datasets[ds_id]['db_id'] != db_id and db_id != None:
+            if temp_datasets[ds_id]['db_id'] not in same_species_db_id_list and db_id != None:
                 continue
 
             choose_datasets[ds_id] = temp_datasets[ds_id]
