@@ -307,7 +307,6 @@ All functions have a try that will return None if errors are found
         temp_datasets = json.loads(result)
         choose_datasets = {}
 
-        dataset_organism_species = ''
         if db_id!= None:
             # fetch all matching species db_id's
             conn_string = config['psycopg2_conn_string']
@@ -324,7 +323,6 @@ All functions have a try that will return None if errors are found
                 db_id_found = row[0]
                 same_species_db_id_list.append(db_id_found)
 
-        # get genome_version from annotation_databases
         for ds_id in temp_datasets:
             db = None
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)

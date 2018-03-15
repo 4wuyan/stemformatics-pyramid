@@ -160,9 +160,9 @@ class ExpressionsController(BaseController):
             if result == "1":
                 ref_id = self._temp.ensemblID
         ref_id = ref_id.split(" ")
-        species = Stemformatics_Dataset.returnSpecies(db_id)
 
         current_ensembl_version_db_id = db_id
+
         c.dataset_ensembl_version_db_id = dataset_ensembl_version_db_id = Stemformatics_Dataset.get_db_id(ds_id)
         data = Stemformatics_Expression.get_expression_graph_data(ds_id,ref_id,ref_type,db_id,dataset_ensembl_version_db_id,current_ensembl_version_db_id)
 
@@ -677,10 +677,6 @@ class ExpressionsController(BaseController):
         request = self.request
         c.analysis = 3
         c.title = c.site_name + ' Analyses  - MultiGene Expression Graph Wizard'
-        #try: #this block is not in use
-        #    db_id = int(db_id)
-        #except:
-        #    db_id = None
         try:
             ds_id = datasetID = int(request.params.get('datasetID'))
         except:
@@ -726,7 +722,7 @@ class ExpressionsController(BaseController):
             c.url = h.url('/workbench/histogram_wizard?graphType=default&db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id))
             c.breadcrumbs = [[h.url('/workbench/index'), 'Analyses'], [h.url('/workbench/histogram_wizard'), 'MultiGene Expression Graph - Choose Gene List'], [h.url('/workbench/histogram_wizard?db_id=' + str(db_id) + '&gene_set_id=' + str(gene_set_id)), 'MultiGene Expression Graph - Choose Dataset (Step 2 of 2)']]
 
-            return render_to_response('S4M_Pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         c.dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db, ds_id, c.uid)
         c.probe_name = Stemformatics_Dataset.get_probe_name(ds_id)

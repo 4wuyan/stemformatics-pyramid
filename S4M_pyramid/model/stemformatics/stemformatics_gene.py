@@ -1356,7 +1356,7 @@ class Stemformatics_Gene(object):
             return gene_set_mapping_data_from_redis
         else:
             # get the mapping for gene_set_ids not in redis
-            chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            chip_type = Stemformatics_Dataset.getChipType(ds_id)
             for gene_set_id in gene_set_not_in_redis:
                 # it will be executed only once as we always have 1 gene_set_id in our list
                 gene_set_mapping_data_from_database[gene_set_id] = Stemformatics_Gene_Set.get_gene_set_items(gene_set_id)
