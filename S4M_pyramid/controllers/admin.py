@@ -10,7 +10,7 @@ from pyramid_handlers import action
 # from pylons import request, response, session, url, tmpl_context as c
 # from pylons.controllers.util import abort, redirect
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
-from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin
+from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin, Stemformatics_Audit
 from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression
 
@@ -157,14 +157,14 @@ class AdminController(BaseController):
 
     ''' This is to update the gct files '''
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
-    def setup_redis_gct(self,id):
+    @action(renderer="string")
+    def setup_redis_gct(self):
         try:
-            ds_id = int(id)
+            ds_id = self.request.matchdict['id']
         except:
             return "Error with this. Must be an integer"
 
-        if ds_id == 0:
+        if int(ds_id) == 0:
             return "Error with the dataset id. Cannot be 0"
 
         # python initialise.py localhost /var/www/pylons-data/SHARED/GCTFiles 0
@@ -172,13 +172,10 @@ class AdminController(BaseController):
         redis_server = config['redis_server']
         gct_base_dir = config['DatasetGCTFiles']
 
-
-
-        cmd = redis_initialise + " " + redis_server + " " + gct_base_dir + " " + str(ds_id)
+        cmd = redis_initialise + " " + redis_server + " " + gct_base_dir + " " + ds_id
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
-        output = p.stdout.read()
-
-        return cmd + "<br><br>" + output.replace("\n","<br/>") + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
+        output = p.stdout.read().decode('UTF-8')
+        return cmd + "<br><br>" + output.replace("\n", "<br/>") + "<br><br>Done! <a href='" + url('/admin/index') + "'>Now click to go back</a>"
 
     ''' This is to update the cumulative files '''
     @Stemformatics_Auth.authorise(db)
@@ -186,18 +183,17 @@ class AdminController(BaseController):
     def setup_redis_cumulative(self):
         try:
             ds_id = self.request.matchdict['id']
+
         except:
             return "Error with this. Must be an integer"
 
-        if ds_id == 0:
+        if int(ds_id) == 0:
             return "Error with the dataset id. Cannot be 0"
 
         # python initialise.py localhost /var/www/pylons-data/SHARED/CUMULATIVEFiles 0
         redis_initialise = config['redis_initialise_x_platform']
         redis_server = config['redis_server']
         x_platform_base_dir = config['x_platform_base_dir']
-
-
 
         cmd = redis_initialise + " " + redis_server + " " + x_platform_base_dir + " " + str(ds_id)
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
@@ -208,15 +204,23 @@ class AdminController(BaseController):
 
     ''' This is to add one new dataset '''
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
-    def setup_new_dataset(self,id):
-        ds_id = int(id)
+    @action(renderer="string")
+    def setup_new_dataset(self):
+        c = self.request.c
+        try:
+            ds_id = self.request.matchdict['id']
+        except:
+            return "Error with this. Must be an integer"
+
+        if int(ds_id) == 0:
+            return "Error with the dataset id. Cannot be 0"
 
         show_text = Stemformatics_Dataset.setup_new_dataset(db,ds_id)
 
         if ds_id != 0:
-            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
+            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
             result = Stemformatics_Audit.add_audit_log(audit_dict)
+        print(type(show_text))
         return show_text
 
 
