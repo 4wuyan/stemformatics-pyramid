@@ -220,7 +220,6 @@ class AdminController(BaseController):
         if ds_id != 0:
             audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
             result = Stemformatics_Audit.add_audit_log(audit_dict)
-        print(type(show_text))
         return show_text
 
 

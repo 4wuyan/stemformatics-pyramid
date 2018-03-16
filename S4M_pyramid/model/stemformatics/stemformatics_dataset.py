@@ -2065,8 +2065,6 @@ All functions have a try that will return None if errors are found
 
 
         Stemformatics_Auth.triggers_for_change_in_user(db)
-        # output = output.decode('utf-8')
-        # output2 = output2.decode('utf-8')
         show_text = cmd + "<br><br>" + output.replace("\n","<br/>") + cmd2 + "<br><br>" + output2.replace("\n","<br/>") + "<br><br> Including all_sample_metadata and triggers for change in dataset and change in user.<br><br>Done! <a href='"+('/admin/index')+"'>Now click to go back</a> or go to <a href='" + ('/datasets/summary?datasetID='+str(ds_id))+"'>the dataset summary</a>"
 
         return show_text
