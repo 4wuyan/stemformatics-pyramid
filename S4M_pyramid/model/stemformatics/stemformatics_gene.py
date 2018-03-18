@@ -345,8 +345,9 @@ class Stemformatics_Gene(object):
     """
     @staticmethod
     def get_probe_mappings_for_datasets(db_id,datasets_dict,ensemblID):
-        chip_type_probe_lists = {}
+        same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
 
+        chip_type_probe_lists = {}
 
         # get a list of chip_types and then get the mappping ids
         # then get all the probe details via feature_mappings
@@ -378,8 +379,8 @@ class Stemformatics_Gene(object):
 
 
         mapping_id_list = list(set(mapping_id_list))
-        sql = "select mapping_id,to_id from stemformatics.feature_mappings where db_id = %(db_id)s and from_type = 'Gene' and from_id = %(ensemblID)s and mapping_id = ANY (%(mapping_id_list)s) ;"
-        data = {"db_id":db_id,'ensemblID':ensemblID,'mapping_id_list':mapping_id_list}
+        sql = "select mapping_id,to_id from stemformatics.feature_mappings where db_id in %(db_id)s and from_type = 'Gene' and from_id = %(ensemblID)s and mapping_id = ANY (%(mapping_id_list)s) ;"
+        data = {"db_id":tuple(same_species_db_id_list),'ensemblID':ensemblID,'mapping_id_list':mapping_id_list}
         result = s4m_psycopg2._get_psycopg2_sql(sql,data)
 
         mapping_id_probe_list = {}

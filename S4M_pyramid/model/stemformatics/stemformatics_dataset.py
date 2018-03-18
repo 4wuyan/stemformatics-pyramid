@@ -308,20 +308,9 @@ All functions have a try that will return None if errors are found
         choose_datasets = {}
 
         if db_id!= None:
-            # fetch all matching species db_id's
-            conn_string = config['psycopg2_conn_string']
-            conn = psycopg2.connect(conn_string)
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cursor.execute("select an_database_id from annotation_databases where genome_version in (select genome_version from annotation_databases where an_database_id = %s)",(db_id,))
-            # retrieve the records from the database
-            result = cursor.fetchall()
-            cursor.close()
-            conn.close()
-
-            same_species_db_id_list = []
-            for row in result:
-                db_id_found = row[0]
-                same_species_db_id_list.append(db_id_found)
+            same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
+        else:
+            same_species_db_id_list = [db_id]
 
         for ds_id in temp_datasets:
             db = None
@@ -1537,11 +1526,12 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def get_all_x_platform_datasets_for_user(uid,db_id,role = 'normal'): #CRITICAL-2 #CRITICAL-3
+        same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
 
         # Cannot show yugene for more than one species. Therefore it is safe to always search on db_id
         if role == 'admin' or role == 'annotator':
-            sql = "select id,handle,chip_type from datasets where show_yugene = true and db_id = %(db_id)s;"
-            data = {"db_id":db_id}
+            sql = "select id,handle,chip_type from datasets where show_yugene = true and db_id in %(db_id)s;"
+            data = {"db_id":tuple(same_species_db_id_list)}
 
             result = s4m_psycopg2._get_psycopg2_sql(sql,data)
             dataset_dict = Stemformatics_Dataset._organise_yugene_datasets(result)
@@ -1570,12 +1560,13 @@ All functions have a try that will return None if errors are found
 
 
             if temp_list_of_ds_ids is not None  :
-                sql = "select id,handle,chip_type from datasets where show_yugene = true  and db_id = %(db_id)s and id = ANY (%(temp_list_of_ds_ids)s) ;"
-                data = {"db_id":db_id,'temp_list_of_ds_ids':temp_list_of_ds_ids}
+                sql = "select id,handle,chip_type from datasets where show_yugene = true  and db_id in %(db_id)s and id = ANY (%(temp_list_of_ds_ids)s) ;"
+                data = {"db_id":same_species_db_id_list,'temp_list_of_ds_ids':temp_list_of_ds_ids}
                 result = s4m_psycopg2._get_psycopg2_sql(sql,data)
                 dataset_dict = Stemformatics_Dataset._organise_yugene_datasets(result)
             else:
                 dataset_dict = {}
+
         return dataset_dict
 
 
@@ -3448,3 +3439,22 @@ All functions have a try that will return None if errors are found
         for ds_id in result_ds_list:
             delete_dataset.extend(ds_id)
         return delete_dataset
+
+    @staticmethod
+    def get_same_species_db_id_list(db_id):
+        # get all db_ids of same species
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("select an_database_id from annotation_databases where genome_version in (select genome_version from annotation_databases where an_database_id = %s)",(db_id,))
+        # retrieve the records from the database
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        same_species_db_id_list = []
+        for row in result:
+            db_id_found = row[0]
+            same_species_db_id_list.append(db_id_found)
+
+        return same_species_db_id_list
