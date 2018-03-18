@@ -341,7 +341,7 @@ class WorkbenchController(BaseController):
         remove_chip_ids  = request.params.get('remove_chip_ids')
 
         if remove_chip_ids is None:
-            chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            chip_type = Stemformatics_Dataset.getChipType(ds_id)
             c.chip_id_details = Stemformatics_Expression.return_sample_details(db,ds_id)
             sort_by = 'Sample Type'
             sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)

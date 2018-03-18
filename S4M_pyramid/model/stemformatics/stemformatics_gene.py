@@ -345,8 +345,9 @@ class Stemformatics_Gene(object):
     """
     @staticmethod
     def get_probe_mappings_for_datasets(db_id,datasets_dict,ensemblID):
-        chip_type_probe_lists = {}
+        same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
 
+        chip_type_probe_lists = {}
 
         # get a list of chip_types and then get the mappping ids
         # then get all the probe details via feature_mappings
@@ -378,8 +379,8 @@ class Stemformatics_Gene(object):
 
 
         mapping_id_list = list(set(mapping_id_list))
-        sql = "select mapping_id,to_id from stemformatics.feature_mappings where db_id = %(db_id)s and from_type = 'Gene' and from_id = %(ensemblID)s and mapping_id = ANY (%(mapping_id_list)s) ;"
-        data = {"db_id":db_id,'ensemblID':ensemblID,'mapping_id_list':mapping_id_list}
+        sql = "select mapping_id,to_id from stemformatics.feature_mappings where db_id in %(db_id)s and from_type = 'Gene' and from_id = %(ensemblID)s and mapping_id = ANY (%(mapping_id_list)s) ;"
+        data = {"db_id":tuple(same_species_db_id_list),'ensemblID':ensemblID,'mapping_id_list':mapping_id_list}
         result = s4m_psycopg2._get_psycopg2_sql(sql,data)
 
         mapping_id_probe_list = {}
@@ -1240,7 +1241,7 @@ class Stemformatics_Gene(object):
         genes_not_in_redis = []
         probe_list = []
         gene_mapping_redis = {}
-
+        # over her we can check for matching probe for all genes
         # first get the gene mapping from redis
         for gene in unique_gene_list:
             gene_mapping_redis[gene] = []
@@ -1356,14 +1357,10 @@ class Stemformatics_Gene(object):
             return gene_set_mapping_data_from_redis
         else:
             # get the mapping for gene_set_ids not in redis
-            chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            chip_type = Stemformatics_Dataset.getChipType(ds_id)
             for gene_set_id in gene_set_not_in_redis:
                 # it will be executed only once as we always have 1 gene_set_id in our list
-                gene_set_mapping_data = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
-                dict_of_probe_to_gene_id = gene_set_mapping_data[2]
-                probe_list = gene_set_mapping_data[0]
-
-                gene_set_mapping_data_from_database[gene_set_id] = dict_of_probe_to_gene_id.values()
+                gene_set_mapping_data_from_database[gene_set_id] = Stemformatics_Gene_Set.get_gene_set_items(gene_set_id)
 
                 # combine the database data with redis data
                 gene_set_mapping_data_from_redis[gene_set_id] = gene_set_mapping_data_from_database[gene_set_id]

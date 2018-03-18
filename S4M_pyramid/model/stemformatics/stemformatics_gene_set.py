@@ -944,3 +944,22 @@ class Stemformatics_Gene_Set(object):
 
         # show export for gene pathways
         result = Stemformatics_Job.write_gene_pathways_export_gene_set_annotation(gene_pathways_export,dict_pathway,dict_gene_set_details,gene_set_counts,genes_in_gene_set_count,total_number_genes)
+
+    @staticmethod
+    def get_gene_set_items(gene_list_id):
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("select gene_id from stemformatics.gene_set_items where gene_set_id = %(gene_list_id)s;",{"gene_list_id":gene_list_id,})
+
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        gene_list = []
+
+        for row in result:
+            gene = row[0]
+            gene_list.append(gene)
+
+        return gene_list
