@@ -181,8 +181,9 @@ class AdminController(BaseController):
     @Stemformatics_Auth.authorise(db)
     @action(renderer="string")
     def setup_redis_cumulative(self):
+        request = self.request
         try:
-            ds_id = self.request.matchdict['id']
+            ds_id = int(self.request.matchdict['id'])
         except:
             return "Error with this. Must be an integer"
 
