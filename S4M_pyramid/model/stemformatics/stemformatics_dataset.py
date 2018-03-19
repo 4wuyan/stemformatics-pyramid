@@ -2259,7 +2259,7 @@ All functions have a try that will return None if errors are found
 
 
     @staticmethod
-    def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options): #CRITICAL-4
+    def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options,latest_db_id): #CRITICAL-4
 
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
@@ -2269,7 +2269,7 @@ All functions have a try that will return None if errors are found
         sort_by = 'Sample Type'
         human_db = config['human_db']
         mouse_db = config['mouse_db']
-        db_id = Stemformatics_Dataset.get_db_id(ds_id)
+        dataset_db_id = db_id = Stemformatics_Dataset.get_db_id(ds_id)
         chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
@@ -2277,7 +2277,7 @@ All functions have a try that will return None if errors are found
 
         if ref_type == 'gene_set_id':
             gene_set_id = int(ref_id)
-            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
+            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,gene_set_id)
             probe_list = result[0]
             probe_dict = result[1] # this has probe to gene symbols
 

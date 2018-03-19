@@ -140,7 +140,7 @@
                                     else:
                                         species = 'Mouse'
                                 %>
-                                % if id not in c.filter_out_gene_sets and (c.filter_by_db_id is None or c.filter_by_db_id == geneSet.db_id):
+                                % if id not in c.filter_out_gene_sets and (c.filter_by_db_id is None or  geneSet.db_id in c.filter_by_db_id):
                                 <tr>
                                     <td id="name${id}"><a class="gene_set_link" href="${c.url}${delimiter}gene_set_id=${id}">${name.strip()}</a><div class="hidden">${geneSet.count}</div></td>
                                     <td>${geneSet.count}</td>
@@ -206,7 +206,7 @@
                                     else:
                                         species = 'Mouse'
                                 %>
-                                % if id not in c.filter_out_gene_sets and (c.filter_by_db_id is None or c.filter_by_db_id == geneSet.db_id):
+                                % if id not in c.filter_out_gene_sets and (c.filter_by_db_id is None or geneSet.db_id in  c.filter_by_db_id):
                                 <tr>
                                     <td id="name${id}"><a class="gene_set_link" href="${c.url}${delimiter}gene_set_id=${id}">${name.strip()}</a><div class="hidden">${geneSet.count}</div></td>
                                     <td>${geneSet.count}</td>
@@ -254,4 +254,3 @@
 
     </div>
 </div>
-
