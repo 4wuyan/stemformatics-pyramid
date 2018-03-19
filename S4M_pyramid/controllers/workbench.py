@@ -13,7 +13,11 @@ import re
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
 import os
+import formencode.validators as fe
 import subprocess
+
+FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
+
 
 class WorkbenchController(BaseController):
 
@@ -656,29 +660,32 @@ class WorkbenchController(BaseController):
 
     # Can set &download=true and it will download instead of display
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="image/png")
     def view_image(self):
+        c = self.request.c
+        request = self.request
+        response = self.request.response
+
         src = request.params.get('src')
         download = request.params.get('download')
         HC_server = request.params.get('hc_server')
-
-        if HC_server != "GenePattern":
-            f = open(self.StemformaticsQueue  + src,'r')
-        else:
-            f = open(self.GPQueue  + src,'r')
 
         if download is not None:
             response.headers['Content-Disposition'] = 'attachment;download_image.png'
 
         response.headers['Content-type'] = 'image/png'
 
-        response.charset= "utf8"
-
-        text = f.read()
+        # response.charset= "utf8"
+        if HC_server != "GenePattern":
+            with open(self.StemformaticsQueue + src ,'rb') as f:
+                text = f.read()
+        else:
+            with open(self.GPQueue + src,'rb') as f:
+                text = f.read()
 
         f.close()
 
-        return text
+        return response
 
     @Stemformatics_Auth.authorise()
     def job_delete(self):
@@ -1715,8 +1722,9 @@ class WorkbenchController(BaseController):
         return response
 
 
-    #---------------------NOT MIGRATED--------------------------------
+    @action()
     def _get_inputs_for_gene_neighbour_graph(self):
+        request = self.request
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
         try:
             first_check = request.params.get('ds_id')
@@ -1912,7 +1920,6 @@ class WorkbenchController(BaseController):
 
         db_id = request.params.get('db_id')
         current_db_id = db_id
-        dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
         c.db_id = db_id
 
         if gene is None:
@@ -1955,10 +1962,6 @@ class WorkbenchController(BaseController):
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
             return render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
-
-
-
-
         if dataset_id is None:
             #now get the dataset ID
             c.species = Stemformatics_Gene.get_species_from_db_id(db,db_id)
@@ -1973,22 +1976,19 @@ class WorkbenchController(BaseController):
         if c.dataset_status != "Available":
             return redirect(url(controller='contents', action='index'), code=404)
 
-
+        dataset_db_id = Stemformatics_Dataset.get_db_id(int(ds_id))
 
         chip_type = Stemformatics_Dataset.getChipType(dataset_id)
 
         result = Stemformatics_Gene.get_unique_gene_fast(db,gene_list,db_id,'all',select_all_ambiguous,get_description,chip_type)
 
 
-
-
-
         if probe is None:
 
-            result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,ref_id,dataset_db_id,current_db_id)
+            result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,[ensemblID],dataset_db_id,current_db_id)
             genes = result[0]
             # now check that the gene has only one probe
-            probes = Stemformatics_Probe.return_probe_information(db,genes,db_id,ds_id)
+            probes = Stemformatics_Probe.return_probe_information(db,genes,dataset_db_id,ds_id)
             len_probes = len(probes)
 
             if len_probes == 0:
@@ -2018,9 +2018,8 @@ class WorkbenchController(BaseController):
                 self._temp.line_graph_available = False
                 gene_annotation_names_required = "no"
                 chip_type = Stemformatics_Dataset.getChipType(ds_id)
-                data = Stemformatics_Gene_Set.get_probes_from_genes(db_id,ds_id,[self._temp.ensemblID],gene_annotation_names_required)
+                data = Stemformatics_Gene_Set.get_probes_from_genes(dataset_db_id,ds_id,genes,gene_annotation_names_required)
                 probe_list = data[0]
-
                 c.probe_list = [probe for probe in probe_list]
                 c.sorted_probe_list = sorted(c.probe_list)
                 # self._temp.this_view = self._setup_graphs(self._temp)
