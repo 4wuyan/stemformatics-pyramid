@@ -662,6 +662,7 @@ class WorkbenchController(BaseController):
     @Stemformatics_Auth.authorise()
     @action(renderer="image/png")
     def view_image(self):
+        from pyramid.response import FileResponse
         c = self.request.c
         request = self.request
         response = self.request.response
@@ -671,19 +672,14 @@ class WorkbenchController(BaseController):
         HC_server = request.params.get('hc_server')
 
         if download is not None:
-            response.headers['Content-Disposition'] = 'attachment;download_image.png'
-
-        response.headers['Content-type'] = 'image/png'
-
-        # response.charset= "utf8"
-        if HC_server != "GenePattern":
-            with open(self.StemformaticsQueue + src ,'rb') as f:
-                text = f.read()
+            download_type = 'application/download'
         else:
-            with open(self.GPQueue + src,'rb') as f:
-                text = f.read()
+            download_type = 'image/png'
 
-        f.close()
+        if HC_server != "GenePattern":
+            response = FileResponse(self.StemformaticsQueue + src, request = request,content_type=download_type)
+        else:
+            response = FileResponse(self.GPQueue + src, request = request,content_type=download_type)
 
         return response
 
