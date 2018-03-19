@@ -489,8 +489,8 @@ class Stemformatics_Expression(object):
 
         file_name =  config['all_sample_metadata_cpickle_file']
 
-        f = open(file_name,'wb')
-        f.write(bytes(json.dumps(all_sample_metadata),'UTF-8'))
+        f = open(file_name,'w')
+        f.write(json.dumps(all_sample_metadata))
         f.close()
         return all_sample_metadata
         # now update the g.all_sample_metadata
