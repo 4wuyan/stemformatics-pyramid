@@ -630,9 +630,6 @@ class Stemformatics_Gene_Set(object):
         # retrieve the records from the database
         result = cursor.fetchall()
 
-            # downgrade genes present in gene_list
-
-
         probes_to_genes = result
         list_of_probes = []
         dict_of_probe_to_gene = {}
@@ -651,7 +648,7 @@ class Stemformatics_Gene_Set(object):
         result = cursor.fetchall()
         cursor.close()
         conn.close()
-        
+
         dict_of_gene_to_name = {}
         for row in result:
             gene_id = row['gene_id']

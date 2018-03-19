@@ -292,7 +292,6 @@ class WorkbenchController(BaseController):
                 select_probes =probes_saved
                 probe_list = result.split(delimiter)
             ref_id = probe_list
-        print(probe_list)
         probe_expression_rows = Stemformatics_Expression.get_expression_rows(ds_id,probe_list)
 
         # if no probes then ask for another
