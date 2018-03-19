@@ -160,11 +160,11 @@ class AdminController(BaseController):
     @action(renderer="string")
     def setup_redis_gct(self):
         try:
-            ds_id = self.request.matchdict['id']
+            ds_id = int(self.request.matchdict['id'])
         except:
             return "Error with this. Must be an integer"
 
-        if int(ds_id) == 0:
+        if ds_id == 0:
             return "Error with the dataset id. Cannot be 0"
 
         # python initialise.py localhost /var/www/pylons-data/SHARED/GCTFiles 0
@@ -172,7 +172,7 @@ class AdminController(BaseController):
         redis_server = config['redis_server']
         gct_base_dir = config['DatasetGCTFiles']
 
-        cmd = redis_initialise + " " + redis_server + " " + gct_base_dir + " " + ds_id
+        cmd = redis_initialise + " " + redis_server + " " + gct_base_dir + " " + str(ds_id)
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
         output = p.stdout.read().decode('UTF-8')
         return cmd + "<br><br>" + output.replace("\n", "<br/>") + "<br><br>Done! <a href='" + url('/admin/index') + "'>Now click to go back</a>"
@@ -182,12 +182,12 @@ class AdminController(BaseController):
     @action(renderer="string")
     def setup_redis_cumulative(self):
         try:
-            ds_id = self.request.matchdict['id']
+            ds_id = int(self.request.matchdict['id'])
 
         except:
             return "Error with this. Must be an integer"
 
-        if int(ds_id) == 0:
+        if ds_id == 0:
             return "Error with the dataset id. Cannot be 0"
 
         # python initialise.py localhost /var/www/pylons-data/SHARED/CUMULATIVEFiles 0
@@ -207,18 +207,16 @@ class AdminController(BaseController):
     @action(renderer="string")
     def setup_new_dataset(self):
         c = self.request.c
+        request = self.request
         try:
-            ds_id = self.request.matchdict['id']
+            ds_id = int(self.request.matchdict['id'])
         except:
             return "Error with this. Must be an integer"
-
-        if int(ds_id) == 0:
-            return "Error with the dataset id. Cannot be 0"
 
         show_text = Stemformatics_Dataset.setup_new_dataset(db,ds_id)
 
         if ds_id != 0:
-            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':self.request}
+            audit_dict = {'ref_type':'ds_id','ref_id':ds_id,'uid':c.uid,'url':url,'request':request}
             result = Stemformatics_Audit.add_audit_log(audit_dict)
         return show_text
 

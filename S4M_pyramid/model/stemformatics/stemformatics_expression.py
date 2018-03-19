@@ -489,7 +489,9 @@ class Stemformatics_Expression(object):
 
         file_name =  config['all_sample_metadata_cpickle_file']
 
-        f = open(file_name, 'wb')
+        # f = open(file_name, 'wb')
+        # f.write(bytes(json.dumps(all_sample_metadata),'UTF-8'))
+        f = open(file_name,'wb')
         f.write(bytes(json.dumps(all_sample_metadata),'UTF-8'))
         f.close()
         return all_sample_metadata
