@@ -233,7 +233,8 @@ class WorkbenchController(BaseController):
         if gene_set_id is None and select_probes is None:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_same_species_db_id_list(dataset_db_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -264,11 +265,13 @@ class WorkbenchController(BaseController):
             species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
             gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id)
 
-            db_id = Stemformatics_Dataset.get_db_id(ds_id)
-            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
+            dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            latest_db_id = Stemformatics_Gene_Set.get_db_id(db,c.uid,gene_set_id)
+            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,str(gene_set_id))
             probe_list = result[0]
 
         else:
+            # no need to compare db_id for probes, as probes remain same
             gene_set_id = 0
             ref_type = 'probes'
             if select_probes is None:
@@ -289,14 +292,14 @@ class WorkbenchController(BaseController):
                 select_probes =probes_saved
                 probe_list = result.split(delimiter)
             ref_id = probe_list
-
         probe_expression_rows = Stemformatics_Expression.get_expression_rows(ds_id,probe_list)
 
         # if no probes then ask for another
         if len(probe_expression_rows) < 2:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_same_species_db_id_list(dataset_db_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -422,7 +425,7 @@ class WorkbenchController(BaseController):
         # now create gct file for galaxy
         gct_file_path = self.StemformaticsQueue + str(job_id) + '/' +'job.gct'
 
-        text = Stemformatics_Dataset.build_gct_from_redis(db,ref_type,ref_id,ds_id,c.uid,options)
+        text = Stemformatics_Dataset.build_gct_from_redis(db,ref_type,ref_id,ds_id,c.uid,options,latest_db_id)
         Stemformatics_Dataset.write_gct_file(text,gct_file_path)
 
         gene_probe_ordered_row_list = self.StemformaticsQueue + str(job_id) + '/' +'job_mapping.text'
@@ -1908,6 +1911,8 @@ class WorkbenchController(BaseController):
         c.use_galaxy_server = use_galaxy = config['use_galaxy_server']
 
         db_id = request.params.get('db_id')
+        current_db_id = db_id
+        dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
         c.db_id = db_id
 
         if gene is None:
@@ -1980,9 +1985,10 @@ class WorkbenchController(BaseController):
 
         if probe is None:
 
-
+            result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,ref_id,dataset_db_id,current_db_id)
+            genes = result[0]
             # now check that the gene has only one probe
-            probes = Stemformatics_Probe.return_probe_information(db,ensemblID,db_id,ds_id)
+            probes = Stemformatics_Probe.return_probe_information(db,genes,db_id,ds_id)
             len_probes = len(probes)
 
             if len_probes == 0:

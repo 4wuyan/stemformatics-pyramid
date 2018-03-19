@@ -597,47 +597,52 @@ class Stemformatics_Gene_Set(object):
 
     # rewrite to use psycopg2 and less joins
     @staticmethod
-    def get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id):
+    def get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,gene_set_id):
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
 
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = "select mapping_id from datasets where id = %s"
+        sql = "select mapping_id from datasets where id = %s;"
         data = (ds_id,)
         cursor.execute(sql, data)
         # retrieve the records from the database
         result = cursor.fetchall()
-        cursor.close()
-        conn.close()
         mapping_id = result[0][0]
 
-        conn = psycopg2.connect(conn_string)
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = "select * from stemformatics.feature_mappings as fm where db_id = %s and mapping_id = %s and from_type = 'Gene' and from_id in (select gene_id from stemformatics.gene_set_items as gsi where gene_set_id = %s);"
-        data = (db_id,mapping_id,gene_set_id)
+        sql = "select gene_id from stemformatics.gene_set_items as gsi where gene_set_id = %s;"
+        data = (gene_set_id,)
+        cursor.execute(sql, data,)
+        data = cursor.fetchall()
+        genes_in_gene_set_id = []
+
+        for row in data:
+            gene = row[0]
+            genes_in_gene_set_id.append(gene)
+
+        result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,genes_in_gene_set_id,dataset_db_id,latest_db_id)
+
+        genes_in_gene_set_id = result[0]
+
+        sql = "select * from stemformatics.feature_mappings as fm where db_id = %s and mapping_id = %s and from_type = 'Gene' and from_id in %s;"
+        data = (dataset_db_id,mapping_id,tuple(genes_in_gene_set_id))
         cursor.execute(sql, data,)
         # retrieve the records from the database
         result = cursor.fetchall()
-        cursor.close()
-        conn.close()
-
 
         probes_to_genes = result
         list_of_probes = []
-        list_of_genes = []
         dict_of_probe_to_gene = {}
-        # added thsi for task 2527, to create a dict with probe and gene_id
-        dict_of_probe_to_gene_id = {}
+
         for row in result:
             probe_id = row['to_id']
             gene_id = row['from_id']
             list_of_probes.append(probe_id)
-            list_of_genes.append(gene_id)
 
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         sql = "select gene_id,associated_gene_name from genome_annotations where db_id = %s and gene_id =ANY(%s);"
-        data = (db_id,list_of_genes)
+        data = (latest_db_id,genes_in_gene_set_id)
         cursor.execute(sql, data,)
         # retrieve the records from the database
         result = cursor.fetchall()
@@ -655,12 +660,7 @@ class Stemformatics_Gene_Set(object):
             gene_id = row['from_id']
             dict_of_probe_to_gene[probe_id] = dict_of_gene_to_name[gene_id]
 
-        for row in probes_to_genes:
-            probe_id = row['to_id']
-            gene_id = row['from_id']
-            dict_of_probe_to_gene_id[probe_id] = gene_id
-
-        return [list_of_probes,dict_of_probe_to_gene,dict_of_probe_to_gene_id]
+        return [list_of_probes,dict_of_probe_to_gene]
 
     # gene must be ensemblID
     # rewriting to use pyscopg2 and incorporate list of genes instead of a single gene
