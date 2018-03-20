@@ -660,7 +660,6 @@ class WorkbenchController(BaseController):
 
     # Can set &download=true and it will download instead of display
     @Stemformatics_Auth.authorise()
-    @action(renderer="image/png")
     def view_image(self):
         from pyramid.response import FileResponse
         c = self.request.c
