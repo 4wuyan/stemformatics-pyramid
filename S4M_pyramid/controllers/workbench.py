@@ -1717,7 +1717,6 @@ class WorkbenchController(BaseController):
         return response
 
 
-    @action()
     def _get_inputs_for_gene_neighbour_graph(self):
         request = self.request
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
