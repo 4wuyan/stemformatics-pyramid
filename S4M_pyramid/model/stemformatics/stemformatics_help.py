@@ -121,7 +121,7 @@ class Stemformatics_Help(object):
 
                 # now iterate over requests details to calculate how good a match the retreived page is.
                 # this will always run at least once as both will always include a 'path' detail
-                for param, value in page_details.iteritems():
+                for param, value in page_details.items():
                     request_value = request_params.get(param, None)
 
                     # if detail is not in request, key fails as match
@@ -243,7 +243,7 @@ class Stemformatics_Help(object):
         if not isinstance(json_data, dict):
             json_data = json.loads(json_data)
 
-        for page_name, page_data in json_data.iteritems():
+        for page_name, page_data in json_data.items():
             tutorial_page_key = Stemformatics_Help.get_tutorial_page_key(tutorial, page_name)
             page_key = Stemformatics_Help.get_page_key(page_name)
 
@@ -351,11 +351,11 @@ class Stemformatics_Help(object):
         tutorials = Stemformatics_Help.get_all_tutorials()
         pageguides = Stemformatics_Help.get_all_pageguides()
 
-        for tutorial, json_data in tutorials.iteritems():
+        for tutorial, json_data in tutorials.items():
             with open(os.path.join(tutorials_path, tutorial + ".json"), "w") as helpfile:
                 helpfile.write(json.dumps(json_data))
 
-        for pageguide, json_data in pageguides.iteritems():
+        for pageguide, json_data in pageguides.items():
             save_data = {
                 "page": pageguide,
                 "data": json_data
@@ -397,6 +397,3 @@ class Stemformatics_Help(object):
                 with open(os.path.join(dump_guides_dir, guides_file_name), "r") as guide_file:
                     page_guide = json.loads(guide_file.read())
                     Stemformatics_Help.save_pageguide(page_guide["page"], page_guide["data"])
-
-
-

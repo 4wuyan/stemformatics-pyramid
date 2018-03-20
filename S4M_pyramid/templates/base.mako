@@ -501,7 +501,7 @@ Updated citation to follow.
             <%
             ## Build dict keyed by link name for next step with lambda lower-case sort order
             name_sorted = {}
-            for k, v in c.ucsc_links.iteritems():
+            for k, v in c.ucsc_links.items():
                 name_sorted[v['link_name']] = k
             %>
             % for link in sorted(name_sorted, key=lambda v: v.lower()):
