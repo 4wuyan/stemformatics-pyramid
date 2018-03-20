@@ -610,6 +610,7 @@ class Stemformatics_Gene_Set(object):
         result = cursor.fetchall()
         mapping_id = result[0][0]
 
+        # step 1. get genes for gene list
         sql = "select gene_id from stemformatics.gene_set_items as gsi where gene_set_id = %s;"
         data = (gene_set_id,)
         cursor.execute(sql, data,)
@@ -620,10 +621,12 @@ class Stemformatics_Gene_Set(object):
             gene = row[0]
             genes_in_gene_set_id.append(gene)
 
+        # step 2. if required map lastest ensembl version genes to dataset ensembl version
         result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,genes_in_gene_set_id,dataset_db_id,latest_db_id)
 
         genes_in_gene_set_id = result[0]
 
+        # step 3. get probes for new genes
         sql = "select * from stemformatics.feature_mappings as fm where db_id = %s and mapping_id = %s and from_type = 'Gene' and from_id in %s;"
         data = (dataset_db_id,mapping_id,tuple(genes_in_gene_set_id))
         cursor.execute(sql, data,)
