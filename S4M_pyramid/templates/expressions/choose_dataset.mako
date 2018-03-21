@@ -1,5 +1,5 @@
-<%inherit file="/popup.html"/>
-<%namespace name="Base" file="/base.mako"/>
+<%inherit file="../popup.html"/>
+<%namespace name="Base" file="../base.mako"/>
 
 <%def name="includes()">
     <link rel="stylesheet" type="text/css" href="${h.url('/css/workbench/wb_default.css')}" >

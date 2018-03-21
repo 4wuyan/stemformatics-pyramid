@@ -12,7 +12,7 @@ from pyramid_handlers import action
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin, Stemformatics_Audit
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression, Stemformatics_Help
 
 
 # Import smtplib for the actual sending function
@@ -181,9 +181,9 @@ class AdminController(BaseController):
     @Stemformatics_Auth.authorise(db)
     @action(renderer="string")
     def setup_redis_cumulative(self):
+        request = self.request
         try:
             ds_id = int(self.request.matchdict['id'])
-
         except:
             return "Error with this. Must be an integer"
 

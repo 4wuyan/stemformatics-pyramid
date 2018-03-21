@@ -89,7 +89,7 @@ class Stemformatics_Probe(object):
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("Select * from stemformatics.feature_mappings as fm left join datasets as d on d.mapping_id = fm.mapping_id where d.id = %(ds_id)s and from_type = 'Gene' and to_type = 'Probe' and from_id = %(from_id)s and d.db_id = %(db_id)s",{"ds_id":ds_id,"from_id":ensemblID,"db_id":db_id})
+        cursor.execute("Select * from stemformatics.feature_mappings as fm left join datasets as d on d.mapping_id = fm.mapping_id where d.id = %(ds_id)s and from_type = 'Gene' and to_type = 'Probe' and from_id  in %(from_id)s and d.db_id = %(db_id)s",{"ds_id":ds_id,"from_id":tuple(ensemblID),"db_id":db_id})
 
         # retrieve the records from the database
         result = cursor.fetchall()

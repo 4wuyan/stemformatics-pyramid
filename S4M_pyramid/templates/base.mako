@@ -501,8 +501,8 @@ Updated citation to follow.
             <%
             ## Build dict keyed by link name for next step with lambda lower-case sort order
             name_sorted = {}
-            for k, v in c.ucsc_links.iteritems():
-                name_sorted[v['link_name']] = k
+            for key_url_with_gid, value_actual_url_without_gid in c.ucsc_links.items():
+                name_sorted[value_actual_url_without_gid['link_name']] = key_url_with_gid
             %>
             % for link in sorted(name_sorted, key=lambda v: v.lower()):
                 <li><a target="_blank" href="${c.ucsc_data['base_url']}?position=chr${c.ucsc_data['chr']}:${c.ucsc_data['start']}-${c.ucsc_data['end']}&db=${c.ucsc_data['ucsc_db_id']}&hgt.customText=${c.ucsc_links[name_sorted[link]]['url']}" id="AButton">${c.ucsc_links[name_sorted[link]]['group_name']} ${c.ucsc_links[name_sorted[link]]['link_name']} on UCSC Genome Browser</a></li>

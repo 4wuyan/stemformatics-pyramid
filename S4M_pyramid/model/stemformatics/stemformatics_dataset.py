@@ -307,6 +307,11 @@ All functions have a try that will return None if errors are found
         temp_datasets = json.loads(result)
         choose_datasets = {}
 
+        if db_id!= None:
+            same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
+        else:
+            same_species_db_id_list = [db_id]
+
         for ds_id in temp_datasets:
             db = None
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
@@ -314,7 +319,7 @@ All functions have a try that will return None if errors are found
                 continue
             if dataset_status == "Limited" and show_limited == False:
                 continue
-            if temp_datasets[ds_id]['db_id'] != db_id and db_id != None:
+            if temp_datasets[ds_id]['db_id'] not in same_species_db_id_list and db_id != None:
                 continue
 
             choose_datasets[ds_id] = temp_datasets[ds_id]
@@ -1521,11 +1526,12 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def get_all_x_platform_datasets_for_user(uid,db_id,role = 'normal'): #CRITICAL-2 #CRITICAL-3
+        same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
 
         # Cannot show yugene for more than one species. Therefore it is safe to always search on db_id
         if role == 'admin' or role == 'annotator':
-            sql = "select id,handle,chip_type from datasets where show_yugene = true and db_id = %(db_id)s;"
-            data = {"db_id":db_id}
+            sql = "select id,handle,chip_type from datasets where show_yugene = true and db_id in %(db_id)s;"
+            data = {"db_id":tuple(same_species_db_id_list)}
 
             result = s4m_psycopg2._get_psycopg2_sql(sql,data)
             dataset_dict = Stemformatics_Dataset._organise_yugene_datasets(result)
@@ -1554,12 +1560,13 @@ All functions have a try that will return None if errors are found
 
 
             if temp_list_of_ds_ids is not None  :
-                sql = "select id,handle,chip_type from datasets where show_yugene = true  and db_id = %(db_id)s and id = ANY (%(temp_list_of_ds_ids)s) ;"
-                data = {"db_id":db_id,'temp_list_of_ds_ids':temp_list_of_ds_ids}
+                sql = "select id,handle,chip_type from datasets where show_yugene = true  and db_id in %(db_id)s and id = ANY (%(temp_list_of_ds_ids)s) ;"
+                data = {"db_id":same_species_db_id_list,'temp_list_of_ds_ids':temp_list_of_ds_ids}
                 result = s4m_psycopg2._get_psycopg2_sql(sql,data)
                 dataset_dict = Stemformatics_Dataset._organise_yugene_datasets(result)
             else:
                 dataset_dict = {}
+
         return dataset_dict
 
 
@@ -2247,7 +2254,7 @@ All functions have a try that will return None if errors are found
 
 
     @staticmethod
-    def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options): #CRITICAL-4
+    def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options,latest_db_id): #CRITICAL-4
 
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
@@ -2257,7 +2264,7 @@ All functions have a try that will return None if errors are found
         sort_by = 'Sample Type'
         human_db = config['human_db']
         mouse_db = config['mouse_db']
-        db_id = Stemformatics_Dataset.get_db_id(ds_id)
+        dataset_db_id = db_id = Stemformatics_Dataset.get_db_id(ds_id)
         chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
@@ -2265,7 +2272,7 @@ All functions have a try that will return None if errors are found
 
         if ref_type == 'gene_set_id':
             gene_set_id = int(ref_id)
-            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
+            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,gene_set_id)
             probe_list = result[0]
             probe_dict = result[1] # this has probe to gene symbols
 
@@ -3427,3 +3434,22 @@ All functions have a try that will return None if errors are found
         for ds_id in result_ds_list:
             delete_dataset.extend(ds_id)
         return delete_dataset
+
+    @staticmethod
+    def get_same_species_db_id_list(db_id):
+        # get all db_ids of same species
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("select an_database_id from annotation_databases where genome_version in (select genome_version from annotation_databases where an_database_id = %s)",(db_id,))
+        # retrieve the records from the database
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        same_species_db_id_list = []
+        for row in result:
+            db_id_found = row[0]
+            same_species_db_id_list.append(db_id_found)
+
+        return same_species_db_id_list

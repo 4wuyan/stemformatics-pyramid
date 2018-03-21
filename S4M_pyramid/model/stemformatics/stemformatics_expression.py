@@ -952,16 +952,43 @@ class Stemformatics_Expression(object):
         return [breakdown_dict,full_sample_count_dict]
 
     @staticmethod
-    def get_expression_graph_data(ds_id,ref_id,ref_type,db_id):
+    def map_gene_to_dataset_ensembl_version_db_id(ds_id,ref_id,dataset_ensembl_version_db_id,current_ensembl_version_db_id):
+        if int(dataset_ensembl_version_db_id) == int(current_ensembl_version_db_id):
+            return [ref_id,current_ensembl_version_db_id]
+        # else get the version 69 gene for ref_id
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("select to_id from stemformatics.ensemble_versions_gene_mappings where from_id in %(from_id)s and from_db_id = %(current_ensembl_version_db_id)s and to_db_id = %(dataset_ensembl_version_db_id)s;",{"from_id":tuple(ref_id), "current_ensembl_version_db_id":current_ensembl_version_db_id, "dataset_ensembl_version_db_id":dataset_ensembl_version_db_id})
+        # retrieve the records from the database
+        genes = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        matching_genes = []
+        for gene in genes:
+            gene = gene[0]
+            matching_genes.append(gene)
+
+        return [matching_genes,dataset_ensembl_version_db_id]
+
+    @staticmethod
+    def get_expression_graph_data(ds_id,ref_id,ref_type,db_id,dataset_ensembl_version_db_id,current_ensembl_version_db_id):
         # ref_type can be ensemblID,gene_set_id,probeID,miRNA
         # ref_id passed is a list of ref_id's
 
         if ref_type == "ensemblID":
+            # this below ref_id will be array of single or multiple matching genes
+            result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,ref_id,dataset_ensembl_version_db_id,current_ensembl_version_db_id)
+            ref_id = result[0]
+            db_id = result[1]
+
+            # array of gene(s) will be passed below to fetch probes
             data = Stemformatics_Expression.get_expression_data_from_genes(ref_id, ds_id, db_id)
             return data
 
         if ref_type == "gene_set_id":
-            data = Stemformatics_Expression.get_expression_data_from_gene_set(ref_id, ds_id, db_id)
+            data = Stemformatics_Expression.get_expression_data_from_gene_set(ref_id, ds_id, db_id, dataset_ensembl_version_db_id, current_ensembl_version_db_id)
             return data
 
         if ref_type == "probeID":
@@ -980,6 +1007,7 @@ class Stemformatics_Expression(object):
 
     @staticmethod
     def get_expression_data_from_genes(ref_id, ds_id, db_id):
+        # over here the exsiting code was using red_id array only , therefore we dont have to change anthing
         # first get the gene mapping data
         gene_mapping_data = Stemformatics_Gene.get_mapping_for_genes(ref_id,ds_id,db_id)
         probe_list = gene_mapping_data[0]
@@ -988,13 +1016,18 @@ class Stemformatics_Expression(object):
         return data
 
     @staticmethod
-    def get_expression_data_from_gene_set(ref_id, ds_id, db_id):
+    def get_expression_data_from_gene_set(ref_id, ds_id, db_id, dataset_ensembl_version_db_id,current_ensembl_version_db_id):
         gene_set_mapping_data = Stemformatics_Gene.get_mapping_for_gene_set(ref_id,db_id,ds_id)
 
         # create a gene list from gene set mapping
         gene_list = []
         for gene_set_id in gene_set_mapping_data:
              gene_list.extend(gene_set_mapping_data[gene_set_id])
+
+        # need to check latest ensemble version with dataset
+        result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,gene_list,dataset_ensembl_version_db_id,current_ensembl_version_db_id)
+        gene_list = result[0]
+        db_id = result[1]
 
         # now get the mapping data for all gene
         gene_mapping_data = Stemformatics_Gene.get_mapping_for_genes(gene_list,ds_id,db_id)

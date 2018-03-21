@@ -105,7 +105,7 @@ class DatasetsController(BaseController):
                 c.dataset_status = c.dataset[ds_id]['dataset_status']
             except:
                 return redirect(url(controller='contents', action='index'), code=404)
-            c.db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
+            c.db_id = Stemformatics_Dataset.get_db_id(ds_id)
         else:
             c.ds_id = None
             c.datasets = None
