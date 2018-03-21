@@ -53,7 +53,12 @@ class Graph_Data(object):
             ref_id_list = []
             get_probes_from_genes = "no"
             ref_id_list.append(self.ref_id)
-            result = Stemformatics_Gene_Set.get_probes_from_genes(self.db_id,self.ds_id,ref_id_list,get_probes_from_genes)
+            # compare db_ids to check if genes needs to be mapped
+            current_db_id = self.db_id
+            database_db_id = Stemformatics_Dataset.get_db_id(self.ds_id)
+            result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(self.ds_id,ref_id_list,database_db_id,current_db_id)
+            ref_id_list = result[0]
+            result = Stemformatics_Gene_Set.get_probes_from_genes(database_db_id,self.ds_id,ref_id_list,get_probes_from_genes)
             probe_list = result[0]
             self.probe_to_gene_dict = result[1]
             self.gene_data = Stemformatics_Gene.getGene(db,True,self.ref_id,self.db_id)[0]

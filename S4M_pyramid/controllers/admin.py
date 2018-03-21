@@ -12,7 +12,7 @@ from pyramid_handlers import action
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression, Stemformatics_Help
 
 
 # Import smtplib for the actual sending function

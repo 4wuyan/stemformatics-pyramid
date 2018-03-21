@@ -187,7 +187,7 @@ $(document).ready(function(){
                             <td class="genes_of_interest">
                                 <% genes_of_interest = c.dataset[ds_id]["top_diff_exp_genes"] %>
                                 <% default_url_geg = "" %>
-                                % for gene, gene_details in genes_of_interest.iteritems():
+                                % for gene, gene_details in genes_of_interest.items():
 
                                         <%
                                         main_url =  h.url('/expressions/result?graphType=default&gene=' + str(gene_details['ensemblID']) + '&db_id=' + str(gene_details['db_id']) + '&datasetID=' + str(c.ds_id))
@@ -403,7 +403,7 @@ $(document).ready(function(){
                         </tr>
                     </thead>
                     <tbody>
-                        % for grouping, count in c.dataset[ds_id]["breakDown"].iteritems():
+                        % for grouping, count in c.dataset[ds_id]["breakDown"].items():
                             % if grouping.split(': ')[1] != 'NULL':
                                 <tr>
                                     <td>${grouping}</td>
