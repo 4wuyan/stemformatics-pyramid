@@ -9,7 +9,7 @@
 #
 from pyramid_handlers import action
 from S4M_pyramid.lib.base import BaseController
-from S4M_pyramid.model.stemformatics import Stemformatics_Job,Stemformatics_Auth,db_deprecated_pylons_orm as db
+from S4M_pyramid.model.stemformatics import Stemformatics_Dataset, Stemformatics_Job,Stemformatics_Auth,db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 #from guide.model.stemformatics import *
 #from guide.controllers.workbench import WorkbenchController
@@ -719,8 +719,9 @@ class ApiController(BaseController):
 
         return return_str
 
-    #---------------------NOT MIGRATED--------------------------------
     def check_dataset_availability_for_user(self):
+        request = self.request
+        response = self.request.response
         ds_id = request.params.get('ds_id')
         user_and_pwd_md5 = request.params.get('user_and_pwd_md5')
         username = request.params.get('username').replace(r"\100","@")
@@ -732,6 +733,5 @@ class ApiController(BaseController):
             user_id = cookie_user.uid
 
         result = Stemformatics_Dataset.check_dataset_availability(db,user_id,ds_id)
-        result = str(result)
-
-        return result
+        response.text = str(result)
+        return response
