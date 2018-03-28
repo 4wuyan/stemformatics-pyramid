@@ -1,15 +1,19 @@
-#TODO-1 - Fix imports
 import logging, redis
+
+from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import redirect
+
 log = logging.getLogger(__name__)
 from subprocess import Popen, PIPE, STDOUT
-from guide.model import twitter
+from S4M_pyramid.model import twitter
+from pyramid_handlers import action
 
-from guide.lib.base import BaseController, render
-from pylons import request, response, session, url, tmpl_context as c
-from pylons.controllers.util import abort, redirect
+# from pylons import request, response, session, url, tmpl_context as c
+# from pylons.controllers.util import abort, redirect
+from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
+from S4M_pyramid.model.stemformatics import db_deprecated_pylons_orm as db, Stemformatics_Admin, Stemformatics_Audit
+from S4M_pyramid.lib.base import BaseController
+from S4M_pyramid.model.stemformatics import Stemformatics_Auth, Stemformatics_Dataset, Stemformatics_Expression, Stemformatics_Help
 
-# trying to find where db is set
-from guide.model.stemformatics import *
 
 # Import smtplib for the actual sending function
 import smtplib
@@ -18,29 +22,23 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from pylons import config
-
 from paste.deploy.converters import asbool
-from pylons import app_globals as g
-
-# for some reason it is not applied in guide/lib/base.py
-import guide.lib.helpers as h
 
 from datetime import date, timedelta, datetime
-
 
 import json , cgi , urllib , os, subprocess , hashlib, ast
 
 class AdminController(BaseController):
     """ Have to check for admin for all of the controllers"""
-    #---------------------NOT MIGRATED--------------------------------
-    def __before__(self):
-        super(AdminController, self).__before__ ()
+
+    def __init__(self,request):
+        super().__init__(request)
+        c = self.request.c
         if request.path_info in ('/admin/annotate_dataset','/admin/save_and_validate_dataset_annotations'):
                 ds_id = int(request.params.get('ds_id'))
                 uid = c.uid
                 available = Stemformatics_Dataset.check_dataset_availability(db,uid,ds_id,'annotator')
-                if not available: redirect(url(controller='contents', action='index'), code=404)
+                if not available: return redirect(url(controller='contents', action='index'), code=404)
         else:
             if not c.role =="admin":
                 if request.path_info in ('/admin/audit_reports','/admin/controller_user_audit_report'):
@@ -48,20 +46,20 @@ class AdminController(BaseController):
                     try:
                         uids = config['audit_reports_uid_list']
                     except:
-                        redirect(url(controller='contents', action='index'), code=404)
+                        return redirect(url(controller='contents', action='index'), code=404)
 
                     # if only one number in audit_reports_uid_list, then it will be treated as an integer
                     if isinstance(uids,int):
                         if c.uid != uids:
-                            redirect(url(controller='contents', action='index'), code=404)
+                            return redirect(url(controller='contents', action='index'), code=404)
                     else:
                         delimiter = config['delimiter']
                         uid_list = uids.split(delimiter)
                         uid_list = map(int, uid_list)
                         if c.uid not in uid_list:
-                            redirect(url(controller='contents', action='index'), code=404)
+                            return redirect(url(controller='contents', action='index'), code=404)
                 else:
-                    redirect(url(controller='contents', action='index'), code=404)
+                    return redirect(url(controller='contents', action='index'), code=404)
 
 
 
@@ -80,11 +78,10 @@ class AdminController(BaseController):
         content= Stemformatics_Admin.get_jar_processes()
         return content
 
-    @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @Stemformatics_Auth.authorise()
+    @action(renderer='templates/admin/index.mako')
     def index(self):
-        return render('admin/index.mako')
-
+        return self.deprecated_pylons_data_for_view
     '''
     This is for troubleshooting page Gene Expression Graph for listing/deleting redis cache for a dataset.
     '''
@@ -133,7 +130,7 @@ class AdminController(BaseController):
 
     ''' This is to update the config['all_sample_metadata'] file '''
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="string")
     def setup_all_sample_metadata(self):
         g.all_sample_metadata = Stemformatics_Expression.setup_all_sample_metadata()
         return "Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
@@ -153,8 +150,6 @@ class AdminController(BaseController):
 
         return result.replace("\n","<br/>")
 
-
-
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
     def confirm(self):
@@ -162,10 +157,10 @@ class AdminController(BaseController):
 
     ''' This is to update the gct files '''
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
-    def setup_redis_gct(self,id):
+    @action(renderer="string")
+    def setup_redis_gct(self):
         try:
-            ds_id = int(id)
+            ds_id = int(self.request.matchdict['id'])
         except:
             return "Error with this. Must be an integer"
 
@@ -177,20 +172,18 @@ class AdminController(BaseController):
         redis_server = config['redis_server']
         gct_base_dir = config['DatasetGCTFiles']
 
-
-
         cmd = redis_initialise + " " + redis_server + " " + gct_base_dir + " " + str(ds_id)
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
-        output = p.stdout.read()
-
-        return cmd + "<br><br>" + output.replace("\n","<br/>") + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
+        output = p.stdout.read().decode('UTF-8')
+        return cmd + "<br><br>" + output.replace("\n", "<br/>") + "<br><br>Done! <a href='" + url('/admin/index') + "'>Now click to go back</a>"
 
     ''' This is to update the cumulative files '''
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
-    def setup_redis_cumulative(self,id):
+    @action(renderer="string")
+    def setup_redis_cumulative(self):
+        request = self.request
         try:
-            ds_id = int(id)
+            ds_id = int(self.request.matchdict['id'])
         except:
             return "Error with this. Must be an integer"
 
@@ -202,20 +195,23 @@ class AdminController(BaseController):
         redis_server = config['redis_server']
         x_platform_base_dir = config['x_platform_base_dir']
 
-
-
         cmd = redis_initialise + " " + redis_server + " " + x_platform_base_dir + " " + str(ds_id)
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
         output = p.stdout.read()
-
+        output = output.decode('utf-8')
         return cmd + "<br><br>" + output.replace("\n","<br/>") + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
 
     ''' This is to add one new dataset '''
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
-    def setup_new_dataset(self,id):
-        ds_id = int(id)
+    @action(renderer="string")
+    def setup_new_dataset(self):
+        c = self.request.c
+        request = self.request
+        try:
+            ds_id = int(self.request.matchdict['id'])
+        except:
+            return "Error with this. Must be an integer"
 
         show_text = Stemformatics_Dataset.setup_new_dataset(db,ds_id)
 
@@ -669,14 +665,14 @@ class AdminController(BaseController):
             return "Problem with update"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="string")
     def triggers_for_change_in_dataset(self):
         Stemformatics_Dataset.triggers_for_change_in_dataset(db)
 
         return "Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer="string")
     def triggers_for_change_in_user(self):
         Stemformatics_Auth.triggers_for_change_in_user(db)
 
@@ -730,8 +726,6 @@ class AdminController(BaseController):
     def edit_pageguide(self):
         c.help_type = "page_guide"
         c.help_name = request.params.get('page', "")
-        print "\n\n\n\n"
-        print c.help_name
         c.help_json = json.dumps(Stemformatics_Help.get_pageguide(c.help_name), indent=4, separators=(',', ': ')) if c.help_name != "" else ""
         return render('admin/edit_help.mako')
 
@@ -1121,10 +1115,11 @@ class AdminController(BaseController):
         return "<br><br>" + result + "<br><br>Done! <a href='"+url('/admin/index')+"'>Now click to go back</a>"
 
     @Stemformatics_Auth.authorise(db)
-    #---------------------NOT MIGRATED--------------------------------
+    @action(renderer='templates/admin/config_index.mako')
     def config_index(self):
+        c = self.request.c
         c.configs = Stemformatics_Admin.get_all_configs()
-        return render('admin/config_index.mako')
+        return self.deprecated_pylons_data_for_view
 
     @Stemformatics_Auth.authorise(db)
     #---------------------NOT MIGRATED--------------------------------
@@ -1295,5 +1290,3 @@ class AdminController(BaseController):
             c.result = []
 
         return render('admin/unsubscribe_users_from_outage_critical_notifications.mako')
-
-

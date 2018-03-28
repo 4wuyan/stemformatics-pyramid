@@ -1078,7 +1078,7 @@ class Stemformatics_Auth(object):
         ucsc_links = {}
         for row in result:
             gid = row['gid']
-            key_name = row['link_name'] + unicode(gid)
+            key_name = row['link_name'] + str(gid)
             ucsc_links[key_name] = {}
             ucsc_links[key_name]['link_name'] = row['link_name']
             ucsc_links[key_name]['url'] = row['url']
@@ -1297,7 +1297,7 @@ class Stemformatics_Auth(object):
         username = user.username
         registration_url = external_base_url+url('auth/register?username=')+username
 
-        from guide.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
+        from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset
         dataset_names = ""
         datasets = Stemformatics_Dataset.getChooseDatasetDetails(db,uid)
         for ds_id in datasets:
@@ -1313,7 +1313,7 @@ class Stemformatics_Auth(object):
         # raise Error
         # Send the message via our own SMTP server, but don't include the
         # envelope header.
-        from guide.model.stemformatics.stemformatics_notification import Stemformatics_Notification # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_notification import Stemformatics_Notification # wouldn't work otherwise??
 
         success = Stemformatics_Notification.send_email(from_email,to_email,subject,body)
         return success

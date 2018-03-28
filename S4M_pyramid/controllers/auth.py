@@ -28,6 +28,7 @@ import hashlib
 
 from pyramid_handlers import action
 from pyramid.renderers import render_to_response
+from pyramid.httpexceptions import HTTPFound
 
 class AuthController(BaseController):
 
@@ -129,7 +130,7 @@ class AuthController(BaseController):
             redirection = session.get('path_before_login')
             del session['path_before_login']
             session.save()
-            return redirect(url(str(redirection)))
+            response = HTTPFound(location=url(str(redirection)), headers=response.headers)
         else:
             if session['page_history'] != []:
                 log.debug('redirected using page history')
@@ -143,10 +144,11 @@ class AuthController(BaseController):
                 else:
                     redirection = url(str(session['page_history'][lastpage]['path']))
 
-                return redirect(redirection)
+                response = HTTPFound(location=redirection, headers=response.headers)
 
             else: # if previous target is unknown just send the user to a welcome page
-                return redirect(url('/workbench/index'))
+                response = HTTPFound(location=url('/workbench/index'), headers=response.headers)
+        return response
 
     # Controller for displaying the private datasets a user has access to
     # and their respective access rights

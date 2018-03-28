@@ -7,12 +7,17 @@ from S4M_pyramid.lib.base import BaseController
 from S4M_pyramid.model.stemformatics import Stemformatics_Shared_Resource,Stemformatics_Notification,Stemformatics_Auth,Stemformatics_Msc_Signature, Stemformatics_Dataset, Stemformatics_Gene, Stemformatics_Audit, Stemformatics_Expression, Stemformatics_Gene_Set,Stemformatics_Probe,Stemformatics_Job, db_deprecated_pylons_orm as db
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, url, app_globals as g, config
 from S4M_pyramid.lib.deprecated_pylons_abort_and_redirect import abort,redirect
+from datetime import datetime
 import json
 import re
 from pyramid.renderers import render_to_response
 import S4M_pyramid.lib.helpers as h
 import os
+import formencode.validators as fe
 import subprocess
+
+FTS_SEARCH_EXPRESSION = fe.Regex(r"[^\'\"\`\$\\]*", not_empty=False, if_empty=None)
+
 
 class WorkbenchController(BaseController):
 
@@ -46,8 +51,9 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def gene_set_upload(self):
+        c = self.request.c
+        request = self.request
 
         c.title = c.site_name+' Analyses - Upload New Gene List'
         c.gene_set_id = None
@@ -64,21 +70,21 @@ class WorkbenchController(BaseController):
         if posted == None:
             c.error_message = ""
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],['','Upload New Gene List']]
-            return render('workbench/gene_set_upload.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         myfile = request.POST['gene_set_file']
 
         if gene_set_name == '':
             c.error_message = "You must provide a gene list name."
-            return render('workbench/gene_set_upload.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         if myfile == '':
             c.error_message = "Error in uploading the file."
-            return render('workbench/gene_set_upload.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
         if db_id is None:
             c.error_message = "Error in choosing species."
-            return render('workbench/gene_set_upload.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/gene_set_upload.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
         geneSetRaw = myfile.value
@@ -103,12 +109,14 @@ class WorkbenchController(BaseController):
         c.title = c.site_name+' Analyses  - New Gene List'
         c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/gene_set_upload'),'Upload New Gene List'],['','Bulk Import Manager']]
         c.description = ''
-        return render('workbench/gene_set_manage_bulk_import.mako')
+        return render_to_response('S4M_pyramid:templates/workbench/gene_set_manage_bulk_import.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
     @Stemformatics_Auth.authorise()
     #---------------------NOT MIGRATED--------------------------------
-    def delete_gene_from_set(self,id):
+    def delete_gene_from_set(self):
+        c = self.request.c
+        id = self.request.matchdict['id']
         gene_set_item_id = int(id)
 
         result = Stemformatics_Gene_Set.delete_gene_set_item(db,c.uid,gene_set_item_id)
@@ -160,7 +168,9 @@ class WorkbenchController(BaseController):
 
     @Stemformatics_Auth.authorise()
     #---------------------NOT MIGRATED--------------------------------
-    def gene_set_delete(self,id):
+    def gene_set_delete(self):
+        c = self.request.c
+        id = self.request.matchdict['id']
         gene_set_id = int(id)
 
         result = Stemformatics_Gene_Set.delete_gene_set(db,c.uid,gene_set_id)
@@ -227,7 +237,8 @@ class WorkbenchController(BaseController):
         if gene_set_id is None and select_probes is None:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_same_species_db_id_list(dataset_db_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -258,11 +269,13 @@ class WorkbenchController(BaseController):
             species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
             gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id)
 
-            db_id = Stemformatics_Dataset.get_db_id(ds_id)
-            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
+            dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            latest_db_id = Stemformatics_Gene_Set.get_db_id(db,c.uid,gene_set_id)
+            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,str(gene_set_id))
             probe_list = result[0]
 
         else:
+            # no need to compare db_id for probes, as probes remain same
             gene_set_id = 0
             ref_type = 'probes'
             if select_probes is None:
@@ -283,14 +296,14 @@ class WorkbenchController(BaseController):
                 select_probes =probes_saved
                 probe_list = result.split(delimiter)
             ref_id = probe_list
-
         probe_expression_rows = Stemformatics_Expression.get_expression_rows(ds_id,probe_list)
 
         # if no probes then ask for another
         if len(probe_expression_rows) < 2:
             # call a gene set chooser for
             result = Stemformatics_Gene_Set.getGeneSets(db,c.uid)
-            c.filter_by_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            dataset_db_id = Stemformatics_Dataset.get_db_id(ds_id)
+            c.filter_by_db_id = Stemformatics_Dataset.get_same_species_db_id_list(dataset_db_id)
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
 
             c.result = result
@@ -335,7 +348,7 @@ class WorkbenchController(BaseController):
         remove_chip_ids  = request.params.get('remove_chip_ids')
 
         if remove_chip_ids is None:
-            chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+            chip_type = Stemformatics_Dataset.getChipType(ds_id)
             c.chip_id_details = Stemformatics_Expression.return_sample_details(db,ds_id)
             sort_by = 'Sample Type'
             sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
@@ -416,7 +429,7 @@ class WorkbenchController(BaseController):
         # now create gct file for galaxy
         gct_file_path = self.StemformaticsQueue + str(job_id) + '/' +'job.gct'
 
-        text = Stemformatics_Dataset.build_gct_from_redis(db,ref_type,ref_id,ds_id,c.uid,options)
+        text = Stemformatics_Dataset.build_gct_from_redis(db,ref_type,ref_id,ds_id,c.uid,options,latest_db_id)
         Stemformatics_Dataset.write_gct_file(text,gct_file_path)
 
         gene_probe_ordered_row_list = self.StemformaticsQueue + str(job_id) + '/' +'job_mapping.text'
@@ -647,29 +660,27 @@ class WorkbenchController(BaseController):
 
     # Can set &download=true and it will download instead of display
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def view_image(self):
+        from pyramid.response import FileResponse
+        c = self.request.c
+        request = self.request
+        response = self.request.response
+
         src = request.params.get('src')
         download = request.params.get('download')
         HC_server = request.params.get('hc_server')
 
-        if HC_server != "GenePattern":
-            f = open(self.StemformaticsQueue  + src,'r')
-        else:
-            f = open(self.GPQueue  + src,'r')
-
         if download is not None:
-            response.headers['Content-Disposition'] = 'attachment;download_image.png'
+            download_type = 'application/download'
+        else:
+            download_type = 'image/png'
 
-        response.headers['Content-type'] = 'image/png'
+        if HC_server != "GenePattern":
+            response = FileResponse(self.StemformaticsQueue + src, request = request,content_type=download_type)
+        else:
+            response = FileResponse(self.GPQueue + src, request = request,content_type=download_type)
 
-        response.charset= "utf8"
-
-        text = f.read()
-
-        f.close()
-
-        return text
+        return response
 
     @Stemformatics_Auth.authorise()
     def job_delete(self):
@@ -945,9 +956,9 @@ class WorkbenchController(BaseController):
 
 
     @Stemformatics_Auth.authorise()
-    #---------------------NOT MIGRATED--------------------------------
     def gene_set_annotation_wizard(self):  #CRITICAL-5
-
+        c = self.request.c
+        request = self.request
         analysis  = 4
         transcripts_per_page = request.params.get('transcripts_per_page')
 
@@ -967,16 +978,14 @@ class WorkbenchController(BaseController):
             c.public_result = Stemformatics_Gene_Set.getGeneSets(db,0)
             c.url = h.url('/workbench/gene_set_annotation_wizard')
             c.breadcrumbs = [[h.url('/workbench/index'),'Analyses'],[h.url('/workbench/gene_set_annotation_wizard'),'Gene List Annotation - Choose Gene List  (Step 1 of 2)']]
-            return render('workbench/choose_gene_set.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_gene_set.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
         else:
             gene_set_id = int(gene_set_id)
             species = Stemformatics_Gene_Set.get_species(db,c.uid,gene_set_id)
             gene_set_name = Stemformatics_Gene_Set.get_gene_set_name(db,c.uid,gene_set_id)
 
-
         dataset_id = 0
-
 
         # this is where it should create a job
         base_path = self.StemformaticsQueue
@@ -988,9 +997,7 @@ class WorkbenchController(BaseController):
         use_gct = False
 
         # create job here
-
         job_details = { 'analysis': analysis, 'status': 0, 'dataset_id': dataset_id, 'gene_set_id': gene_set_id, 'uid': c.uid, 'use_cls': use_cls, 'use_gct': use_gct, 'gene': None, 'probe': None}
-
         job_id = Stemformatics_Job.create_job(db,job_details)
 
         if job_id is None:
@@ -1003,16 +1010,11 @@ class WorkbenchController(BaseController):
 
         # create ini file
         ini_file = open(ini_filename,"w")
-
         ini_file_list = ['[StemformaticsQueue]\n','analysis='+str(analysis)+'\n','uid='+str(c.uid)+'\n','gene_set_id='+str(gene_set_id)+'\n','dataset_id='+str(dataset_id)+'\n']
-
         ini_file.writelines(ini_file_list)
         ini_file.close()
-
-        # call java code from command line
-        command_line = "nice -n 15 " + self.FullJavaPath + " -jar "+ self.StemformaticsController +" " + str(job_id)+ " " + config['__file__']
-
-        p = subprocess.Popen(command_line,shell=True)
+        # java code replacement
+        result = Stemformatics_Gene_Set.submit_gene_list_annotation_job(job_id,db)
 
         audit_dict = {'ref_type':'gene_set_id','ref_id':gene_set_id,'uid':c.uid,'url':url,'request':request}
         result = Stemformatics_Audit.add_audit_log(audit_dict)
@@ -1622,24 +1624,16 @@ class WorkbenchController(BaseController):
         return printout
 
 
-
-
-
-
-    #---------------------NOT MIGRATED--------------------------------
     def download_gct_file_for_gene_set_wizard(self): #CRITICAL-5
+        c = self.request.c
+        request = self.request
+        response = self.request.response
 
         c.analysis = 6
 
         gene_set_id  = request.params.get('gene_set_id')
         file_type  = request.params.get('file_type')
 
-        #~ if file_type is None:
-            #~ file_type = 'gct'
-            #~
-        #~ if file_type != 'gct' and file_type != 'txt':
-            #~ raise Error
-        #~
         c.title = c.site_name+' Analyses - Download Expression Profile Wizard'
         if gene_set_id is None:
             # call a gene list chooser for
@@ -1668,7 +1662,8 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id)
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/download_gct_file_for_gene_set_wizard'),'Download Expression Profile - Choose Gene List'],[h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id),'Download Expression Profile - Choose Dataset  (Step 2 of 3)']]
-            return render('workbench/choose_dataset.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/choose_dataset.mako', self.deprecated_pylons_data_for_view, request=self.request)
+
         ds_id = dataset_id
 
         if file_type is None:
@@ -1679,14 +1674,14 @@ class WorkbenchController(BaseController):
 
             c.url = h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id)+'&datasetID='+str(dataset_id)+'&file_type='
             c.breadcrumbs = [[h.url('/genes/search'),'Genes'],[h.url('/workbench/download_gct_file_for_gene_set_wizard'),'Choose Gene List'],[h.url('/workbench/download_gct_file_for_gene_set_wizard?gene_set_id=')+str(gene_set_id),'Choose Dataset '],[h.url('/workbench/download_gct_file_for_gene_set_wizard'),'Download Expression Profile - Choose File Type (Step 3 of 3)']]
-            return render('workbench/generic_choose.mako')
+            return render_to_response('S4M_pyramid:templates/workbench/generic_choose.mako', self.deprecated_pylons_data_for_view, request=self.request)
 
 
         base_path = self.StemformaticsQueue
 
-        chip_type = Stemformatics_Dataset.getChipType(db,dataset_id)
+        chip_type = Stemformatics_Dataset.getChipType(dataset_id)
 
-        db_id = Stemformatics_Dataset.get_db_id(db,dataset_id)
+        db_id = Stemformatics_Dataset.get_db_id(dataset_id)
 
         # set some variables
         self.DatasetGCTFiles = config['DatasetGCTFiles']
@@ -1707,9 +1702,7 @@ class WorkbenchController(BaseController):
             download_gct_filename = 'download_expression_profile_gene_set_'+str(gene_set_id)+'_dataset_'+handle+'.txt'
             options = ['no_gct_header']
 
-
         read_gct_file_name = self.DatasetGCTFiles + 'dataset'+str(dataset_id)+'.gct'
-
 
         ref_type = 'gene_set_id'
         ref_id = gene_set_id
@@ -1720,13 +1713,12 @@ class WorkbenchController(BaseController):
         stemformatics_version = config['stemformatics_version']
         response.headers['Content-Disposition'] = 'attachment;filename='+download_gct_filename
         response.charset= "utf8"
+        response.text = gct_text
+        return response
 
-        return gct_text
 
-
-
-    #---------------------NOT MIGRATED--------------------------------
     def _get_inputs_for_gene_neighbour_graph(self):
+        request = self.request
         geneSearch = FTS_SEARCH_EXPRESSION.to_python(request.params.get('gene'))
         try:
             first_check = request.params.get('ds_id')
@@ -1921,6 +1913,7 @@ class WorkbenchController(BaseController):
         c.use_galaxy_server = use_galaxy = config['use_galaxy_server']
 
         db_id = request.params.get('db_id')
+        current_db_id = db_id
         c.db_id = db_id
 
         if gene is None:
@@ -1963,10 +1956,6 @@ class WorkbenchController(BaseController):
             c.breadcrumbs = [[h.url('/genes/search'),'Gene Search']]
             return render_to_response('S4M_pyramid:templates/workbench/choose_from_multiple_genes.mako',self.deprecated_pylons_data_for_view,request=self.request)
 
-
-
-
-
         if dataset_id is None:
             #now get the dataset ID
             c.species = Stemformatics_Gene.get_species_from_db_id(db,db_id)
@@ -1981,21 +1970,19 @@ class WorkbenchController(BaseController):
         if c.dataset_status != "Available":
             return redirect(url(controller='contents', action='index'), code=404)
 
-
+        dataset_db_id = Stemformatics_Dataset.get_db_id(int(ds_id))
 
         chip_type = Stemformatics_Dataset.getChipType(dataset_id)
 
         result = Stemformatics_Gene.get_unique_gene_fast(db,gene_list,db_id,'all',select_all_ambiguous,get_description,chip_type)
 
 
-
-
-
         if probe is None:
 
-
+            result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,[ensemblID],dataset_db_id,current_db_id)
+            genes = result[0]
             # now check that the gene has only one probe
-            probes = Stemformatics_Probe.return_probe_information(db,ensemblID,db_id,ds_id)
+            probes = Stemformatics_Probe.return_probe_information(db,genes,dataset_db_id,ds_id)
             len_probes = len(probes)
 
             if len_probes == 0:
@@ -2025,9 +2012,8 @@ class WorkbenchController(BaseController):
                 self._temp.line_graph_available = False
                 gene_annotation_names_required = "no"
                 chip_type = Stemformatics_Dataset.getChipType(ds_id)
-                data = Stemformatics_Gene_Set.get_probes_from_genes(db_id,ds_id,[self._temp.ensemblID],gene_annotation_names_required)
+                data = Stemformatics_Gene_Set.get_probes_from_genes(dataset_db_id,ds_id,genes,gene_annotation_names_required)
                 probe_list = data[0]
-
                 c.probe_list = [probe for probe in probe_list]
                 c.sorted_probe_list = sorted(c.probe_list)
                 # self._temp.this_view = self._setup_graphs(self._temp)

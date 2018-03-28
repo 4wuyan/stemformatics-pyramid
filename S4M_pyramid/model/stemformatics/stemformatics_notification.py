@@ -14,7 +14,6 @@ from sqlalchemy import or_, and_, desc
 
 from S4M_pyramid.lib.deprecated_pylons_globals import magic_globals, config
 
-from decorator import decorator
 
 import formencode.validators as fe
 
@@ -28,7 +27,7 @@ import psycopg2.extras
 from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
-#from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job # wouldn't work otherwise??
+from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job # wouldn't work otherwise??
 from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
 
 

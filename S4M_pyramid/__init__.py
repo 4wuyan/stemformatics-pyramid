@@ -4,12 +4,18 @@ from .controllers.workbench import WorkbenchController
 from .controllers.contents import ContentsController
 from .controllers.expressions import ExpressionsController
 from .controllers.auth import AuthController
+from .controllers.tests import TestsController
+from .controllers.statistics import StatisticsController
 from .controllers.genes import GenesController
 from .controllers.main import MainController
 from .controllers.api import ApiController
+from .controllers.admin import AdminController
 from .controllers.datasets import DatasetsController
 from .controllers.msc_signature import MscSignatureController
+from .controllers.projects import ProjectsController
 from .controllers.ensembl_upgrade import EnsemblUpgradeController
+from .controllers.probes import ProbesController
+
 def main(global_config, **settings):
     setup_deprecated_pylons_globals(settings)
     setup_database_connection(settings)
@@ -26,25 +32,25 @@ def main(global_config, **settings):
     # the routing order is consistent with the order in pylons project
 
     # Custom routes are placed first
-    redirect_shortcut(config, '/project_grandiose', '/projects/project_grandiose')
-    redirect_shortcut(config, '/leukomics', '/projects/leukomics')
-    redirect_shortcut(config, '/', '/contents/index')
-    redirect_shortcut(config, '/hamlet/index', '/contents/removal_of_hamlet')
-    redirect_shortcut(config, '/tests', '/main/tests')
-    redirect_shortcut(config, '/genes', '/genes/search')
-    redirect_shortcut(config, '/genes/', '/genes/search')
-    redirect_shortcut(config, '/genes/summary', '/expressions/yugene_graph')
-    redirect_shortcut(config, '/workbench/gene_set_index', '/genes/gene_set_index')
-    redirect_shortcut(config, '/workbench/public_gene_set_index', '/genes/public_gene_set_index')
-    redirect_shortcut(config, '/workbench/gene_set_view/{id}', '/genes/gene_set_view/{id}')
-    redirect_shortcut(config, '/workbench/gene_set_bulk_import_manager', '/genes/gene_set_bulk_import_manager')
-    redirect_shortcut(config, '/workbench/merge_gene_sets', '/genes/merge_gene_sets')
-    redirect_shortcut(config, '/admin/check_redis_consistency_for_datasets', '/api/check_redis_consistency_for_datasets')
-    redirect_shortcut(config, '/workbench/histogram_wizard', '/expressions/histogram_wizard')
-    redirect_shortcut(config, '/expressions', '/contents/index')
-    redirect_shortcut(config, '/expressions/', '/contents/index')
-    redirect_shortcut(config, '/datasets', '/datasets/search')
-    redirect_shortcut(config, '/datasets/', '/datasets/search')
+    special_routing(config, '/project_grandiose', controller='projects', action='project_grandiose')
+    special_routing(config, '/leukomics', controller='projects', action='leukomics')
+    special_routing(config, '/', controller='contents', action='index')
+    special_routing(config, '/hamlet/index', controller='contents', action='removal_of_hamlet')
+    special_routing(config, '/tests', controller='main', action='tests')
+    special_routing(config, '/genes', controller='genes', action='search')
+    special_routing(config, '/genes/', controller='genes', action='search')
+    special_routing(config, '/genes/summary', controller='expressions', action='yugene_graph')
+    special_routing(config, '/workbench/gene_set_index', controller='genes', action='gene_set_index')
+    special_routing(config, '/workbench/public_gene_set_index', controller='genes', action='public_gene_set_index')
+    special_routing(config, '/workbench/gene_set_view/{id}', controller='genes', action='gene_set_view')
+    special_routing(config, '/workbench/gene_set_bulk_import_manager', controller='genes', action='gene_set_bulk_import_manager')
+    special_routing(config, '/workbench/merge_gene_sets', controller='genes', action='merge_gene_sets')
+    special_routing(config, '/admin/check_redis_consistency_for_datasets', controller='api', action='check_redis_consistency_for_datasets')
+    special_routing(config, '/workbench/histogram_wizard', controller='expressions', action='histogram_wizard')
+    special_routing(config, '/expressions', controller='contents', action='index')
+    special_routing(config, '/expressions/', controller='contents', action='index')
+    special_routing(config, '/datasets', controller='datasets', action='search')
+    special_routing(config, '/datasets/', controller='datasets', action='search')
 
     # the following routing rules correspond to variable controller, i.e. '/{controller}*', in pylons.
     # You can't choose a view class via a routing variable in Pyramid.
@@ -54,13 +60,22 @@ def main(global_config, **settings):
     config.add_handler("contents","/contents/{action}",handler=ContentsController)
     config.add_handler("expressions","/expressions/{action}",handler=ExpressionsController)
     config.add_handler("auth","/auth/{action}",handler=AuthController)
+    config.add_handler("tests","/tests/{action}",handler=TestsController)
+    config.add_handler("tests_withID","/tests/{action}/{id}",handler=TestsController)
+    config.add_handler("statistics","/statistics/{action}",handler=StatisticsController)
     config.add_handler("genes","/genes/{action}",handler=GenesController)
+    config.add_handler("genes_withID","/genes/{action}/{id}",handler=GenesController)
     config.add_handler("main","/main/{action}",handler=MainController)
     config.add_handler("api","/api/{action}",handler=ApiController)
     config.add_handler("datasets","/datasets/{action}",handler=DatasetsController)
     config.add_handler("msc_signature","/msc_signature/{action}",handler=MscSignatureController)
+    config.add_handler("projects","/projects/{action}",handler=ProjectsController)
     config.add_handler("ensembl_upgrade","/ensembl_upgrade/{action}",handler=EnsemblUpgradeController)
     config.add_handler("ensembl_upgrade_withID","/ensembl_upgrade/{action}/{id}",handler=EnsemblUpgradeController)
+
+    config.add_handler("admin", "/admin/{action}", handler=AdminController)
+    config.add_handler("admin_withID", "/admin/{action}/{id}", handler=AdminController)
+    config.add_handler("probes","/probes/{action}",handler=ProbesController)
     return config.make_wsgi_app()
 
 def setup_deprecated_pylons_globals(settings):
@@ -96,15 +111,22 @@ def setup_database_connection(settings):
     redis_interface_for_pickle.lazy_init(unix_socket_path = config['redis_server'])
     #---------------------------------------------
 
-def redirect_shortcut(config, old_path_pattern, new_path_pattern):
-    def redirect_view(request):
-        path = new_path_pattern.format(**request.matchdict)
-        if request.query_string:
-            path += '?' + request.query_string
-        return HTTPFound(location = path)
-    route_name = 'route_name for ' + old_path_pattern.format(controller='controller', action='action', id='id')
-    config.add_route(route_name, old_path_pattern)
-    config.add_view(redirect_view, route_name=route_name)
+from S4M_pyramid.lib.deprecated_pylons_globals import url
+def special_routing(config, path, **kwargs):
+    controller = kwargs.get('controller')
+    action = kwargs.get('action')
+    controller_pointer = eval(controller.capitalize() + 'Controller')
+
+    route_name = 'route_name for ' + path.format(controller='controller', action='action', id='id')
+    config.add_handler(route_name, path, handler=controller_pointer, action=action)
+
+    '''
+    The code below makes sure things like
+    url.environ['pylons.routes_dict']['controller']
+    url.environ['pylons.routes_dict']['action']
+    get correct values
+    '''
+    url.special_rules[path] = kwargs
 
 def config_static_views(config):
     config.add_static_view(name='static_views', path='public')
@@ -114,3 +136,9 @@ def config_static_views(config):
     config.add_static_view(name='themes', path='public/themes')
     config.add_static_view(name='img', path='public/img')
     config.add_static_view(name='help', path='public/help')
+
+    # serve assets that need to be accessed from the root of your domain
+    # https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/pylons/static.html
+    config.include("pyramid_assetviews")
+    filenames = ['robots.txt', 'favicon.ico', 'favicon.png']
+    config.add_asset_views("S4M_pyramid:public", filenames=filenames)

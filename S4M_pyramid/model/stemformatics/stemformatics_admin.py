@@ -66,7 +66,7 @@ class Stemformatics_Admin(object):
         conn.close()
         result= str(result[0][0])
 
-        from guide.model.stemformatics.stemformatics_expression import Stemformatics_Expression
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
         ds_id = config['health_check_ds_id_redis']
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
         result += ':'+sample_labels[0]
@@ -94,7 +94,7 @@ class Stemformatics_Admin(object):
     @staticmethod
     def dataset_override_users(db): #CRITICAL-6 #CRITICAL-2
 
-        from guide.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
+        from S4M_pyramid.model.stemformatics.stemformatics_dataset import Stemformatics_Dataset # wouldn't work otherwise??
 
 
         db.schema = 'stemformatics'

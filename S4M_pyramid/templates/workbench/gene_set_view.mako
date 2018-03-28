@@ -1,27 +1,27 @@
-<%inherit file="/default.html"/>
-<%namespace name="Base" file="/base.mako"/>
+<%inherit file="../default.html"/>
+<%namespace name="Base" file="../base.mako"/>
 
-<%def name="includes()">   
+<%def name="includes()">
     <link rel="stylesheet" type="text/css" href="${h.url('/css/workbench/gene_set_index.css')}" >
     <link rel="stylesheet" type="text/css" href="${h.url('/css/workbench/gene_set_view.css')}" >
     <script type="text/javascript" src="${h.url('/js/popups.js')}"></script>
     <script type="text/javascript" src="${h.url('/js/workbench/gene_set_view.js')}"></script>
 </%def>
 
-    
-        
-    <div id="wb_background" class="wb_background_divs">    
+
+
+    <div id="wb_background" class="wb_background_divs">
         <div id="wb_background_inner_div">
-            
-            ${Base.wb_breadcrumbs()}  
-                
-                
+
+            ${Base.wb_breadcrumbs()}
+
+
             <div class="wb_question_groups_selected">
-                
+
                 <div class="wb_main_menu_expanded">
                     <div class="wb_sub_menu_container">
-                        
-                        
+
+
                         <div class="wb_sub_menu wb_menu_items">
                             <div class="wb_sub_menu_inner_div">Gene List View - ${c.gene_set.gene_set_name}</div>
                         </div>
@@ -31,21 +31,21 @@
                             </div>
                         </div>
                         <div class="wb_help wb_menu_items">
-                            <div class="wb_help_inner_div">                
+                            <div class="wb_help_inner_div">
                                 <p>Genes in your gene list are listed here.</p>
                                 <p>From this view, you may send your gene list to Analysis or view the expression of your geneset in a Multi-Gene Expression Graph.</p>
                             </div>
                         </div>
 
-                        
+
                     </div>
                     <div class="clear"></div>
                 </div>
-            
-            </div>    
+
+            </div>
             <div id="form">
                 <div class="innerDiv">
-                
+
                     <div class="hidden" id="gene_set_id">${c.gene_set.id}</div>
                     <div class="hidden" id="db_id">${c.gene_set.db_id}</div>
                     <div class="hidden" id="gene_set_name">${c.gene_set.gene_set_name}</div>
@@ -73,9 +73,9 @@
                                         <% dict_of_types = c.innate_db_object.return_dict_of_types() %>
                                         <% list_of_types_in_order = c.innate_db_object.return_list_of_types_in_order() %>
                                         %for analysis in list_of_types_in_order:
-                                            <% type = dict_of_types[analysis] %> 
+                                            <% type = dict_of_types[analysis] %>
                                             <li><a href="#" class="innate_db" data_type="${type}">Innate DB ${analysis}</a></li>
-            
+
                                         %endfor
                                 </ul>
                             </li>
@@ -93,25 +93,25 @@
                             <li id="helpMenu"> <a href="#" class="button help wb_open_help"><span><span class="icon quest"></span>Help</span><span class="arrow right"></span></a> </li>
                         </ul>
                     </div>
-                    
+
                     <div class=message>${c.message}</div>
-                    
+
                     <div class="clear"></div>
-                    <div id="description" class="description"> 
+                    <div id="description" class="description">
                         <div class="innerDiv">
-                                <% 
+                                <%
 if c.public and (c.gene_set.description == '' or c.gene_set.description is None):
     descriptionText = c.gene_set.gene_set_name +" ("+str(len(c.result)) + " genes)"
 elif c.gene_set.description == '' or c.gene_set.description is None:
     descriptionText = "No description (" + str(len(c.result)) + " genes)"
 else:
     descriptionText = c.gene_set.description + " ("+str(len(c.result))+" genes)"
-endif 
+endif
 %>
                             <div id="descriptionText">${descriptionText}</div>
                         </div>
                     </div>
-                            
+
                     <table id="gene_set_items">
                         <thead>
                             <tr>
@@ -119,45 +119,45 @@ endif
                                 <th id="aliases">Aliases</th>
                                 <th id="ensemblID">Ensembl ID</th>
                                 <th>Description</th>
-                                <th id="status">Action</th> 
+                                <th id="status">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                         % if c.result == [] or c.result is None:
                             <tr><td style="text-align:center;"> No Genes were found. </td><td></td><td></td>
-                        % else: 
+                        % else:
                             <% count = 0 %>
-                        
+
                             % for genes in c.result:
-                                
-                                <% 
+
+                                <%
                                     name = genes.associated_gene_name
                                     aliases = genes.associated_gene_synonym
                                     ensemblID = genes.gene_id
                                     description = genes.description
                                     gene_set_list_id = genes.id
                                 %>
-                                
-                                
-                                
+
+
+
                                 <tr>
                                     <td><a target="_blank" href="${h.url('/genes/search?gene=')}${ensemblID.strip()}">${name}</a></td>
                                     <td>${aliases}</td>
                                     <td>${ensemblID}</td>
                                     <td>${description.replace('<br />','')}</td>
                                     <td>
-                                        
+
                                         % if not c.public or (c.public and c.role=="admin"):
                                         <a class="delete" href="${h.url('/workbench/delete_gene_from_set/')}${gene_set_list_id}">Delete</a>
                                         %else:
                                         No actions available
-                                        %endif 
+                                        %endif
                                     </td>
-                                    
-                                    
+
+
                                 </tr>
-                                
-                                
+
+
                             % endfor
                         % endif
                         </tbody>
@@ -169,7 +169,7 @@ endif
         </div>
         <div class="clear" > </div>
     </div>
-    
+
     <div class="hidden">
         <table id="gene_set_items_download">
                 <thead>
@@ -183,17 +183,17 @@ endif
                         <th>Chr End</th>
                         <th>Chr Strand</th>
 
-                        
+
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                 % if c.result == [] or c.result is None:
                     <tr><td style="text-align:center;"> No Genes were found. </td>
-                % else: 
+                % else:
                     % for genes in c.result:
-                        
-                        <% 
+
+                        <%
                             name = genes.associated_gene_name.strip()
                             ensemblID = genes.gene_id.strip()
                             aliases = genes.associated_gene_synonym.strip()
@@ -201,10 +201,10 @@ endif
                             chr = genes.chromosome_name
                             start = genes.gene_start
                             end = genes.gene_end
-                            strand = genes.strand        
-                            
+                            strand = genes.strand
+
                         %>
-                        
+
                         <tr>
                             <td>${name}</td>
                             <td>${aliases}</td>
@@ -215,29 +215,29 @@ endif
                             <td>${end}</td>
                             <td>${strand}</td>
                         </tr>
-                        
-                        
+
+
                     % endfor
                 % endif
                 </tbody>
             </table>
 
 
-            
+
     </div>
-    <div class="hidden innatedb"> 
+    <div class="hidden innatedb">
             <!-- this is for innatedb -->
             % if c.result != [] or c.result is not None:
-                <% 
-                list_of_ensembl_ids = [] 
+                <%
+                list_of_ensembl_ids = []
                 for genes in c.result:
                     ensemblID = genes.gene_id.strip()
                     list_of_ensembl_ids.append(ensemblID)
-               %> 
+               %>
                ${c.innate_db_object.create_form_to_post(list_of_ensembl_ids)| n}
 
 
-       
+
             %endif
 
     </div>

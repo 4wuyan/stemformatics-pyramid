@@ -9,9 +9,8 @@ log = logging.getLogger(__name__)
 
 import re
 from S4M_pyramid.model import redis_interface_normal as r_server
-import datetime
-from datetime import timedelta
-
+from datetime import timedelta, datetime
+import os
 
 from sqlalchemy import or_, and_, desc
 
@@ -28,6 +27,7 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 #CRITICAL-6
 from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin
+from S4M_pyramid.model.stemformatics.stemformatics_transcript import Stemformatics_Transcript
 
 # check strong password
 # (?=^.{8,20}$)(?=.*\d)(?=.*\W+)(?!.*\s)(?=.*[A-Z])(?=.*[a-z]).*$
@@ -51,6 +51,7 @@ class Stemformatics_Gene_Set(object):
 
     def __init__ (self):
         pass
+
 
     @staticmethod
     def check_gene_set_availability(gene_set_id,uid):
@@ -184,7 +185,8 @@ class Stemformatics_Gene_Set(object):
         try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
-            gsi = db.gene_set_items
+            gsi = db.with_labels(db.gene_set_items)
+
             db.schema = 'public'
             ga = db.genome_annotations
 
@@ -196,9 +198,9 @@ class Stemformatics_Gene_Set(object):
 
             if resultGeneSet is not None:
 
-                join1 = db.join(gsi,ga,and_(ga.gene_id==gsi.gene_id,ga.db_id == resultGeneSet.db_id))
-                where = and_(gsi.gene_set_id==gene_set_id)
-                resultGeneSetData = join1.filter(where).order_by(gsi.gene_id).all()
+                join1 = db.join(gsi,ga,and_(ga.gene_id==gsi.stemformatics_gene_set_items_gene_id,ga.db_id == resultGeneSet.db_id))
+                where = and_(gsi.stemformatics_gene_set_items_gene_set_id==gene_set_id)
+                resultGeneSetData = join1.filter(where).order_by(gsi.stemformatics_gene_set_items_gene_id).all()
 
                 result = [resultGeneSet,resultGeneSetData]
             else:
@@ -243,25 +245,27 @@ class Stemformatics_Gene_Set(object):
         try:
             db.schema = 'stemformatics'
             gs = db.gene_sets
-            gsi = db.gene_set_items
+            gsi = db.with_labels(db.gene_set_items)
 
             # first find the gene_set_item_id and the gene_set record
-            join1 = db.join(gsi,gs,gsi.gene_set_id==gs.id)
-            result = join1.filter(gsi.id==gene_set_item_id).one()
+            join1 = db.join(gsi,gs,gsi.stemformatics_gene_set_items_gene_set_id==gs.id)
+            result = join1.filter(gsi.stemformatics_gene_set_items_id==gene_set_item_id).one()
 
             if result is None:
-                raise Error
+                raise Exception # raise Error
                 return None
 
             # check that this user owns this gene_set record
             if result.uid != uid:
-                raise Error
+                raise Exception # raise Error
                 return None
 
             # save gene_set_id
+            result.gene_set_id = result.stemformatics_gene_set_items_gene_set_id
             gene_set_id = result.gene_set_id
 
             # delete gene_set_item
+            gsi = db.gene_set_items # you can't delete when column names are wrapped with labels
             gsi.filter(gsi.id==gene_set_item_id).delete()
 
             if result is None:
@@ -511,19 +515,16 @@ class Stemformatics_Gene_Set(object):
 
         db.schema = 'stemformatics'
         gs = db.gene_sets
-        gsi = db.gene_set_items
-
+        gsi = db.with_labels(db.gene_set_items)
         # check uid, geneset id are valid
         where = and_(gs.uid == uid, gs.id.in_(gene_sets))
-
-
-        join1 = db.join(gsi,gs,gsi.gene_set_id==gs.id)
+        join1 = db.join(gsi,gs,gsi.stemformatics_gene_set_items_gene_set_id==gs.id)
 
         result = join1.filter(where).order_by(gs.id).all()
 
         pathway_count_result = {}
         for gene in result:
-            gene.gene_set_id = str(gene.gene_set_id)
+            gene.gene_set_id = str(gene.stemformatics_gene_set_items_gene_set_id)
 
             if gene.gene_set_id not in pathway_count_result:
                 pathway_count_result[gene.gene_set_id] = 0
@@ -596,47 +597,55 @@ class Stemformatics_Gene_Set(object):
 
     # rewrite to use psycopg2 and less joins
     @staticmethod
-    def get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id):
+    def get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,gene_set_id):
+        from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression
         conn_string = config['psycopg2_conn_string']
         conn = psycopg2.connect(conn_string)
 
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = "select mapping_id from datasets where id = %s"
+        sql = "select mapping_id from datasets where id = %s;"
         data = (ds_id,)
         cursor.execute(sql, data)
         # retrieve the records from the database
         result = cursor.fetchall()
-        cursor.close()
-        conn.close()
         mapping_id = result[0][0]
 
-        conn = psycopg2.connect(conn_string)
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = "select * from stemformatics.feature_mappings as fm where db_id = %s and mapping_id = %s and from_type = 'Gene' and from_id in (select gene_id from stemformatics.gene_set_items as gsi where gene_set_id = %s);"
-        data = (db_id,mapping_id,gene_set_id)
+        # step 1. get genes for gene list
+        sql = "select gene_id from stemformatics.gene_set_items as gsi where gene_set_id = %s;"
+        data = (gene_set_id,)
+        cursor.execute(sql, data,)
+        data = cursor.fetchall()
+        genes_in_gene_set_id = []
+
+        for row in data:
+            gene = row[0]
+            genes_in_gene_set_id.append(gene)
+
+        # step 2. if required map lastest ensembl version genes to dataset ensembl version
+        result = Stemformatics_Expression.map_gene_to_dataset_ensembl_version_db_id(ds_id,genes_in_gene_set_id,dataset_db_id,latest_db_id)
+
+        genes_in_gene_set_id = result[0]
+
+        # step 3. get probes for new genes
+        sql = "select * from stemformatics.feature_mappings as fm where db_id = %s and mapping_id = %s and from_type = 'Gene' and from_id in %s;"
+        data = (dataset_db_id,mapping_id,tuple(genes_in_gene_set_id))
         cursor.execute(sql, data,)
         # retrieve the records from the database
         result = cursor.fetchall()
-        cursor.close()
-        conn.close()
-
 
         probes_to_genes = result
         list_of_probes = []
-        list_of_genes = []
         dict_of_probe_to_gene = {}
-        # added thsi for task 2527, to create a dict with probe and gene_id
-        dict_of_probe_to_gene_id = {}
+
         for row in result:
             probe_id = row['to_id']
             gene_id = row['from_id']
             list_of_probes.append(probe_id)
-            list_of_genes.append(gene_id)
 
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         sql = "select gene_id,associated_gene_name from genome_annotations where db_id = %s and gene_id =ANY(%s);"
-        data = (db_id,list_of_genes)
+        data = (latest_db_id,genes_in_gene_set_id)
         cursor.execute(sql, data,)
         # retrieve the records from the database
         result = cursor.fetchall()
@@ -654,12 +663,7 @@ class Stemformatics_Gene_Set(object):
             gene_id = row['from_id']
             dict_of_probe_to_gene[probe_id] = dict_of_gene_to_name[gene_id]
 
-        for row in probes_to_genes:
-            probe_id = row['to_id']
-            gene_id = row['from_id']
-            dict_of_probe_to_gene_id[probe_id] = gene_id
-
-        return [list_of_probes,dict_of_probe_to_gene,dict_of_probe_to_gene_id]
+        return [list_of_probes,dict_of_probe_to_gene]
 
     # gene must be ensemblID
     # rewriting to use pyscopg2 and incorporate list of genes instead of a single gene
@@ -868,3 +872,97 @@ class Stemformatics_Gene_Set(object):
                 r_server.delete(key)
 
         return True
+
+    def submit_gene_list_annotation_job(job_id,db):
+
+        from S4M_pyramid.model.stemformatics.stemformatics_job import Stemformatics_Job
+        from S4M_pyramid.model.stemformatics.stemformatics_gene import Stemformatics_Gene
+
+        result = Stemformatics_Job.get_job_details_with_gene_set(db,job_id)
+
+        if result is None:
+            return redirect(url(controller='contents', action='index'), code=404)
+
+        dataset_id  = result.dataset_id
+        uid = result.uid
+        analysis = result.analysis
+        gene_set_id= result.gene_set_id
+        use_cls = result.use_cls
+        use_gct = result.use_gct
+
+        # get list of genes so we can get the db_id too
+        result = Stemformatics_Gene_Set.getGeneSetData(db,uid,gene_set_id)
+
+        raw_genes = result[1]
+
+        # expecting at least one gene in the gene set
+        db_id = raw_genes[0].db_id
+
+        StemformaticsQueue = config['StemformaticsQueue']
+        GeneSetFiles = config['GeneSetFiles']
+        # create directory
+        base_path = StemformaticsQueue + str(job_id) + '/'
+        ini_filename = base_path + 'job.ini'
+        main_filename = base_path + 'job.tsv'
+        gene_pathways_filename = base_path + 'pathways.tsv'
+        f_gene_sets = GeneSetFiles + 'db_id_'+str(db_id)+'_all_genes.tsv'
+        gene_pathways_export = base_path + 'pathway_export.tsv'
+
+        if not os.path.exists(base_path):
+            os.mkdir(base_path)
+
+        # now use the list of genes
+        genes_in_gene_set_count = len(raw_genes)
+        genes = []
+        dict_gene_names = {}
+
+        for gene_row in raw_genes:
+            genes.append(gene_row.gene_id)
+            dict_gene_names[gene_row.gene_id] = gene_row.associated_gene_name
+
+        tx_dict = Stemformatics_Transcript.get_transcript_annotations(db,db_id,genes)
+
+        # write the main job data file
+        result = Stemformatics_Job.write_transcript_data_gene_set_annotation(db,main_filename,tx_dict)
+
+        # read the gene sets large file to go through and work out the pathways this gene set is for
+        gene_list = Stemformatics_Gene_Set.read_db_all_genes(f_gene_sets,genes)
+
+        # write to file gene centric list of pathways that touch this gene set - returns dict_pathway and gene pathways list
+        result = Stemformatics_Job.write_gene_pathways_gene_set_annotation(gene_pathways_filename,gene_list,dict_gene_names)
+
+        dict_pathway = result[0]
+        gene_pathways_list = result[1]
+
+        public_uid = 0
+        gene_set_details = Stemformatics_Gene_Set.get_gene_set_details(db,public_uid,gene_pathways_list)
+
+        total_number_genes = Stemformatics_Gene.get_total_number_genes(db,db_id)
+
+        gene_set_counts = Stemformatics_Gene_Set.get_gene_set_counts(db,public_uid,gene_pathways_list)
+
+        dict_gene_set_details = {}
+        for gene_set in gene_set_details:
+            dict_gene_set_details[str(gene_set.id)] = gene_set
+
+        # show export for gene pathways
+        result = Stemformatics_Job.write_gene_pathways_export_gene_set_annotation(gene_pathways_export,dict_pathway,dict_gene_set_details,gene_set_counts,genes_in_gene_set_count,total_number_genes)
+
+    @staticmethod
+    def get_gene_set_items(gene_list_id):
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("select gene_id from stemformatics.gene_set_items where gene_set_id = %(gene_list_id)s;",{"gene_list_id":gene_list_id,})
+
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        gene_list = []
+
+        for row in result:
+            gene = row[0]
+            gene_list.append(gene)
+
+        return gene_list

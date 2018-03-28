@@ -18,19 +18,17 @@ import S4M_pyramid.lib.helpers as h
 import psycopg2
 import psycopg2.extras
 from S4M_pyramid.model import s4m_psycopg2
-from S4M_pyramid.lib.deprecated_pylons_globals import config
-#from S4M_pyramid.lib.state import *
+from S4M_pyramid.lib.deprecated_pylons_globals import config,app_globals as g
+from S4M_pyramid.lib.helpers import url
 from S4M_pyramid.model.stemformatics.stemformatics_auth import Stemformatics_Auth # wouldn't work otherwise??
-#from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
+from S4M_pyramid.model.stemformatics.stemformatics_admin import Stemformatics_Admin # wouldn't work otherwise??
 
 __all__ = ['Stemformatics_Dataset']
 
-import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob#urllib2
-#from poster.encode import multipart_encode
-#from poster.streaminghttp import register_openers
+import formencode.validators as fe, time ,os , codecs , subprocess , re , string , json, datetime,glob
 
 from S4M_pyramid.model import redis_interface_normal as r_server, redis_interface_for_pickle
-
+import urllib.request
 POS_INT = fe.Int(min=1, not_empty=True)
 NUMBER = fe.Number(not_empty=True)
 IDENTIFIER = fe.PlainText(not_empty=True)
@@ -309,6 +307,11 @@ All functions have a try that will return None if errors are found
         temp_datasets = json.loads(result)
         choose_datasets = {}
 
+        if db_id!= None:
+            same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
+        else:
+            same_species_db_id_list = [db_id]
+
         for ds_id in temp_datasets:
             db = None
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
@@ -316,7 +319,7 @@ All functions have a try that will return None if errors are found
                 continue
             if dataset_status == "Limited" and show_limited == False:
                 continue
-            if temp_datasets[ds_id]['db_id'] != db_id and db_id != None:
+            if temp_datasets[ds_id]['db_id'] not in same_species_db_id_list and db_id != None:
                 continue
 
             choose_datasets[ds_id] = temp_datasets[ds_id]
@@ -530,7 +533,7 @@ All functions have a try that will return None if errors are found
                 temp_result_dict[ds_id]['showReportOnDatasetSummaryPage'] = sorted(hosted_reports_dict.items())
                 temp_result_dict[ds_id]['ShowExternalLinksOnDatasetSummaryPage'] = sorted(external_analysis_links_dict.items())
                 temp_result_dict[ds_id]['ShowPCALinksOnDatasetSummaryPage'] = sorted(pca_links_dict.items())
-                temp_result_dict[ds_id]['has_data'] = ds_row.has_data
+                temp_result_dict[ds_id]['has_data'] = ds_row.has_data #ds_row is not defined before
             except:
                 pass # when no ds_id found (eg. jjjj) this will be executed
             """
@@ -796,7 +799,7 @@ All functions have a try that will return None if errors are found
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
             if dataset_status == "Unavailable":
                 continue
-            if dataset_status == "Limited" and show_limited == False:
+            if dataset_status == "Limited" and show_limited == False:#show_limited is not defined before
                 continue
 
             ds_mt_result = {}
@@ -1523,11 +1526,12 @@ All functions have a try that will return None if errors are found
     """
     @staticmethod
     def get_all_x_platform_datasets_for_user(uid,db_id,role = 'normal'): #CRITICAL-2 #CRITICAL-3
+        same_species_db_id_list = Stemformatics_Dataset.get_same_species_db_id_list(db_id)
 
         # Cannot show yugene for more than one species. Therefore it is safe to always search on db_id
         if role == 'admin' or role == 'annotator':
-            sql = "select id,handle,chip_type from datasets where show_yugene = true and db_id = %(db_id)s;"
-            data = {"db_id":db_id}
+            sql = "select id,handle,chip_type from datasets where show_yugene = true and db_id in %(db_id)s;"
+            data = {"db_id":tuple(same_species_db_id_list)}
 
             result = s4m_psycopg2._get_psycopg2_sql(sql,data)
             dataset_dict = Stemformatics_Dataset._organise_yugene_datasets(result)
@@ -1556,12 +1560,13 @@ All functions have a try that will return None if errors are found
 
 
             if temp_list_of_ds_ids is not None  :
-                sql = "select id,handle,chip_type from datasets where show_yugene = true  and db_id = %(db_id)s and id = ANY (%(temp_list_of_ds_ids)s) ;"
-                data = {"db_id":db_id,'temp_list_of_ds_ids':temp_list_of_ds_ids}
+                sql = "select id,handle,chip_type from datasets where show_yugene = true  and db_id in %(db_id)s and id = ANY (%(temp_list_of_ds_ids)s) ;"
+                data = {"db_id":same_species_db_id_list,'temp_list_of_ds_ids':temp_list_of_ds_ids}
                 result = s4m_psycopg2._get_psycopg2_sql(sql,data)
                 dataset_dict = Stemformatics_Dataset._organise_yugene_datasets(result)
             else:
                 dataset_dict = {}
+
         return dataset_dict
 
 
@@ -1641,7 +1646,7 @@ All functions have a try that will return None if errors are found
 
     @staticmethod
     def convert_bs_md_into_json(db,ds_id,uid): #CRITICAL-2
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
         json_ds_md = []
         base_array = {}
         #header_array = ['chip_id','ds_id','chip_type','Sample Type','Replicate Group ID','Sample Description','Tissue','Cell Type','Organism'] # these are the first three columns all the time
@@ -1777,8 +1782,12 @@ All functions have a try that will return None if errors are found
         f_ds_md.write(ds_md_text)
         f_ds_md.close()
 
+        # The following code is not used because poster doesn't support Python3
+        # (multipart_encode & register_openers are from poster module)
+        '''
         #then call curl
         # Register the streaming http handlers with urllib2
+        # this function requires poster.streaminghttp, which is unsupported in python3
         register_openers()
 
         # Start the multipart/form-data encoding of the file "DSC0001.jpg"
@@ -1787,6 +1796,7 @@ All functions have a try that will return None if errors are found
 
         # headers contains the necessary Content-Type and Content-Length
         # datagen is a generator object that yields the encoded parameters
+        # this function requires poster.encode, which is unsupported in python3
         datagen, headers = multipart_encode({
             "biosamples_metadata": open(file_bs_md, "rb"),
             "metastore": open(file_ds_md, "rb"),
@@ -1795,9 +1805,20 @@ All functions have a try that will return None if errors are found
 
         # Create the Request object
         url = config['validator_url']
-        request = urllib2.Request(url, datagen, headers)
+        request = urllib.request.Request(url, datagen, headers)
         # Actually do the request, and get the response
-        return_text = urllib2.urlopen(request).read()
+        return_text = urllib.request.urlopen(request).read()
+        '''
+        # Let's use requests module
+        import requests
+        url = config['validator_url']
+        files = [
+            ("biosamples_metadata",  open(file_bs_md, "rb")        ),
+            ("metastore",            open(file_ds_md, "rb")        ),
+            ("annotation-submit",    "Validate Annotation Files"   ),
+        ]
+        request = requests.post(url, files=files)
+        return_text = request.text
 
         os.remove(file_bs_md)
         os.remove(file_ds_md)
@@ -1929,14 +1950,14 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def write_cls_file(db,ds_id,uid): #CRITICAL-6
         ds_id = int(ds_id)
-        pylons.app_globals._push_object(config['pylons.app_globals'])
+        # pylons.app_globals._push_object(config['pylons.app_globals'])
         redis_server = config['redis_server']
         cls_base_dir = config['DatasetCLSFiles']
         ds_result = Stemformatics_Dataset.getExpressionDatasetMetadata(db,ds_id,uid,True)
         return_text =ds_result['limit_sort_by'] + "<br/>"
         sort_type_list = ds_result['limit_sort_by'].split(',')
         build_dict = {}
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
 
@@ -2034,7 +2055,7 @@ All functions have a try that will return None if errors are found
         # yugene redis
         cmd = redis_initialise_yugene + " " + redis_server + " " + x_platform_base_dir + " " + str(ds_id)
         p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-        output = p.stdout.read()
+        output = p.stdout.read().decode('utf-8')
         p.stdout.close()
 
 
@@ -2042,7 +2063,7 @@ All functions have a try that will return None if errors are found
         # gct redis
         cmd2 = redis_initialise_gct + " " + redis_server + " " + gct_base_dir + " " + str(ds_id)
         p2 = subprocess.Popen(cmd2, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-        output2 = p2.stdout.read()
+        output2 = p2.stdout.read().decode('utf-8')
         p2.stdout.close()
 
         # user and dataset triggers
@@ -2051,12 +2072,7 @@ All functions have a try that will return None if errors are found
 
 
         Stemformatics_Auth.triggers_for_change_in_user(db)
-
-
-
-
         show_text = cmd + "<br><br>" + output.replace("\n","<br/>") + cmd2 + "<br><br>" + output2.replace("\n","<br/>") + "<br><br> Including all_sample_metadata and triggers for change in dataset and change in user.<br><br>Done! <a href='"+('/admin/index')+"'>Now click to go back</a> or go to <a href='" + ('/datasets/summary?datasetID='+str(ds_id))+"'>the dataset summary</a>"
-
 
         return show_text
 
@@ -2126,7 +2142,7 @@ All functions have a try that will return None if errors are found
     @staticmethod
     def get_sample_chip_ids_in_order(db,chip_type,chip_ids,sort_by,ds_id):   #CRITICAL-2
         ds_id = int(ds_id)
-        pylons.app_globals._push_object(config['pylons.app_globals'])
+        # pylons.app_globals._push_object(config['pylons.app_globals'])
         temp_result_dict = {}
         map_replicate_group_id_to_chip_id = {}
         for chip_id in chip_ids:
@@ -2238,7 +2254,7 @@ All functions have a try that will return None if errors are found
 
 
     @staticmethod
-    def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options): #CRITICAL-4
+    def build_gct_from_redis(db,ref_type,ref_id,ds_id,uid,options,latest_db_id): #CRITICAL-4
 
         from S4M_pyramid.model.stemformatics.stemformatics_expression import Stemformatics_Expression # wouldn't work otherwise??
         from S4M_pyramid.model.stemformatics.stemformatics_gene_set import Stemformatics_Gene_Set # wouldn't work otherwise??
@@ -2248,15 +2264,15 @@ All functions have a try that will return None if errors are found
         sort_by = 'Sample Type'
         human_db = config['human_db']
         mouse_db = config['mouse_db']
-        db_id = Stemformatics_Dataset.get_db_id(db,ds_id)
-        chip_type = Stemformatics_Dataset.getChipType(db,ds_id)
+        dataset_db_id = db_id = Stemformatics_Dataset.get_db_id(ds_id)
+        chip_type = Stemformatics_Dataset.getChipType(ds_id)
 
         sample_labels = Stemformatics_Expression.get_sample_labels(ds_id)
         sample_chip_ids_in_order = Stemformatics_Dataset.get_sample_chip_ids_in_order(db,chip_type,sample_labels,sort_by,ds_id)
 
         if ref_type == 'gene_set_id':
             gene_set_id = int(ref_id)
-            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,db_id,ds_id,gene_set_id)
+            result = Stemformatics_Gene_Set.get_probes_from_gene_set_id(db,dataset_db_id,latest_db_id,ds_id,gene_set_id)
             probe_list = result[0]
             probe_dict = result[1] # this has probe to gene symbols
 
@@ -2595,7 +2611,7 @@ All functions have a try that will return None if errors are found
             dataset_status = Stemformatics_Dataset.check_dataset_with_limitations(db,ds_id,uid)
             if dataset_status == "Unavailable":
                 continue
-            if dataset_status == "Limited" and show_limited == False:
+            if dataset_status == "Limited" and show_limited == False:# show_limited not defined
                 continue
 
             ds_mt_result = {}
@@ -3350,7 +3366,7 @@ All functions have a try that will return None if errors are found
             for line in f:
                 columns = line.split() # split line into columns
                 if len(columns) == 1:
-                    probes.append(column[0])   # column 1
+                    probes.append(columns[0])   # column 1
         cumulative_value_keys = []
         gct_value_keys = []
         for probe in probes:
@@ -3418,3 +3434,22 @@ All functions have a try that will return None if errors are found
         for ds_id in result_ds_list:
             delete_dataset.extend(ds_id)
         return delete_dataset
+
+    @staticmethod
+    def get_same_species_db_id_list(db_id):
+        # get all db_ids of same species
+        conn_string = config['psycopg2_conn_string']
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("select an_database_id from annotation_databases where genome_version in (select genome_version from annotation_databases where an_database_id = %s)",(db_id,))
+        # retrieve the records from the database
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        same_species_db_id_list = []
+        for row in result:
+            db_id_found = row[0]
+            same_species_db_id_list.append(db_id_found)
+
+        return same_species_db_id_list
